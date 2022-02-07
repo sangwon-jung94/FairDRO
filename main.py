@@ -46,8 +46,6 @@ def main():
                                                         add_attr = args.add_attr,
 #                                                         skew_ratio=args.skew_ratio,
                                                         labelwise=args.labelwise,
-                                                        sv_ratio = args.sv,
-                                                        version = args.version,
                                                         args=args
                                                         )
     num_classes, num_groups, train_loader, test_loader = tmp
@@ -84,11 +82,11 @@ def main():
         teacher.cuda('cuda:{}'.format(args.t_device))
     
     ########################## get trainer ##################################
-    if 'Adam' in args.optimizer:
+    if 'Adam' == args.optim:
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-    elif 'AdamP' in args.optimizer:
+    elif 'AdamP' == args.optim:
         optimizer = AdamP(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-    elif 'SGD' in args.optimizer:
+    elif 'SGD' == args.optim:
         optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
 
     trainer_ = trainer.TrainerFactory.get_trainer(args.method, model=model, args=args,

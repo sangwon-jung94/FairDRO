@@ -79,43 +79,39 @@ class FitnetRegressor(torch.nn.Module):
 def make_log_name(args):
     log_name = args.model
 
-    if args.mode == 'eva':
-        log_name = args.modelpath.split('/')[-1]
-        # remove .pt from name
-        log_name = log_name[:-3]
+#     if args.mode == 'eva':
+#         log_name = args.modelpath.split('/')[-1]
+#         log_name = log_name[:-3]
 
-    else:
-        if args.pretrained:
-            log_name += '_pretrained'
-        log_name += '_seed{}_epochs{}_bs{}_lr{}'.format(args.seed, args.epochs, args.batch_size, args.lr)
-        if args.method == 'adv':
-            log_name += '_lamb{}_eta{}'.format(args.lamb, args.eta)
+#     else:
+    if args.pretrained:
+        log_name += '_pretrained'
+    log_name += f'_seed{args.seed}_epochs{args.epochs}_bs{args.batch_size}_lr{args.lr}_{args.optim}_wd{args.weight_decay}'
+    if args.method == 'adv':
+        log_name += f'_lamb{args.lamb}_eta{args.eta}'
 
-        elif args.method == 'scratch_mmd' or args.method == 'kd_mfd':
-            log_name += '_{}'.format(args.kernel)
-            log_name += '_sigma{}'.format(args.sigma) if args.kernel == 'rbf' else ''
-            log_name += '_{}'.format(args.lambhf)
+    elif args.method == 'reweighting':
+        log_name += f'_eta{args.eta}_iter{args.iteration}'
 
-        elif args.method == 'reweighting':
-            log_name += '_eta{}_iter{}'.format(args.eta, args.iteration)
-            
-        elif 'groupdro' in args.method:
-            log_name += '_gamma{}'.format(args.gamma)
-        
-        if args.labelwise:
-            log_name += '_labelwise'
+    elif 'gdro' in args.method:
+        if not args.ibr:
+            log_name += f'_gamma{args.gamma}'
 
-        if args.teacher_path is not None or args.method == 'fairhsic':
-            log_name += '_lamb{}'.format(args.lamb)
-            log_name += '_from_{}'.format(args.teacher_type)
-                
-        if args.dataset == 'celeba':
-            if args.target != 'Attractive':
-                log_name += '_{}'.format(args.target)
-            if args.add_attr is not None:
-                log_name += '_{}'.format(args.add_attr)
-        if args.sv < 1:
-            log_name += '_sv{}'.format(args.sv)
-            log_name += '_{}'.format(args.version)
+        if 'chi' in args.method:
+            log_name += f'_rho{args.rho}'
+
+    if args.labelwise:
+        log_name += '_labelwise'
+
+    if args.method in ['fairhsic', 'mfd']:
+        log_name += f'_lamb{args.lamb}'
+        if args.method == 'mfd':
+            log_name += f'_from_{args.teacher_type}'
+
+    if args.dataset == 'celeba':
+        if args.target != 'Attractive':
+            log_name += f'_T{args.target}'
+        if args.add_attr is not None:
+            log_name += f'_A{args.add_attr}'
         
     return log_name

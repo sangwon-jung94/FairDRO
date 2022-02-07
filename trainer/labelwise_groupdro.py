@@ -24,9 +24,8 @@ class Trainer(trainer.GenericTrainer):
         
         self.adv_probs_dict = {}
         for l in range(num_classes):
-            self.adv_probs_dict[l] = torch.ones(num_groups).cuda() / num_groups*num_classes
-        
-#         self.adv_probs = torch.ones(num_groups*num_classes).cuda() / num_groups*num_classes
+            self.adv_probs_dict[l] = torch.ones(num_groups).cuda() / num_groups
+#             self.adv_probs = torch.ones(num_groups*num_classes).cuda() / num_groups*num_classes
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model,criterion)
             eval_start_time = time.time()
@@ -90,7 +89,7 @@ class Trainer(trainer.GenericTrainer):
             else:
                 loss = self.train_criterion(outputs, labels)
             
-            # calculate the groupwise losses
+            # calculate the labelwise losses
             group_map = (subgroups == torch.arange(num_subgroups).unsqueeze(1).long().cuda()).float()
             group_count = group_map.sum(1)
             group_denom = group_count + (group_count==0).float() # avoid nans
@@ -98,17 +97,18 @@ class Trainer(trainer.GenericTrainer):
             
             # update q
             robust_loss = 0
-#             idxs = np.array([i * num_classes for i in range(num_groups)])
-#             for l in range(num_classes):
-#                 label_group_loss = group_loss[idxs+l]
-#                 self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma * label_group_loss.data)
-#                 self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum())
-#                 robust_loss += label_group_loss @ self.adv_probs_dict[l]
-            self.adv_probs = self.adv_probs * torch.exp(self.gamma*group_loss.data)
-            self.adv_probs = self.adv_probs/(self.adv_probs.sum())
+            idxs = np.array([i * num_classes for i in range(num_groups)])
+            for l in range(num_classes):
+                label_group_loss = group_loss[idxs+l]
+                self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma * label_group_loss.data)
+                self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum())
+                robust_loss += label_group_loss @ self.adv_probs_dict[l]
+#             self.adv_probs = self.adv_probs * torch.exp(self.gamma*group_loss.data)
+#             self.adv_probs = self.adv_probs/(self.adv_probs.sum())
             
-            robust_loss = group_loss @ self.adv_probs
-            
+#             robust_loss = group_loss @ self.adv_probs
+
+            robust_loss /= num_classes
             running_loss += robust_loss.item()
             running_acc += get_accuracy(outputs, labels)
 

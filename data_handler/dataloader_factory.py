@@ -11,15 +11,15 @@ class DataloaderFactory:
 
     @staticmethod
     def get_dataloader(name, batch_size=256, seed = 0, num_workers=4,
-                       target_attr='Attractive', add_attr=None, labelwise=False, sv_ratio=1, version='', args=None):
+                       target_attr='Attractive', add_attr=None, labelwise=False, args=None):
         if name == 'adult':
             target_attr = 'sex'
         elif name == 'compas':
             target_attr = 'race'
 
-        test_dataset = DatasetFactory.get_dataset(name, split='test', sv_ratio=sv_ratio, version=version,
+        test_dataset = DatasetFactory.get_dataset(name, split='test',
                                                   target_attr=target_attr, seed=seed, add_attr=add_attr)
-        train_dataset = DatasetFactory.get_dataset(name, split='train', sv_ratio=sv_ratio, version=version,
+        train_dataset = DatasetFactory.get_dataset(name, split='train',
                                                    target_attr=target_attr, seed=seed,add_attr=add_attr)
 
         def _init_fn(worker_id):
@@ -38,6 +38,10 @@ class DataloaderFactory:
                 from torch.utils.data.sampler import WeightedRandomSampler
                 weights = train_dataset.weights
                 sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
+            elif args.method == 'lgdro_chi':
+                from torch.utils.data.sampler import WeightedRandomSampler
+                weights = train_dataset.weights
+                sampler = WeightedRandomSampler(weights, len(weights), replacement=True)                
             else:
                 from data_handler.custom_loader import Customsampler                
                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)

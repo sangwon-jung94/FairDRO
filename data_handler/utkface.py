@@ -9,7 +9,7 @@ from torchvision import transforms
 from data_handler import GenericDataset, SSLDataset
 from data_handler.utils import get_mean_std
 
-class UTKFaceDataset(SSLDataset):
+class UTKFaceDataset(GenericDataset):
     label = 'age'
     sensi = 'race'
     fea_map = {
@@ -40,8 +40,8 @@ class UTKFaceDataset(SSLDataset):
         
         transform = self.train_transform if kwargs['split'] == 'train' else self.test_transform
 
-#         GenericDataset.__init__(self, transform=transform, **kwargs)
-        SSLDataset.__init__(self, transform=transform, **kwargs)
+        GenericDataset.__init__(self, transform=transform, **kwargs)
+#         SSLDataset.__init__(self, transform=transform, **kwargs)
         
         filenames = list_files(self.root, '.jpg')
         filenames = natsorted(filenames)
@@ -53,15 +53,9 @@ class UTKFaceDataset(SSLDataset):
         random.shuffle(self.features)
         
         train, test = self._make_data(self.features, self.num_groups, self.num_classes)
-        self.features = train if self.split == 'train' or 'group' in self.version else test
+        self.features = train if self.split == 'train' else test
         
         self.num_data, self.idxs_per_group = self._data_count(self.features, self.num_groups, self.num_classes)
-        if self.sv_ratio < 1: # if semi-supervised learning,
-            random.seed(self.seed) # we want the different supervision according to the seed
-            self.features, self.num_data, self.idxs_per_group = self.ssl_processing(self.features, self.num_data, self.idxs_per_group, )
-            if 'group' in self.version:
-                a,b = self.num_groups, self.num_classes
-                self.num_groups, self.num_classes = b,a
         
         self.weights = self._make_weights()
                 
@@ -74,10 +68,7 @@ class UTKFaceDataset(SSLDataset):
         if self.transform:
             image = self.transform(image)
             
-        if 'group' in self.version:
-            return image, 1, np.float32(l), np.int64(s), (index, img_name)
-        else :
-            return image, 1, np.float32(s), np.int64(l), (index, img_name)
+        return image, 1, np.float32(s), np.int64(l), (index, img_name)
 
     # five functions below preprocess UTKFace dataset
     def _data_preprocessing(self, filenames):

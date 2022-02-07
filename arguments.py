@@ -29,9 +29,9 @@ def get_args():
     parser.add_argument('--seed', default=0, type=int, help='seed for randomness')
     parser.add_argument('--date', default='20200101', type=str, help='experiment date')
     parser.add_argument('--method', default='scratch', type=str, required=True,
-                        choices=['scratch', 'reweighting','mfd', 'adv', 'fairhsic', 'groupdro','groupdro_ori'])
+                        choices=['scratch', 'reweighting','mfd', 'adv', 'fairhsic', 'lgdro','gdro', 'lgdro_chi'])
 
-    parser.add_argument('--optimizer', default='Adam', type=str, required=False,
+    parser.add_argument('--optim', default='Adam', type=str, required=False,
                         choices=['AdamP', 'SGD', 'SGD_momentum_decay', 'Adam'],
                         help='(default=%(default)s)')
 
@@ -61,9 +61,10 @@ def get_args():
     # For reweighting,
     parser.add_argument('--reweighting-target-criterion', default='eo', type=str, help='fairness criterion')
     parser.add_argument('--iteration', default=10, type=int, help='iteration for reweighting')
-    # For fair FG,
-    parser.add_argument('--sv', default=1, type=float, help='the ratio of group annotation for a training set')
-    parser.add_argument('--version', default='', type=str, help='version about how the unsupervised data is used')
+    
+    # For ldro chi,
+    parser.add_argument('--rho', default=0.5, type=float, help='uncertainty box length')
+    parser.add_argument('--ibr', default=False, action='store_true', help='iterated best response')
     args = parser.parse_args()
     args.cuda=True
     if args.mode == 'train' and args.method == 'mfd':

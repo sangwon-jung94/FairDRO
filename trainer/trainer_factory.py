@@ -23,10 +23,12 @@ class TrainerFactory:
             import trainer.adv_debiasing as trainer
         elif method == 'reweighting':
             import trainer.reweighting as trainer
-        elif method == 'groupdro':
+        elif method == 'lgdro':
+            import trainer.labelwise_groupdro as trainer
+        elif method == 'gdro':
             import trainer.groupdro as trainer
-        elif method == 'groupdro_ori':
-            import trainer.groupdro as trainer
+        elif method == 'lgdro_chi':
+            import trainer.labelwise_groupdro_chi as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)
@@ -51,7 +53,7 @@ class GenericTrainer:
         self.model = model
         self.teacher = teacher
         self.optimizer = optimizer
-        self.optim_type = args.optimizer
+        self.optim_type = args.optim
         self.log_dir = args.log_dir
         self.criterion=torch.nn.CrossEntropyLoss()
         self.scheduler = None

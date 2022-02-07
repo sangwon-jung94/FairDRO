@@ -7,12 +7,51 @@ import trainer
 import torch
 import numpy as np
 
+def bisection(eta_min, eta_max, f, tol=1e-6, max_iter=1000):
+    """Expects f an increasing function and return eta in [eta_min, eta_max]
+    s.t. |f(eta)| <= tol (or the best solution after max_iter iterations"""
+    lower = f(eta_min)
+    upper = f(eta_max)
+
+    # until the root is between eta_min and eta_max, double the length of the
+    # interval starting at either endpoint.
+    while lower > 0 or upper < 0:
+        length = eta_max - eta_min
+        if lower > 0:
+            eta_max = eta_min
+            eta_min = eta_min - 2 * length
+        if upper < 0:
+            eta_min = eta_max
+            eta_max = eta_max + 2 * length
+
+        lower = f(eta_min)
+        upper = f(eta_max)
+
+    for _ in range(max_iter):
+        eta = 0.5 * (eta_min + eta_max)
+
+        v = f(eta)
+
+        if torch.abs(v) <= tol:
+            return eta
+
+        if v > 0:
+            eta_max = eta
+        elif v < 0:
+            eta_min = eta
+
+    # if the minimum is not reached in max_iter, returns the current value
+    logger.info('Maximum number of iterations exceeded in bisection')
+    return 0.5 * (eta_min + eta_max)
 
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
         super().__init__(args=args, **kwargs)
         self.gamma = args.gamma # learning rate of adv_probs
+        self.rho = args.rho
+        self.ibr = args.ibr
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
+        self.tol = 1e-4
 
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         global loss_set
@@ -24,9 +63,8 @@ class Trainer(trainer.GenericTrainer):
         
         self.adv_probs_dict = {}
         for l in range(num_classes):
-            self.adv_probs_dict[l] = torch.ones(num_groups).cuda() / num_groups*num_classes
-        
-#         self.adv_probs = torch.ones(num_groups*num_classes).cuda() / num_groups*num_classes
+            self.adv_probs_dict[l] = torch.ones(num_groups).cuda() / num_groups
+            
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model,criterion)
             eval_start_time = time.time()
@@ -73,6 +111,9 @@ class Trainer(trainer.GenericTrainer):
         num_classes = train_loader.dataset.num_classes
         num_groups = train_loader.dataset.num_groups
         num_subgroups = num_classes * num_groups
+        
+        total_loss = torch.zeros(num_subgroups).cuda(device=self.device)
+        
         for i, data in enumerate(train_loader):
             # Get the inputs
             inputs, _, groups, targets, _ = data
@@ -90,25 +131,23 @@ class Trainer(trainer.GenericTrainer):
             else:
                 loss = self.train_criterion(outputs, labels)
             
-            # calculate the groupwise losses
+            # calculate the labelwise losses
             group_map = (subgroups == torch.arange(num_subgroups).unsqueeze(1).long().cuda()).float()
             group_count = group_map.sum(1)
             group_denom = group_count + (group_count==0).float() # avoid nans
             group_loss = (group_map @ loss.view(-1))/group_denom
+            total_loss += group_loss.detach().clone()
+
             
             # update q
             robust_loss = 0
-#             idxs = np.array([i * num_classes for i in range(num_groups)])
-#             for l in range(num_classes):
-#                 label_group_loss = group_loss[idxs+l]
-#                 self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma * label_group_loss.data)
-#                 self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum())
-#                 robust_loss += label_group_loss @ self.adv_probs_dict[l]
-            self.adv_probs = self.adv_probs * torch.exp(self.gamma*group_loss.data)
-            self.adv_probs = self.adv_probs/(self.adv_probs.sum())
-            
-            robust_loss = group_loss @ self.adv_probs
-            
+            idxs = np.array([i * num_classes for i in range(num_groups)])            
+            for l in range(num_classes):
+                label_group_loss = group_loss[idxs+l]
+#                 self.adv_probs_dict[l] = self._update_mw(label_group_loss)
+                robust_loss += label_group_loss @ self.adv_probs_dict[l]
+
+            robust_loss /= num_classes
             running_loss += robust_loss.item()
             running_acc += get_accuracy(outputs, labels)
 
@@ -126,4 +165,65 @@ class Trainer(trainer.GenericTrainer):
                 running_loss = 0.0
                 running_acc = 0.0
                 batch_start_time = time.time()
+                
+        idxs = np.array([i * num_classes for i in range(num_groups)])            
+        for l in range(num_classes):
+            label_group_loss = total_loss[idxs+l]
+            self.adv_probs_dict[l] = self._update_mw(label_group_loss)
+            print(self.adv_probs_dict[l])
+
+                
+    def _update_mw(self, losses):
+        
+#         if epoch == 1:
+#             return None
+
+        if losses.min() < 0:
+            raise ValueError
+
+        rho = self.rho
+        p_train = torch.ones(losses.shape) / losses.shape[0]
+        p_train = p_train.cuda(device=self.device)
+
+#         if hasattr(self, 'min_prob'):
+#             min_prob = self.min_prob
+#         else:
+#             min_prob = 0.2
+
+        def p(eta):
+            pp = p_train * torch.relu(losses - eta)
+            q = pp / pp.sum()
+            cq = q / p_train
+#             cq = torch.clamp(q / p_train, min=min_prob)
+            return cq * p_train / (cq * p_train).sum()
+
+        def bisection_target(eta):
+            pp = p(eta)
+            return 0.5 * ((pp / p_train - 1) ** 2 * p_train).sum() - rho
+
+        eta_min = -(1.0 / (np.sqrt(2 * rho + 1) - 1)) * losses.max()
+        eta_max = losses.max()
+        eta_star = bisection(
+            eta_min, eta_max, bisection_target,
+            tol=self.tol, max_iter=1000)
+
+        q = p(eta_star)
+        if hasattr(self, 'clamp_q_to_min') and self.clamp_q_to_min:
+            q = torch.clamp(q, min=torch.min(self.p_train).item())
+            q = q / q.sum()
+
+#         if self.logging:
+#             logger.info("EMA before-baseline losses: {}".format(
+#                 " ".join(["{:.6f}".format(xx.item()) for xx in self.sum_losses[0:self.n_groups]])))
+#             logger.info("EMA after-baseline losses: {}".format(" ".join(["{:.6f}".format(xx.item()) for xx in past_losses[0:self.n_groups]])))
+#             logger.info("EMA group fractions: {}".format(" ".join(["{:.6f}".format(xx.item()) for xx in self.p_train[0:self.n_groups]])))
+#             sum_weights = q[0:self.n_groups].sum().item()
+#             logger.info("Group loss weights: {}".format(" ".join(["{:.6f}".format(xx.item() / sum_weights) for xx in q[0:self.n_groups]])))
+
+#         if self.args.clear_history:
+#             self.sum_losses.zero_()
+        # self.count_cat.fill_(1.)
+
+        return q        
+        
 
