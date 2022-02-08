@@ -38,7 +38,7 @@ class DataloaderFactory:
                 from torch.utils.data.sampler import WeightedRandomSampler
                 weights = train_dataset.weights
                 sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
-            elif args.method == 'lgdro_chi':
+            elif args.method == 'lgdro_chi' or args.method == 'gdro' or args.method == 'lgdro':
                 from torch.utils.data.sampler import WeightedRandomSampler
                 weights = train_dataset.weights
                 sampler = WeightedRandomSampler(weights, len(weights), replacement=True)                

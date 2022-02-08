@@ -22,11 +22,7 @@ class Trainer(trainer.GenericTrainer):
         num_classes = train_loader.dataset.num_classes
         num_groups = train_loader.dataset.num_groups
         
-        self.adv_probs_dict = {}
-        for l in range(num_classes):
-            self.adv_probs_dict[l] = torch.ones(num_groups).cuda() / num_groups*num_classes
-        
-#         self.adv_probs = torch.ones(num_groups*num_classes).cuda() / num_groups*num_classes
+        self.adv_probs = torch.ones(num_groups*num_classes).cuda() / num_groups*num_classes
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model,criterion)
             eval_start_time = time.time()
@@ -97,13 +93,6 @@ class Trainer(trainer.GenericTrainer):
             group_loss = (group_map @ loss.view(-1))/group_denom
             
             # update q
-            robust_loss = 0
-#             idxs = np.array([i * num_classes for i in range(num_groups)])
-#             for l in range(num_classes):
-#                 label_group_loss = group_loss[idxs+l]
-#                 self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma * label_group_loss.data)
-#                 self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum())
-#                 robust_loss += label_group_loss @ self.adv_probs_dict[l]
             self.adv_probs = self.adv_probs * torch.exp(self.gamma*group_loss.data)
             self.adv_probs = self.adv_probs/(self.adv_probs.sum())
             
