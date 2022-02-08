@@ -15,8 +15,6 @@ class Trainer(trainer.GenericTrainer):
         self.lamb = args.lamb
         self.sigma = args.sigma
         self.kernel = args.kernel
-        self.slmode = True if args.sv < 1 else False
-        self.version = args.version
         
     def train(self, train_loader, test_loader, epochs, writer=None):
         num_classes = train_loader.dataset.num_classes
