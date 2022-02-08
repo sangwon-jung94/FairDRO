@@ -165,7 +165,7 @@ class Trainer(trainer.GenericTrainer):
                 running_loss = 0.0
                 running_acc = 0.0
                 batch_start_time = time.time()
-                
+        total_loss /= len(train_loader) 
         idxs = np.array([i * num_classes for i in range(num_groups)])            
         for l in range(num_classes):
             label_group_loss = total_loss[idxs+l]
@@ -185,16 +185,15 @@ class Trainer(trainer.GenericTrainer):
         p_train = torch.ones(losses.shape) / losses.shape[0]
         p_train = p_train.cuda(device=self.device)
 
-#         if hasattr(self, 'min_prob'):
-#             min_prob = self.min_prob
-#         else:
-#             min_prob = 0.2
+        if hasattr(self, 'min_prob'):
+            min_prob = self.min_prob
+        else:
+            min_prob = 0.2
 
         def p(eta):
             pp = p_train * torch.relu(losses - eta)
             q = pp / pp.sum()
-            cq = q / p_train
-#             cq = torch.clamp(q / p_train, min=min_prob)
+            cq = torch.clamp(q / p_train, min=min_prob)
             return cq * p_train / (cq * p_train).sum()
 
         def bisection_target(eta):
