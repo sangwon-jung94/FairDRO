@@ -17,7 +17,7 @@ class DatasetFactory:
 
     @staticmethod
    # def get_dataset(name, split='Train', seed=0, sv_ratio=1, version=1, target='Attractive', add_attr=None):
-    def get_dataset(name, split='Train', seed=0, target_attr='Attractive', add_attr=None):
+    def get_dataset(name, split='train', seed=0, target_attr='Attractive', add_attr=None, method='scratch', labelwise=False):
         root = f'./data/{name}' if name != 'utkface_fairface' else './data/utkface'
         kwargs = {'root':root,
                   'split':split,
@@ -37,6 +37,9 @@ class DatasetFactory:
 
         module = importlib.import_module(dataset_dict[name][0])
         class_ = getattr(module, dataset_dict[name][1])
+        
+#         if split == 'train' and labelwise:
+#             class_.sampel_weight = class_._make_weights(method)
         return class_(**kwargs)
 
 class GenericDataset(data.Dataset):
@@ -81,10 +84,6 @@ class GenericDataset(data.Dataset):
         test_data = tmp
         return train_data, test_data
 
-    def _make_weights(self):
-        group_weights = len(self) / self.num_data
-        weights = [group_weights[s,l] for s, l, _ in self.features]
-        return weights 
 #         for s, l, _ in self.features:
         
     def _balance_test_data(self, num_data, num_groups, num_classes):
@@ -101,4 +100,13 @@ class GenericDataset(data.Dataset):
                 data_count[s, l] += 1
             
         return new_features
+
+    def make_weights(self, method):
+        if method == 'fairhsic':
+            group_weights = len(self) / self.num_data.sum(axis=0)
+            weights = [group_weights[l] for _, l, _ in self.features]
+        else:
+            group_weights = len(self) / self.num_data
+            weights = [group_weights[s,l] for s, l, _ in self.features]
+        return weights 
 

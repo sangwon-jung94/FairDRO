@@ -64,7 +64,7 @@ class GenericTrainer:
 
         if self.optim_type == 'Adam' and self.optimizer is not None:
             self.scheduler = ReduceLROnPlateau(self.optimizer)
-        elif self.optim_type == 'AdamP' and self.optimizer is not None:
+        elif (self.optim_type == 'AdamP' or self.optim_type == 'AdamW') and self.optimizer is not None:
             self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
         else: 
             self.scheduler = MultiStepLR(self.optimizer, [60, 120, 180], gamma=0.1)

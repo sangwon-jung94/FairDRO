@@ -86,6 +86,8 @@ def main():
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     elif 'AdamP' == args.optim:
         optimizer = AdamP(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    elif 'AdamW' == args.optim:
+        optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     elif 'SGD' == args.optim:
         optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
 

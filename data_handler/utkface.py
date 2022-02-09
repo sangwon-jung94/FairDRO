@@ -57,7 +57,7 @@ class UTKFaceDataset(GenericDataset):
         
         self.num_data, self.idxs_per_group = self._data_count(self.features, self.num_groups, self.num_classes)
         
-        self.weights = self._make_weights()
+#         self.weights = self._make_weights()
                 
     def __getitem__(self, index):
         s, l, img_name = self.features[index]
