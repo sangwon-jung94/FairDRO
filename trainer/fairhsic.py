@@ -15,10 +15,6 @@ class Trainer(trainer.GenericTrainer):
         self.lamb = args.lamb
         self.sigma = args.sigma
         self.kernel = args.kernel
-        self.slmode = True if args.sv < 1 else False
-        self.version = args.version
-        #if self.slmode and self.version == 2:
-        #    self.lamb = self.lamb / args.sv
         
         # self.image_transformer = networks.ModelFactory.get_model('image_transformer').cuda(self.device)
         

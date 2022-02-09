@@ -22,8 +22,6 @@ class Trainer(trainer.GenericTrainer):
         self.batch_size = args.batch_size
         self.num_workers = args.num_workers
         self.reweighting_target_criterion = args.reweighting_target_criterion ################################
-        self.slmode = True if args.sv < 1 else False
-        self.version = args.version
 
 #         param_m = [param for name, param in self.model.named_parameters() if 'mask' in name] \
 #             if not args.no_groupmask and self.decouple else None
@@ -277,9 +275,6 @@ class Trainer(trainer.GenericTrainer):
         weights = torch.zeros(len(label))
         w_matrix = torch.sigmoid(extended_multipliers) # g by c
         weights = w_matrix[sen_attrs, label]
-        if self.slmode and self.version == 2:
-#             group_idxs = np.where(sen_attrs == -1)
-            weights[sen_attrs == -1] = 0.5
         return weights
 
 #         for i in range(num_groups):  ## 그룹별로 동일한 타겟 (각 클래스별로) -> 각 클래스별로 따로 따로 업뎃한번씩 하는것이 얼마나 효과가 있는지 ?

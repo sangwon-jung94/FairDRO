@@ -21,8 +21,8 @@ class TrainerFactory:
             import trainer.fairhsic as trainer
         elif method == 'adv':
             import trainer.adv_debiasing as trainer
-        elif method == 'reweighting':
-            import trainer.reweighting as trainer
+        elif method == 'lbc':
+            import trainer.lbc as trainer
         elif method == 'lgdro':
             import trainer.labelwise_groupdro as trainer
         elif method == 'gdro':

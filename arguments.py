@@ -29,7 +29,7 @@ def get_args():
     parser.add_argument('--seed', default=0, type=int, help='seed for randomness')
     parser.add_argument('--date', default='20200101', type=str, help='experiment date')
     parser.add_argument('--method', default='scratch', type=str, required=True,
-                        choices=['scratch', 'reweighting','mfd', 'adv', 'fairhsic', 'lgdro','gdro', 'lgdro_chi'])
+                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro', 'lgdro_chi'])
 
     parser.add_argument('--optim', default='Adam', type=str, required=False,
                         choices=['AdamP', 'SGD', 'SGD_momentum_decay', 'Adam'],
