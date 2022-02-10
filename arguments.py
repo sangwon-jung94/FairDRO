@@ -32,7 +32,7 @@ def get_args():
                         choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro', 'lgdro_chi'])
 
     parser.add_argument('--optim', default='Adam', type=str, required=False,
-                        choices=['AdamP', 'SGD', 'SGD_momentum_decay', 'Adam'],
+                        choices=['AdamP', 'AdamW','SGD', 'SGD_momentum_decay', 'Adam'],
                         help='(default=%(default)s)')
 
     parser.add_argument('--lamb', default=1, type=float, help='fairness strength')
