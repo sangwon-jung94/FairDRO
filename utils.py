@@ -109,7 +109,7 @@ def make_log_name(args):
             log_name += f'_from_{args.teacher_type}'
 
     if args.dataset == 'celeba':
-        if args.target != 'Attractive':
+        if args.target != 'Blond_Hair':
             log_name += f'_T{args.target}'
         if args.add_attr is not None:
             log_name += f'_A{args.add_attr}'
