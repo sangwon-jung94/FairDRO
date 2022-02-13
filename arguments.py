@@ -46,7 +46,7 @@ def get_args():
     parser.add_argument('--pretrained', default=False, action='store_true', help='load imagenet pretrained model')
     parser.add_argument('--num-workers', default=2, type=int, help='the number of thread used in dataloader')
     parser.add_argument('--term', default=20, type=int, help='the period for recording train acc')
-    parser.add_argument('--target', default='Attractive', type=str, help='target attribute for celeba')
+    parser.add_argument('--target', default='Blond_Hair', type=str, help='target attribute for celeba')
     parser.add_argument('--add-attr', default=None, help='additional group attribute for celeba')
 
     parser.add_argument('--eta', default=0.001, type=float, help='adversary training learning rate or lr for reweighting')

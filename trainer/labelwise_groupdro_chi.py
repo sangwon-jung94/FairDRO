@@ -193,7 +193,8 @@ class Trainer(trainer.GenericTrainer):
         def p(eta):
             pp = p_train * torch.relu(losses - eta)
             q = pp / pp.sum()
-            cq = torch.clamp(q / p_train, min=min_prob)
+            cq = q / p_train
+            #cq = torch.clamp(q / p_train, min=min_prob)
             return cq * p_train / (cq * p_train).sum()
 
         def bisection_target(eta):
