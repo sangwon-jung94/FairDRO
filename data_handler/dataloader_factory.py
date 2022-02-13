@@ -31,13 +31,13 @@ class DataloaderFactory:
         shuffle = True
         sampler = None
         if labelwise:
-            from torch.utils.data.sampler import WeightedRandomSampler
-            weights = train_dataset.make_weights(args.method)
-            sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
+#            from torch.utils.data.sampler import WeightedRandomSampler
+#            weights = train_dataset.make_weights(args.method)
+#            sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
             
-#             if args.method == 'fairhsic':
-#                 from data_handler.custom_loader_hsic import Customsampler                
-#                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
+            if args.method == 'fairhsic':
+                from data_handler.custom_loader_hsic import Customsampler                
+                sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
 #             elif args.dataset == 'cifar100s':
 #                 from torch.utils.data.sampler import WeightedRandomSampler
 #                 weights = train_dataset.weights
@@ -46,9 +46,9 @@ class DataloaderFactory:
 #                 from torch.utils.data.sampler import WeightedRandomSampler
 #                 weights = train_dataset.weights
 #                 sampler = WeightedRandomSampler(weights, len(weights), replacement=True)                
-#             else:
-#                 from data_handler.custom_loader import Customsampler                
-#                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
+            else:
+                from data_handler.custom_loader import Customsampler                
+                sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
 #                from torch.utils.data.sampler import WeightedRandomSampler
 #                weights = train_dataset.weights
 #                sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
