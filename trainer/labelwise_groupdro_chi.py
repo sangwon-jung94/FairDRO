@@ -41,7 +41,7 @@ def bisection(eta_min, eta_max, f, tol=1e-6, max_iter=1000):
             eta_min = eta
 
     # if the minimum is not reached in max_iter, returns the current value
-    logger.info('Maximum number of iterations exceeded in bisection')
+#     logger.info('Maximum number of iterations exceeded in bisection')
     return 0.5 * (eta_min + eta_max)
 
 class Trainer(trainer.GenericTrainer):
@@ -193,7 +193,8 @@ class Trainer(trainer.GenericTrainer):
         def p(eta):
             pp = p_train * torch.relu(losses - eta)
             q = pp / pp.sum()
-            cq = torch.clamp(q / p_train, min=min_prob)
+            cq = q / p_train
+            #cq = torch.clamp(q / p_train, min=min_prob)
             return cq * p_train / (cq * p_train).sum()
 
         def bisection_target(eta):
