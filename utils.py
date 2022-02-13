@@ -90,7 +90,7 @@ def make_log_name(args):
     if args.method == 'adv':
         log_name += f'_lamb{args.lamb}_eta{args.eta}'
 
-    elif args.method == 'reweighting':
+    elif args.method == 'lbc':
         log_name += f'_eta{args.eta}_iter{args.iteration}'
 
     elif 'gdro' in args.method:
