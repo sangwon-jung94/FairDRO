@@ -7,6 +7,8 @@ import trainer
 import torch
 import numpy as np
 
+from torch.utils.data import DataLoader
+
 def bisection(eta_min, eta_max, f, tol=1e-6, max_iter=1000):
     """Expects f an increasing function and return eta in [eta_min, eta_max]
     s.t. |f(eta)| <= tol (or the best solution after max_iter iterations"""
@@ -60,6 +62,14 @@ class Trainer(trainer.GenericTrainer):
         
         num_classes = train_loader.dataset.num_classes
         num_groups = train_loader.dataset.num_groups
+        
+        
+        self.normal_loader = DataLoader(train_loader.dataset, 
+                                        batch_size=128, 
+                                        shuffle=False, 
+                                        num_workers=2, 
+                                        pin_memory=True, 
+                                        drop_last=True)
         
         self.adv_probs_dict = {}
         for l in range(num_classes):
@@ -136,7 +146,7 @@ class Trainer(trainer.GenericTrainer):
             group_count = group_map.sum(1)
             group_denom = group_count + (group_count==0).float() # avoid nans
             group_loss = (group_map @ loss.view(-1))/group_denom
-            total_loss += group_loss.detach().clone()
+#             total_loss += group_loss.detach().clone()
 
             
             # update q
@@ -165,7 +175,38 @@ class Trainer(trainer.GenericTrainer):
                 running_loss = 0.0
                 running_acc = 0.0
                 batch_start_time = time.time()
-        total_loss /= len(train_loader) 
+
+        group_count = torch.zeros(num_subgroups).cuda(device=self.device)
+        with torch.no_grad():
+            for i, data in enumerate(self.normal_loader):
+                # Get the inputs
+                inputs, _, groups, targets, _ = data
+                labels = targets
+
+                if self.cuda:
+                    inputs = inputs.cuda(device=self.device)
+                    labels = labels.cuda(device=self.device)
+                    groups = groups.cuda(device=self.device)
+
+                subgroups = groups * num_classes + labels
+                outputs = model(inputs)
+                subgroups = groups * num_classes + labels
+                outputs = model(inputs)
+                if criterion is not None:
+                    loss = criterion(outputs, labels)
+                else:
+                    loss = self.train_criterion(outputs, labels)
+            
+                # calculate the labelwise losses
+                group_map = (subgroups == torch.arange(num_subgroups).unsqueeze(1).long().cuda()).float()
+                group_count += group_map.sum(1)
+#                 group_denom = group_count + (group_count==0).float() # avoid nans
+#                 group_loss = (group_map @ loss.view(-1))/group_denom                
+                group_loss = (group_map @ loss.view(-1))                
+                total_loss += group_loss.detach().clone()
+            print(total_loss, group_count)
+            total_loss /= group_count
+        
         idxs = np.array([i * num_classes for i in range(num_groups)])            
         for l in range(num_classes):
             label_group_loss = total_loss[idxs+l]

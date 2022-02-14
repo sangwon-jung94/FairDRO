@@ -22,36 +22,26 @@ class DataloaderFactory:
         train_dataset = DatasetFactory.get_dataset(name, split='train',
                                                    target_attr=target_attr, seed=seed,add_attr=add_attr)
 
-        def _init_fn(worker_id):
-            np.random.seed(int(seed))
             
         num_classes = test_dataset.num_classes
         num_groups = test_dataset.num_groups
+        
+        def _init_fn(worker_id):
+            np.random.seed(int(seed))
 
         shuffle = True
         sampler = None
         if labelwise:
-#            from torch.utils.data.sampler import WeightedRandomSampler
-#            weights = train_dataset.make_weights(args.method)
-#            sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
+            from torch.utils.data.sampler import WeightedRandomSampler
+            weights = train_dataset.make_weights(args.method)
+            sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
             
-            if args.method == 'fairhsic':
-                from data_handler.custom_loader_hsic import Customsampler                
-                sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
-#             elif args.dataset == 'cifar100s':
-#                 from torch.utils.data.sampler import WeightedRandomSampler
-#                 weights = train_dataset.weights
-#                 sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
-#             elif args.method == 'lgdro_chi' or args.method == 'gdro' or args.method == 'lgdro':
-#                 from torch.utils.data.sampler import WeightedRandomSampler
-#                 weights = train_dataset.weights
-#                 sampler = WeightedRandomSampler(weights, len(weights), replacement=True)                
-            else:
-                from data_handler.custom_loader import Customsampler                
-                sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
-#                from torch.utils.data.sampler import WeightedRandomSampler
-#                weights = train_dataset.weights
-#                sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
+#             if args.method == 'fairhsic':
+#                 from data_handler.custom_loader_hsic import Customsampler                
+#                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
+#             else:
+#                 from data_handler.custom_loader import Customsampler                
+#                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
 
             shuffle = False
 
