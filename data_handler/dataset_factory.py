@@ -8,7 +8,8 @@ dataset_dict = {'utkface' : ['data_handler.utkface','UTKFaceDataset'],
                 'celeba' : ['data_handler.celeba', 'CelebA'],
                 'adult' : ['data_handler.adult', 'AdultDataset_torch'],
                 'compas' : ['data_handler.compas', 'CompasDataset_torch'],                
-                'cifar100s' : ['data_handler.cifar100s', 'CIFAR_100S'],                
+                'cifar100s' : ['data_handler.cifar100s', 'CIFAR_100S'],   
+                'waterbird' : ['data_handler.waterbird', 'WaterBird'],   
                }
 
 class DatasetFactory:

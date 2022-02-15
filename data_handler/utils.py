@@ -18,6 +18,10 @@ def get_mean_std(dataset, skew_ratio=0.8):
         mean = [0.485, 0.456, 0.406]
         std = [0.229, 0.224, 0.225]
 
+    elif dataset == 'waterbirds':
+        mean = [0.485, 0.456, 0.406]
+        std = [0.229, 0.224, 0.225]
+        
     return mean, std
 
 def predict_group(model, loader, args):

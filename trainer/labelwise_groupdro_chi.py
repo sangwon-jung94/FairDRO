@@ -147,7 +147,6 @@ class Trainer(trainer.GenericTrainer):
             group_denom = group_count + (group_count==0).float() # avoid nans
             group_loss = (group_map @ loss.view(-1))/group_denom
 #             total_loss += group_loss.detach().clone()
-
             
             # update q
             robust_loss = 0
