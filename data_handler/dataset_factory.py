@@ -18,7 +18,7 @@ class DatasetFactory:
 
     @staticmethod
    # def get_dataset(name, split='Train', seed=0, sv_ratio=1, version=1, target='Attractive', add_attr=None):
-    def get_dataset(name, split='train', seed=0, target_attr='Attractive', add_attr=None, method='scratch', labelwise=False):
+    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, method='scratch', labelwise=False):
         root = f'./data/{name}' if name != 'utkface_fairface' else './data/utkface'
         kwargs = {'root':root,
                   'split':split,

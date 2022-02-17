@@ -43,7 +43,7 @@ class CelebA(data_handler.SSLDataset):
         )
     name = 'celeba'
 
-    def __init__(self, target_attr='Attractive', add_attr=None, download=False, **kwargs):
+    def __init__(self, target_attr='Blond_Hair', add_attr=None, download=False, **kwargs):
         transform = self.train_transform if kwargs['split'] == 'train' else self.test_transform
         super(CelebA, self).__init__(transform=transform, **kwargs)
 

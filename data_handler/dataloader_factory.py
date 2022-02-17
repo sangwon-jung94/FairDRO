@@ -11,7 +11,7 @@ class DataloaderFactory:
 
     @staticmethod
     def get_dataloader(name, batch_size=256, seed = 0, num_workers=4,
-                       target_attr='Attractive', add_attr=None, labelwise=False, args=None):
+                       target_attr='Blond_Hair', add_attr=None, labelwise=False, args=None):
         if name == 'adult':
             target_attr = 'sex'
         elif name == 'compas':
