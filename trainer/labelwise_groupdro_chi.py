@@ -203,13 +203,13 @@ class Trainer(trainer.GenericTrainer):
 #                 group_loss = (group_map @ loss.view(-1))/group_denom                
                 group_loss = (group_map @ loss.view(-1))                
                 total_loss += group_loss.detach().clone()
-            print(total_loss, group_count)
             total_loss /= group_count
         
         idxs = np.array([i * num_classes for i in range(num_groups)])            
         for l in range(num_classes):
             label_group_loss = total_loss[idxs+l]
             self.adv_probs_dict[l] = self._update_mw(label_group_loss)
+            print(total_loss[idxs+l])
             print(self.adv_probs_dict[l])
 
                 
