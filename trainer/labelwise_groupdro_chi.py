@@ -41,7 +41,7 @@ def bisection(eta_min, eta_max, f, tol=1e-6, max_iter=1000):
             eta_max = eta
         elif v < 0:
             eta_min = eta
-
+    print(eta_min, eta_max)
     # if the minimum is not reached in max_iter, returns the current value
 #     logger.info('Maximum number of iterations exceeded in bisection')
     return 0.5 * (eta_min + eta_max)
@@ -84,6 +84,7 @@ class Trainer(trainer.GenericTrainer):
                   'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
                   (epoch + 1, epochs, self.method,
                    eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
+            
             if self.record:
                 train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc = self.evaluate(self.model, train_loader, self.criterion)
                 writer.add_scalar('train_loss', train_loss, epoch)
@@ -155,7 +156,7 @@ class Trainer(trainer.GenericTrainer):
                 label_group_loss = group_loss[idxs+l]
 #                 self.adv_probs_dict[l] = self._update_mw(label_group_loss)
                 robust_loss += label_group_loss @ self.adv_probs_dict[l]
-
+            
             robust_loss /= num_classes
             running_loss += robust_loss.item()
             running_acc += get_accuracy(outputs, labels)
@@ -209,15 +210,11 @@ class Trainer(trainer.GenericTrainer):
         for l in range(num_classes):
             label_group_loss = total_loss[idxs+l]
             self.adv_probs_dict[l] = self._update_mw(label_group_loss)
-            print(total_loss[idxs+l])
-            print(self.adv_probs_dict[l])
-
+            print(f'{l} label loss : {total_loss[idxs+l]}')
+            print(f'{l} label q values : {self.adv_probs_dict[l]}')
                 
     def _update_mw(self, losses):
         
-#         if epoch == 1:
-#             return None
-
         if losses.min() < 0:
             raise ValueError
 
@@ -234,7 +231,7 @@ class Trainer(trainer.GenericTrainer):
             pp = p_train * torch.relu(losses - eta)
             q = pp / pp.sum()
             cq = q / p_train
-            #cq = torch.clamp(q / p_train, min=min_prob)
+#             cq = torch.clamp(q / p_train, min=0.01)
             return cq * p_train / (cq * p_train).sum()
 
         def bisection_target(eta):

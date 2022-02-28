@@ -23,7 +23,7 @@ def get_args():
     parser.add_argument('--img-size', default=176, type=int, help='img size for preprocessing')
 
     parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
-    parser.add_argument('--weight-decay', default=0, type=float, help='weight decay')
+    parser.add_argument('--weight-decay', default=0.0001, type=float, help='weight decay')
     parser.add_argument('--epochs', default=50, type=int, help='number of training epochs')
     parser.add_argument('--batch-size', default=128, type=int, help='mini batch size')
     parser.add_argument('--seed', default=0, type=int, help='seed for randomness')
