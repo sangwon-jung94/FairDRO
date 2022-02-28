@@ -78,15 +78,17 @@ class Trainer(trainer.GenericTrainer):
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model,criterion)
             eval_start_time = time.time()
-            eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc  = self.evaluate(self.model, test_loader, self.criterion)
+            eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc, eval_subgroup_loss  = self.evaluate(self.model, test_loader, self.train_criterion)
             eval_end_time = time.time()
             print('[{}/{}] Method: {} '
                   'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
                   (epoch + 1, epochs, self.method,
                    eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
+            train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion)
+            
+            self._q_update(train_subgroup_loss, num_classes, num_groups)
             
             if self.record:
-                train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc = self.evaluate(self.model, train_loader, self.criterion)
                 writer.add_scalar('train_loss', train_loss, epoch)
                 writer.add_scalar('train_acc', train_acc, epoch)
                 writer.add_scalar('train_deom', train_deom, epoch)
@@ -96,14 +98,28 @@ class Trainer(trainer.GenericTrainer):
                 writer.add_scalar('eval_deom', eval_deom, epoch)
                 writer.add_scalar('eval_deoa', eval_deoa, epoch)
                 
-                eval_contents = {}
-                train_contents = {}
+                eval_subgroup_loss = eval_subgroup_loss.reshape((num_groups, num_classes))
+                train_subgroup_loss = train_subgroup_loss.reshape((num_groups, num_classes))
+                
+                eval_contents_acc = {}
+                train_contents_acc = {}
+                eval_contents_loss = {}
+                train_contents_loss = {}
+                q_values = {}
+                
                 for g in range(num_groups):
                     for l in range(num_classes):
-                        eval_contents[f'g{g},l{l}'] = eval_subgroup_acc[g,l]
-                        train_contents[f'g{g},l{l}'] = train_subgroup_acc[g,l]
-                writer.add_scalars('eval_subgroup_acc', eval_contents, epoch)
-                writer.add_scalars('train_subgroup_acc', train_contents, epoch)
+                        eval_contents_acc[f'g{g},l{l}'] = eval_subgroup_acc[g,l]
+                        train_contents_acc[f'g{g},l{l}'] = train_subgroup_acc[g,l]
+                        eval_contents_loss[f'g{g},l{l}'] = eval_subgroup_loss[g,l]
+                        train_contents_loss[f'g{g},l{l}'] = train_subgroup_loss[g,l]
+                        q_values[f'g{g},l{l}'] = self.adv_probs_dict[l][g]
+
+                writer.add_scalars('eval_subgroup_acc', eval_contents_acc, epoch)
+                writer.add_scalars('train_subgroup_acc', train_contents_acc, epoch)
+                writer.add_scalars('eval_subgroup_loss', eval_contents_loss, epoch)
+                writer.add_scalars('train_subgroup_loss', train_contents_loss, epoch)
+                writer.add_scalars('q_values', q_values, epoch)                
                 
             if self.scheduler != None and 'Reduce' in type(self.scheduler).__name__:
                 self.scheduler.step(eval_loss)
@@ -176,41 +192,16 @@ class Trainer(trainer.GenericTrainer):
                 running_acc = 0.0
                 batch_start_time = time.time()
 
-        group_count = torch.zeros(num_subgroups).cuda(device=self.device)
-        with torch.no_grad():
-            for i, data in enumerate(self.normal_loader):
-                # Get the inputs
-                inputs, _, groups, targets, _ = data
-                labels = targets
-
-                if self.cuda:
-                    inputs = inputs.cuda(device=self.device)
-                    labels = labels.cuda(device=self.device)
-                    groups = groups.cuda(device=self.device)
-
-                subgroups = groups * num_classes + labels
-                outputs = model(inputs)
-                subgroups = groups * num_classes + labels
-                outputs = model(inputs)
-                if criterion is not None:
-                    loss = criterion(outputs, labels)
-                else:
-                    loss = self.train_criterion(outputs, labels)
-            
-                # calculate the labelwise losses
-                group_map = (subgroups == torch.arange(num_subgroups).unsqueeze(1).long().cuda()).float()
-                group_count += group_map.sum(1)
-#                 group_denom = group_count + (group_count==0).float() # avoid nans
-#                 group_loss = (group_map @ loss.view(-1))/group_denom                
-                group_loss = (group_map @ loss.view(-1))                
-                total_loss += group_loss.detach().clone()
-            total_loss /= group_count
         
-        idxs = np.array([i * num_classes for i in range(num_groups)])            
+    def _q_update(self, losses, num_classes, num_groups):
+        assert len(losses) == (num_classes * num_groups)
+        
+        idxs = np.array([i * num_classes for i in range(num_groups)])
+        
         for l in range(num_classes):
-            label_group_loss = total_loss[idxs+l]
+            label_group_loss = losses[idxs+l]
             self.adv_probs_dict[l] = self._update_mw(label_group_loss)
-            print(f'{l} label loss : {total_loss[idxs+l]}')
+            print(f'{l} label loss : {losses[idxs+l]}')
             print(f'{l} label q values : {self.adv_probs_dict[l]}')
                 
     def _update_mw(self, losses):
@@ -263,4 +254,60 @@ class Trainer(trainer.GenericTrainer):
 
         return q        
         
+    def evaluate(self, model, loader, criterion, device=None):
+        model.eval()
+        num_groups = loader.dataset.num_groups
+        num_classes = loader.dataset.num_classes
+        num_subgroups = num_groups * num_classes
+        device = self.device if device is None else device
+
+        eval_eopp_list = torch.zeros(num_subgroups).cuda(device)
+#         eval_data_count = torch.zeros(num_subgroups).cuda(device)
+        
+        group_count = torch.zeros(num_subgroups).cuda(device=self.device)
+        group_loss = torch.zeros(num_subgroups).cuda(device=self.device)        
+        group_acc = torch.zeros(num_subgroups).cuda(device=self.device)        
+        with torch.no_grad():
+            for i, data in enumerate(loader):
+                # Get the inputs
+                inputs, _, groups, targets, _ = data
+                labels = targets
+
+                if self.cuda:
+                    inputs = inputs.cuda(device=self.device)
+                    labels = labels.cuda(device=self.device)
+                    groups = groups.cuda(device=self.device)
+
+                subgroups = groups * num_classes + labels
+                outputs = model(inputs)
+                
+                loss = criterion(outputs, labels)
+                preds = torch.argmax(outputs, 1)
+                acc = (preds == labels).float()
+            
+                # calculate the labelwise losses
+                group_map = (subgroups == torch.arange(num_subgroups).unsqueeze(1).long().cuda()).float()
+                group_count += group_map.sum(1)
+                
+                group_loss += (group_map @ loss.view(-1))
+                group_acc += group_map @ acc
+                
+#                 for g in range(num_groups):
+#                     for l in range(num_classes):
+#                         eval_eopp_list += acc[(groups == g) * (labels == l)].sum()
+#                         eval_data_count[g, l] += torch.sum((groups == g) * (labels == l))
+
+            eval_loss = group_loss.sum() / group_count.sum() 
+            eval_acc = group_acc.sum() / group_count.sum() 
+
+            group_loss /= group_count        
+            group_acc /= group_count
+            
+            group_acc = group_acc.reshape((num_groups, num_classes))
+            labelwise_acc_gap = torch.max(group_acc, dim=0)[0] - torch.min(group_acc, dim=0)[0]
+            eval_avg_eopp = torch.mean(labelwise_acc_gap).item()
+            eval_max_eopp = torch.max(labelwise_acc_gap).item()
+        model.train()
+        
+        return eval_loss, eval_acc, eval_max_eopp, eval_avg_eopp, group_acc, group_loss
 

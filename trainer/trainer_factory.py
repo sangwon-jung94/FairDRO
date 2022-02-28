@@ -67,8 +67,8 @@ class GenericTrainer:
         elif (self.optim_type == 'AdamP' or self.optim_type == 'AdamW') and self.optimizer is not None:
             self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
         else: 
-            self.scheduler = MultiStepLR(self.optimizer, [60, 120, 180], gamma=0.1)
-            #self.scheduler = MultiStepLR(self.optimizer, [30, 60, 90], gamma=0.1)
+#             self.scheduler = MultiStepLR(self.optimizer, [60, 120, 180], gamma=0.1)
+            self.scheduler = MultiStepLR(self.optimizer, [30, 60, 90], gamma=0.1)
             
 
     def evaluate(self, model, loader, criterion, device=None):
@@ -171,6 +171,12 @@ class GenericTrainer:
                         confu_mat[str(i)] += confusion_matrix(
                             labels[mask].cpu().numpy(), pred[mask].cpu().numpy(),
                             labels=[i for i in range(num_classes)])
+                        
+#         print(confu_mat['0'][0,0] / confu_mat['0'][0,:].sum())
+#         print(confu_mat['0'][1,1] / confu_mat['0'][1,:].sum())
+#         print(confu_mat['1'][0,0] / confu_mat['1'][0,:].sum())
+#         print(confu_mat['1'][1,1] / confu_mat['1'][1,:].sum())
+
 
         predict_mat['group_set'] = group_set.numpy()
         predict_mat['target_set'] = target_set.numpy()
