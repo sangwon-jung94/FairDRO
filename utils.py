@@ -3,6 +3,24 @@ import numpy as np
 import random
 import os
 import torch.nn.functional as F
+import cvxpy as cvx
+
+def chi_proj(pre_q, rho):
+    g = pre_q.shape[0]
+    q = cvx.Variable(g)
+    v = pre_q.cpu().numpy()
+    obj = cvx.Minimize(cvx.square(cvx.norm(q - v, 2)))
+
+    constraints = [q>= 0.0,
+                   cvx.sum(q)==1.0,
+                   cvx.square(cvx.norm(q-np.ones(g)/g, 2)) <= rho]
+    
+    prob = cvx.Problem(obj, constraints)
+    prob.solve() # Returns the optimal value.
+    print("optimal value : ", prob.value)
+    print("pre q : ", pre_q)
+    print("optimal var :", q.value)
+    return q.value
 
 def list_files(root, suffix, prefix=False):
     root = os.path.expanduser(root)

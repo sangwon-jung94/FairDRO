@@ -2,7 +2,7 @@ from __future__ import print_function
 from collections import defaultdict
 
 import time
-from utils import get_accuracy
+from utils import get_accuracy, chi_proj
 import trainer
 import torch
 import numpy as np
@@ -69,7 +69,7 @@ class Trainer(trainer.GenericTrainer):
                                         shuffle=False, 
                                         num_workers=2, 
                                         pin_memory=True, 
-                                        drop_last=True)
+                                        drop_last=False)
         
         self.adv_probs_dict = {}
         for l in range(num_classes):
@@ -77,16 +77,26 @@ class Trainer(trainer.GenericTrainer):
             
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model,criterion)
+            train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, train=True)
+            
+            # gradient ascent
+            idxs = np.array([i * num_classes for i in range(num_groups)])            
+            for l in range(num_classes):
+                label_group_loss = train_subgroup_loss[idxs+l]
+                self.adv_probs_dict[l] *= torch.exp(self.gamma*label_group_loss)
+                self.adv_probs_dict[l] = torch.from_numpy(chi_proj(self.adv_probs_dict[l], self.rho)).cuda(device=self.device).float()
+#             self._q_update(train_subgroup_loss, num_classes, num_groups)            
+            
+            
             eval_start_time = time.time()
-            eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc, eval_subgroup_loss  = self.evaluate(self.model, test_loader, self.train_criterion)
+            eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc, eval_subgroup_loss  = self.evaluate(self.model, test_loader, self.train_criterion, train=False)
             eval_end_time = time.time()
+            
+
             print('[{}/{}] Method: {} '
                   'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
                   (epoch + 1, epochs, self.method,
                    eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
-            train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion)
-            
-            self._q_update(train_subgroup_loss, num_classes, num_groups)
             
             if self.record:
                 writer.add_scalar('train_loss', train_loss, epoch)
@@ -212,7 +222,6 @@ class Trainer(trainer.GenericTrainer):
         rho = self.rho
         p_train = torch.ones(losses.shape) / losses.shape[0]
         p_train = p_train.cuda(device=self.device)
-
         if hasattr(self, 'min_prob'):
             min_prob = self.min_prob
         else:
@@ -254,8 +263,13 @@ class Trainer(trainer.GenericTrainer):
 
         return q        
         
-    def evaluate(self, model, loader, criterion, device=None):
-        model.eval()
+    def evaluate(self, model, loader, criterion, device=None, train=False):
+
+        if not train:
+            model.eval()
+        else:
+            print('eval : ', train)
+            model.train()
         num_groups = loader.dataset.num_groups
         num_classes = loader.dataset.num_classes
         num_subgroups = num_groups * num_classes

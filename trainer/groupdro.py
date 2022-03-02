@@ -94,7 +94,7 @@ class Trainer(trainer.GenericTrainer):
             
             # update q
             self.adv_probs = self.adv_probs * torch.exp(self.gamma*group_loss.data)
-            self.adv_probs = self.adv_probs/(self.adv_probs.sum())
+            self.adv_probs = self.adv_probs/(self.adv_probs.sum()) # proj
             
             robust_loss = group_loss @ self.adv_probs
             
