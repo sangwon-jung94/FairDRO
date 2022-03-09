@@ -106,6 +106,16 @@ class GenericDataset(data.Dataset):
         if method == 'fairhsic':
             group_weights = len(self) / self.num_data.sum(axis=0)
             weights = [group_weights[int(feature[1])] for feature in self.features]
+        elif method == 'lgdro_chi':
+            group_weights = np.zeros_like(self.num_data, dtype=np.float)            
+            for l in range(self.num_classes):
+                group_probs = 1 / self.num_data[:, l]
+                group_weights[:,l] = group_probs / group_probs.sum()
+                print(group_weights[:,l])
+                group_weights[:,l] *= self.num_data[:, l].sum()
+                print(group_weights[:,l])
+            print(group_weights)
+            weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features]
         else:
             group_weights = len(self) / self.num_data
             weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features]

@@ -80,28 +80,24 @@ class Trainer(trainer.GenericTrainer):
             self.adv_probs_dict[l] = torch.from_numpy(self.group_dist[l]).float().cuda(device=self.device)
 #             self.adv_probs_dict[l] = torch.ones(num_groups).cuda(device=self.device) / num_groups
 
-            
         for epoch in range(epochs):
             
             self._train_epoch(epoch, train_loader, model,criterion)            
-            
             
             # gradient ascent
             train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, train=True)
             idxs = np.array([i * num_classes for i in range(num_groups)])  
             
-#             for l in range(num_classes):
-#                 label_group_loss = train_subgroup_loss[idxs+l]
-# #                 label_group_loss = 1-train_subgroup_acc[:,l]
+            for l in range(num_classes):
+                label_group_loss = train_subgroup_loss[idxs+l]
+#                 label_group_loss = 1-train_subgroup_acc[:,l]
 #                 print(label_group_loss)
 #                 print(self.adv_probs_dict[l])
-#                 self.adv_probs_dict[l] *= torch.exp(self.gamma*label_group_loss)
+                self.adv_probs_dict[l] *= torch.exp(self.gamma*label_group_loss)
 #                 print(self.adv_probs_dict[l])
-# #                 self.adv_probs_dict[l] = torch.from_numpy(chi_proj(self.adv_probs_dict[l], self.rho)).cuda(device=self.device).float()
+                self.adv_probs_dict[l] = torch.from_numpy(chi_proj(self.adv_probs_dict[l], self.rho)).cuda(device=self.device).float()
 #                 self.adv_probs_dict[l] = torch.from_numpy(chi_proj_nonuni(self.adv_probs_dict[l], self.rho, self.group_dist[l])).cuda(device=self.device).float()
-            self._q_update(train_subgroup_loss, num_classes, num_groups)            
-
-
+#             self._q_update(train_subgroup_loss, num_classes, num_groups)            
 
             eval_start_time = time.time()
             eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc, eval_subgroup_loss  = self.evaluate(self.model, test_loader, self.train_criterion, train=False)
