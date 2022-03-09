@@ -90,17 +90,16 @@ class Trainer(trainer.GenericTrainer):
             train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, train=True)
             idxs = np.array([i * num_classes for i in range(num_groups)])  
             
-            for l in range(num_classes):
-                label_group_loss = train_subgroup_loss[idxs+l]
-#                 label_group_loss = 1-train_subgroup_acc[:,l]
-                print(label_group_loss)
-                print(self.adv_probs_dict[l])
-                self.adv_probs_dict[l] *= torch.exp(self.gamma*label_group_loss)
-                print(self.adv_probs_dict[l])
-#                 self.adv_probs_dict[l] = torch.from_numpy(chi_proj(self.adv_probs_dict[l], self.rho)).cuda(device=self.device).float()
-                self.adv_probs_dict[l] = torch.from_numpy(chi_proj_nonuni(self.adv_probs_dict[l], self.rho, self.group_dist[l])).cuda(device=self.device).float()
-#             self._q_update(train_subgroup_loss, num_classes, num_groups)            
-
+#             for l in range(num_classes):
+#                 label_group_loss = train_subgroup_loss[idxs+l]
+# #                 label_group_loss = 1-train_subgroup_acc[:,l]
+#                 print(label_group_loss)
+#                 print(self.adv_probs_dict[l])
+#                 self.adv_probs_dict[l] *= torch.exp(self.gamma*label_group_loss)
+#                 print(self.adv_probs_dict[l])
+# #                 self.adv_probs_dict[l] = torch.from_numpy(chi_proj(self.adv_probs_dict[l], self.rho)).cuda(device=self.device).float()
+#                 self.adv_probs_dict[l] = torch.from_numpy(chi_proj_nonuni(self.adv_probs_dict[l], self.rho, self.group_dist[l])).cuda(device=self.device).float()
+            self._q_update(train_subgroup_loss, num_classes, num_groups)            
 
 
 
@@ -231,18 +230,19 @@ class Trainer(trainer.GenericTrainer):
         
         for l in range(num_classes):
             label_group_loss = losses[idxs+l]
-            self.adv_probs_dict[l] = self._update_mw(label_group_loss)
+            self.adv_probs_dict[l] = self._update_mw(label_group_loss, self.group_dist[l])
             print(f'{l} label loss : {losses[idxs+l]}')
             print(f'{l} label q values : {self.adv_probs_dict[l]}')
                 
-    def _update_mw(self, losses):
+    def _update_mw(self, losses, p_train):
         
         if losses.min() < 0:
             raise ValueError
 
         rho = self.rho
-        p_train = torch.ones(losses.shape) / losses.shape[0]
-        p_train = p_train.cuda(device=self.device)
+        
+#         p_train = torch.ones(losses.shape) / losses.shape[0]
+        p_train = torch.from_numpy(p_train).float().cuda(device=self.device)
         if hasattr(self, 'min_prob'):
             min_prob = self.min_prob
         else:
