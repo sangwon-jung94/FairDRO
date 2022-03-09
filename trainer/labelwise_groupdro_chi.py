@@ -2,7 +2,7 @@ from __future__ import print_function
 from collections import defaultdict
 
 import time
-from utils import get_accuracy, chi_proj
+from utils import get_accuracy, chi_proj, chi_proj_nonuni
 import trainer
 import torch
 import numpy as np
@@ -72,26 +72,41 @@ class Trainer(trainer.GenericTrainer):
                                         drop_last=False)
         
         self.adv_probs_dict = {}
+        self.group_dist = {}        
         for l in range(num_classes):
-            self.adv_probs_dict[l] = torch.ones(num_groups).cuda() / num_groups
+            num_data = train_loader.dataset.num_data[:,l]
+            self.group_dist[l] = num_data / num_data.sum()
+            print(num_data, self.group_dist[l])
+            self.adv_probs_dict[l] = torch.from_numpy(self.group_dist[l]).float().cuda(device=self.device)
+#             self.adv_probs_dict[l] = torch.ones(num_groups).cuda(device=self.device) / num_groups
+
             
         for epoch in range(epochs):
-            self._train_epoch(epoch, train_loader, model,criterion)
-            train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, train=True)
+            
+            self._train_epoch(epoch, train_loader, model,criterion)            
+            
             
             # gradient ascent
-            idxs = np.array([i * num_classes for i in range(num_groups)])            
+            train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, train=True)
+            idxs = np.array([i * num_classes for i in range(num_groups)])  
+            
             for l in range(num_classes):
                 label_group_loss = train_subgroup_loss[idxs+l]
+#                 label_group_loss = 1-train_subgroup_acc[:,l]
+                print(label_group_loss)
+                print(self.adv_probs_dict[l])
                 self.adv_probs_dict[l] *= torch.exp(self.gamma*label_group_loss)
-                self.adv_probs_dict[l] = torch.from_numpy(chi_proj(self.adv_probs_dict[l], self.rho)).cuda(device=self.device).float()
+                print(self.adv_probs_dict[l])
+#                 self.adv_probs_dict[l] = torch.from_numpy(chi_proj(self.adv_probs_dict[l], self.rho)).cuda(device=self.device).float()
+                self.adv_probs_dict[l] = torch.from_numpy(chi_proj_nonuni(self.adv_probs_dict[l], self.rho, self.group_dist[l])).cuda(device=self.device).float()
 #             self._q_update(train_subgroup_loss, num_classes, num_groups)            
-            
-            
+
+
+
+
             eval_start_time = time.time()
             eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc, eval_subgroup_loss  = self.evaluate(self.model, test_loader, self.train_criterion, train=False)
-            eval_end_time = time.time()
-            
+            eval_end_time = time.time()            
 
             print('[{}/{}] Method: {} '
                   'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
@@ -99,6 +114,7 @@ class Trainer(trainer.GenericTrainer):
                    eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
             
             if self.record:
+                train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, train=True)
                 writer.add_scalar('train_loss', train_loss, epoch)
                 writer.add_scalar('train_acc', train_acc, epoch)
                 writer.add_scalar('train_deom', train_deom, epoch)
@@ -151,6 +167,7 @@ class Trainer(trainer.GenericTrainer):
         
         total_loss = torch.zeros(num_subgroups).cuda(device=self.device)
         
+        idxs = np.array([i * num_classes for i in range(num_groups)])            
         for i, data in enumerate(train_loader):
             # Get the inputs
             inputs, _, groups, targets, _ = data
@@ -175,11 +192,15 @@ class Trainer(trainer.GenericTrainer):
             group_loss = (group_map @ loss.view(-1))/group_denom
 #             total_loss += group_loss.detach().clone()
             
+#            train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, train=True)
+            
             # update q
             robust_loss = 0
             idxs = np.array([i * num_classes for i in range(num_groups)])            
             for l in range(num_classes):
                 label_group_loss = group_loss[idxs+l]
+#                 self.adv_probs_dict[l] *= torch.exp(self.gamma*label_group_loss).detach()
+#                 self.adv_probs_dict[l] = torch.from_numpy(chi_proj(self.adv_probs_dict[l], self.rho)).cuda(device=self.device).float()
 #                 self.adv_probs_dict[l] = self._update_mw(label_group_loss)
                 robust_loss += label_group_loss @ self.adv_probs_dict[l]
             
@@ -268,8 +289,8 @@ class Trainer(trainer.GenericTrainer):
         if not train:
             model.eval()
         else:
-            print('eval : ', train)
             model.train()
+            
         num_groups = loader.dataset.num_groups
         num_classes = loader.dataset.num_classes
         num_subgroups = num_groups * num_classes
