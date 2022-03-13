@@ -91,13 +91,10 @@ class Trainer(trainer.GenericTrainer):
             for l in range(num_classes):
                 label_group_loss = train_subgroup_loss[idxs+l]
 #                 label_group_loss = 1-train_subgroup_acc[:,l]
-#                 print(label_group_loss)
-#                 print(self.adv_probs_dict[l])
                 self.adv_probs_dict[l] *= torch.exp(self.gamma*label_group_loss)
-#                 print(self.adv_probs_dict[l])
                 self.adv_probs_dict[l] = torch.from_numpy(chi_proj(self.adv_probs_dict[l], self.rho)).cuda(device=self.device).float()
-#                 self.adv_probs_dict[l] = torch.from_numpy(chi_proj_nonuni(self.adv_probs_dict[l], self.rho, self.group_dist[l])).cuda(device=self.device).float()
-#             self._q_update(train_subgroup_loss, num_classes, num_groups)            
+#                self.adv_probs_dict[l] = torch.from_numpy(chi_proj_nonuni(self.adv_probs_dict[l], self.rho, self.group_dist[l])).cuda(device=self.device).float()
+#            self._q_update(train_subgroup_loss, num_classes, num_groups)            
 
             eval_start_time = time.time()
             eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc, eval_subgroup_loss  = self.evaluate(self.model, test_loader, self.train_criterion, train=False)
@@ -237,13 +234,13 @@ class Trainer(trainer.GenericTrainer):
 
         rho = self.rho
         
-#         p_train = torch.ones(losses.shape) / losses.shape[0]
-        p_train = torch.from_numpy(p_train).float().cuda(device=self.device)
+        p_train = torch.ones(losses.shape) / losses.shape[0]
+        p_train = p_train.float().cuda(device=self.device)
+#        p_train = torch.from_numpy(p_train).float().cuda(device=self.device)
         if hasattr(self, 'min_prob'):
             min_prob = self.min_prob
         else:
             min_prob = 0.2
-
         def p(eta):
             pp = p_train * torch.relu(losses - eta)
             q = pp / pp.sum()
