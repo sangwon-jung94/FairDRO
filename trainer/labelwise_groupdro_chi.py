@@ -76,9 +76,7 @@ class Trainer(trainer.GenericTrainer):
         for l in range(num_classes):
             num_data = train_loader.dataset.num_data[:,l]
             self.group_dist[l] = num_data / num_data.sum()
-            print(num_data, self.group_dist[l])
-            self.adv_probs_dict[l] = torch.from_numpy(self.group_dist[l]).float().cuda(device=self.device)
-#             self.adv_probs_dict[l] = torch.ones(num_groups).cuda(device=self.device) / num_groups
+            self.adv_probs_dict[l] = torch.ones(num_groups).cuda(device=self.device) / num_groups
 
         for epoch in range(epochs):
             

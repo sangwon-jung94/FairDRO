@@ -11,17 +11,18 @@ def chi_proj(pre_q, rho):
     g = pre_q.shape[0]
     q = cvx.Variable(g)
     v = pre_q.cpu().numpy()
-    obj = cvx.Minimize(cvx.square(cvx.norm(q - v, 2)))
+    #obj = cvx.Minimize(cvx.square(cvx.norm(q - v, 2)))
+    obj = cvx.Minimize(cvx.sum(cvx.kl_div(v, q)))
 
     constraints = [q>= 0.0,
                    cvx.sum(q)==1.0,
-                   cvx.square(cvx.norm(q-np.ones(g)/g, 2)) <= rho]
+                   cvx.square(cvx.norm(q-np.ones(g)/g, 2)) <= rho*2*g*g]
     
     prob = cvx.Problem(obj, constraints)
     prob.solve() # Returns the optimal value.
-    #print("optimal value : ", prob.value)
-    #print("pre q : ", pre_q)
-    #print("optimal var :", q.value)
+    print("optimal value : ", prob.value)
+    print("pre q : ", pre_q)
+    print("optimal var :", q.value)
     #end = time.time()
     #print(f'took {end-start} s')
     return q.value
