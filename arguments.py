@@ -40,7 +40,7 @@ def get_args():
     parser.add_argument('--model', default='', required=True, choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp', 'resnet18_dropout'])
     parser.add_argument('--teamodel', default='', choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp'])    
     
-    parser.add_argument('--teacher-type', default=None, choices=['mlp','resnet12','resnet18', 'resnet34', 'resnet50', 'mobilenet', 'shufflenet', 'cifar_net'])
+    parser.add_argument('--teacher-type', default=None, choices=['mlp','resnet12','resnet18', 'resnet34', 'resnet50', 'mobilenet', 'shufflenet', 'cifar_net', 'None'])
     parser.add_argument('--teacher-path', default=None, help='teacher model path')
 
     parser.add_argument('--pretrained', default=False, action='store_true', help='load imagenet pretrained model')
@@ -63,6 +63,7 @@ def get_args():
     parser.add_argument('--iteration', default=10, type=int, help='iteration for reweighting')
     
     # For ldro chi,
+    parser.add_argument('--kd', default=False, action='store_true', help='kd')
     parser.add_argument('--rho', default=0.5, type=float, help='uncertainty box length')
     parser.add_argument('--ibr', default=False, action='store_true', help='iterated best response')
     args = parser.parse_args()
