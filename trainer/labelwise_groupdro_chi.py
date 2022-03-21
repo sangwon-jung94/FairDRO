@@ -60,7 +60,7 @@ class Trainer(trainer.GenericTrainer):
 #         self.alpha = args.alpha
         self.alpha = 0.2
         self.lamb = 1
-        self.temp = 4
+        self.temp = 1
         
         self.kd = args.kd
 
@@ -190,7 +190,12 @@ class Trainer(trainer.GenericTrainer):
                 with torch.no_grad():
                     t_outputs = self.teacher(inputs)
                 kd_loss = compute_hinton_loss(outputs, t_outputs, kd_temp=self.temp)
-            
+                kd_loss = kd_loss.sum(dim=1)
+#                 print(t_outputs[:10])
+#             print(labels[:10])
+#             print(loss.shape, kd_loss.shape)
+#             print(kd_loss)
+        
             loss = loss + self.lamb * kd_loss
             
             # calculate the labelwise losses

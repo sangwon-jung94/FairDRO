@@ -85,6 +85,12 @@ def main():
         teacher = networks.ModelFactory.get_model(args.teacher_type, train_loader.dataset.num_classes, args.img_size)
         teacher.load_state_dict(torch.load(args.teacher_path, map_location=torch.device('cuda:{}'.format(args.t_device))))
         teacher.cuda('cuda:{}'.format(args.t_device))
+
+    if ((args.method == 'lgdro_chi' and args.teacher_path is not None) and args.mode != 'eval'):
+#     (args.method=='lgdro_chi' and args.kd):
+        teacher = networks.ModelFactory.get_model(args.teacher_type, train_loader.dataset.num_classes, args.img_size)
+        teacher.load_state_dict(torch.load(args.teacher_path, map_location=torch.device('cuda:{}'.format(args.t_device))))
+        teacher.cuda('cuda:{}'.format(args.t_device))
         
 #     set_seed(seed)
     
