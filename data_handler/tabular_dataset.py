@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 import random
 import torch.utils.data as data
-from data_handler import SSLDataset
+from data_handler.dataset_factory import GenericDataset
 
 # class TabularDataset(data.Dataset):
-class TabularDataset(SSLDataset):
+class TabularDataset(GenericDataset):
     """Adult dataset."""
     # 1 idx -> sensi
     # 2 idx -> label
@@ -16,7 +16,7 @@ class TabularDataset(SSLDataset):
         
         dataset_train, dataset_test = dataset.split([0.8], shuffle=True, seed=0)
         # features, labels = self._balance_test_set(dataset)
-        self.dataset = dataset_train if (self.split == 'train') or ('group' in self.version) else dataset_test
+        self.dataset = dataset_train if self.split == 'train' else dataset_test
         
         features = np.delete(self.dataset.features, self.sen_attr_idx, axis=1)
         mean, std = self._get_mean_n_std(dataset_train.features)        
@@ -56,10 +56,7 @@ class TabularDataset(SSLDataset):
         label = features[1]
         feature = features[2:]
 
-        if 'group' in self.version:
-            return np.float32(feature), 0, label, np.int64(group), idx
-        else:
-            return np.float32(feature), 0, group, np.int64(label), idx
+        return np.float32(feature), 0, group, np.int64(label), idx
 
     def _get_mean_n_std(self, train_features):
         features = np.delete(train_features, self.sen_attr_idx, axis=1)

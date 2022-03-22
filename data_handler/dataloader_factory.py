@@ -48,10 +48,10 @@ class DataloaderFactory:
             shuffle = False
 
         train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, sampler=sampler,
-                                      n_workers=n_workers, worker_init_fn=_init_fn, pin_memory=True, drop_last=True)
+                                      num_workers=n_workers, worker_init_fn=_init_fn, pin_memory=True, drop_last=True)
 
         test_dataloader = DataLoader(test_dataset, batch_size=256, shuffle=False,
-                                     n_workers=n_workers, worker_init_fn=_init_fn, pin_memory=True)
+                                     num_workers=n_workers, worker_init_fn=_init_fn, pin_memory=True)
 
         print('# of test data : {}'.format(len(test_dataset)))
         print('# of train data : {}'.format(len(train_dataset)))
