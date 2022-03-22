@@ -12,7 +12,7 @@ def chi_proj(pre_q, rho):
     q = cvx.Variable(g)
     v = pre_q.cpu().numpy()
     #obj = cvx.Minimize(cvx.square(cvx.norm(q - v, 2)))
-    obj = cvx.Minimize(cvx.sum(cvx.kl_div(v, q)))
+    obj = cvx.Minimize(cvx.sum(cvx.kl_div(q, v)))
 
     constraints = [q>= 0.0,
                    cvx.sum(q)==1.0,

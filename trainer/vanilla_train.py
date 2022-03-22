@@ -60,7 +60,8 @@ class Trainer(trainer.GenericTrainer):
         batch_start_time = time.time()
         for i, data in enumerate(train_loader):
             # Get the inputs
-            inputs, _, groups, targets, _ = data
+        
+            inputs, _, groups, targets, idx = data
             labels = targets
 
             if self.cuda:

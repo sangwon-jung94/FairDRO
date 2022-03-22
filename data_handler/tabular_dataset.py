@@ -57,9 +57,9 @@ class TabularDataset(SSLDataset):
         feature = features[2:]
 
         if 'group' in self.version:
-            return np.float32(feature), 0, label, np.int64(group), (idx, 0)
+            return np.float32(feature), 0, label, np.int64(group), idx
         else:
-            return np.float32(feature), 0, group, np.int64(label), (idx, 0)
+            return np.float32(feature), 0, group, np.int64(label), idx
 
     def _get_mean_n_std(self, train_features):
         features = np.delete(train_features, self.sen_attr_idx, axis=1)

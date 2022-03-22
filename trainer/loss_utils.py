@@ -37,7 +37,7 @@ def compute_hinton_loss(outputs, t_outputs=None, teacher=None, t_inputs=None, kd
             Exception('Nothing is given to compute hinton loss')
 
     soft_label = F.softmax(t_outputs / kd_temp, dim=1).to(device).detach()
-    kd_loss = nn.KLDivLoss(reduction='batchmean')(F.log_softmax(outputs / kd_temp, dim=1),
+    kd_loss = nn.KLDivLoss(reduction='none')(F.log_softmax(outputs / kd_temp, dim=1),
                                                   soft_label) * (kd_temp * kd_temp)
 
     return kd_loss

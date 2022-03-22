@@ -109,7 +109,7 @@ class GenericTrainer:
                     for l in range(num_classes):
                         eval_eopp_list[g, l] += acc[(groups == g) * (labels == l)].sum()
                         eval_data_count[g, l] += torch.sum((groups == g) * (labels == l))
-
+            print(eval_loss, eval_data_count)
             eval_loss = eval_loss / eval_data_count.sum() 
             eval_acc = eval_acc / eval_data_count.sum() 
             eval_eopp_list = eval_eopp_list / eval_data_count
