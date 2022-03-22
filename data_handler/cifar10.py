@@ -25,10 +25,10 @@ class CIFAR_10S(VisionDataset):
         self.split = split
         self.seed = seed
 
-        self.num_classes = 10
-        self.num_groups = 2
+        self.n_classes = 10
+        self.n_groups = 2
 
-        imgs, labels, colors, data_count = self._make_skewed(split, seed, skewed_ratio, self.num_classes)
+        imgs, labels, colors, data_count = self._make_skewed(split, seed, skewed_ratio, self.n_classes)
 
         self.dataset = {}
         self.dataset['image'] = np.array(imgs)
@@ -38,17 +38,17 @@ class CIFAR_10S(VisionDataset):
         self._get_label_list()
         self.labelwise = labelwise
 
-        self.num_data = data_count
+        self.n_data = data_count
 
         if self.labelwise:
             self.idx_map = self._make_idx_map()
 
     def _make_idx_map(self):
-        idx_map = [[] for i in range(self.num_groups * self.num_classes)]
+        idx_map = [[] for i in range(self.n_groups * self.n_classes)]
         for j, i in enumerate(self.dataset['image']):
             y = self.dataset['label'][j]
             s = self.dataset['color'][j]
-            pos = s * self.num_classes + y
+            pos = s * self.n_classes + y
             idx_map[int(pos)].append(j)
         final_map = []
         for l in idx_map:
@@ -57,11 +57,11 @@ class CIFAR_10S(VisionDataset):
 
     def _get_label_list(self):
         self.label_list = []
-        for i in range(self.num_classes):
+        for i in range(self.n_classes):
             self.label_list.append(sum(self.dataset['label'] == i))
 
     def _set_mapping(self):
-        tmp = [[] for _ in range(self.num_classes)]
+        tmp = [[] for _ in range(self.n_classes)]
         for i in range(self.__len__()):
             tmp[int(self.dataset['label'][i])].append(i)
         self.map = []
@@ -86,20 +86,20 @@ class CIFAR_10S(VisionDataset):
 
         return image, 0, np.float32(color), np.int64(label), (index, 0)
 
-    def _make_skewed(self, split='train', seed=0, skewed_ratio=1., num_classes=10):
+    def _make_skewed(self, split='train', seed=0, skewed_ratio=1., n_classes=10):
 
         train = False if split =='test' else True
         cifardata = CIFAR10('./data', train=train, shuffle=True, seed=seed, download=True)
 
-        num_data = 50000 if split =='train' else 20000
+        n_data = 50000 if split =='train' else 20000
 
-        imgs = np.zeros((num_data, 32, 32, 3), dtype=np.uint8)
-        labels = np.zeros(num_data)
-        colors = np.zeros(num_data)
-        data_count = np.zeros((2, num_classes), dtype=int)
+        imgs = np.zeros((n_data, 32, 32, 3), dtype=np.uint8)
+        labels = np.zeros(n_data)
+        colors = np.zeros(n_data)
+        data_count = np.zeros((2, n_classes), dtype=int)
 
-        num_total_train_data = int((50000 // num_classes))
-        num_skewed_train_data = int((50000 * skewed_ratio) // num_classes)
+        n_total_train_data = int((50000 // n_classes))
+        n_skewed_train_data = int((50000 * skewed_ratio) // n_classes)
 
         for i, data in enumerate(cifardata):
             img, target = data
@@ -115,7 +115,7 @@ class CIFAR_10S(VisionDataset):
                 data_count[1, target] += 1
             else:
                 if target < 5:
-                    if data_count[0, target] < (num_skewed_train_data):
+                    if data_count[0, target] < (n_skewed_train_data):
                         imgs[i] = rgb_to_grayscale(img)
                         colors[i] = 0
                         data_count[0, target] += 1
@@ -125,7 +125,7 @@ class CIFAR_10S(VisionDataset):
                         data_count[1, target] += 1
                     labels[i] = target
                 else:
-                    if data_count[0, target] < (num_total_train_data - num_skewed_train_data):
+                    if data_count[0, target] < (n_total_train_data - n_skewed_train_data):
                         imgs[i] = rgb_to_grayscale(img)
                         colors[i] = 0
                         data_count[0, target] += 1
@@ -261,4 +261,5 @@ class CIFAR10(VisionDataset):
 
     def extra_repr(self):
         return "Split: {}".format("Train" if self.train is True else "Test")
+
 

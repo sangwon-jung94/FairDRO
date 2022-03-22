@@ -37,10 +37,10 @@ class CIFAR_100S(SSLDataset):
 
 #         super(CIFAR_100S, self).__init__(root, transform=transform, target_transform=target_transform)
 
-        self.num_classes = 100
-        self.num_groups = 2
+        self.n_classes = 100
+        self.n_groups = 2
 
-        imgs, labels, colors, data_count = self._make_skewed(self.split, self.seed, skewed_ratio, self.num_classes)
+        imgs, labels, colors, data_count = self._make_skewed(self.split, self.seed, skewed_ratio, self.n_classes)
         
         self.dataset = {}
         self.dataset['image'] = np.array(imgs)
@@ -50,7 +50,7 @@ class CIFAR_100S(SSLDataset):
         #add by sw
         self.features = self._combine(self.dataset)
 
-        self.num_data, self.idxs_per_group = self._data_count(self.features, self.num_groups, self.num_classes)
+        self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
 
         self.weights = self._make_weights()    
         
@@ -78,20 +78,20 @@ class CIFAR_100S(SSLDataset):
             return image, 1, np.float32(s), np.int64(l), (index)
 
 
-    def _make_skewed(self, split='train', seed=0, skewed_ratio=1., num_classes=10):
+    def _make_skewed(self, split='train', seed=0, skewed_ratio=1., n_classes=10):
 
         train = False if split =='test' else True
         cifardata = CIFAR100('./data', train=train, shuffle=True, seed=seed, download=True)
 
-        num_data = 50000 if split =='train' else 20000
+        n_data = 50000 if split =='train' else 20000
 
-        imgs = np.zeros((num_data, 32, 32, 3), dtype=np.uint8)
-        labels = np.zeros(num_data)
-        colors = np.zeros(num_data)
-        data_count = np.zeros((2, num_classes), dtype=int)
+        imgs = np.zeros((n_data, 32, 32, 3), dtype=np.uint8)
+        labels = np.zeros(n_data)
+        colors = np.zeros(n_data)
+        data_count = np.zeros((2, n_classes), dtype=int)
 
-        num_total_train_data = int((50000 // num_classes))
-        num_skewed_train_data = int((50000 * skewed_ratio) // num_classes)
+        n_total_train_data = int((50000 // n_classes))
+        n_skewed_train_data = int((50000 * skewed_ratio) // n_classes)
 
         
         for i, data in enumerate(cifardata):
@@ -107,8 +107,8 @@ class CIFAR_100S(SSLDataset):
                 data_count[0, target] += 1
                 data_count[1, target] += 1
             else:
-                if target < (num_classes / 2):
-                    if data_count[0, target] < (num_skewed_train_data):
+                if target < (n_classes / 2):
+                    if data_count[0, target] < (n_skewed_train_data):
                         imgs[i] = rgb_to_grayscale(img)
                         colors[i] = 0
                         data_count[0, target] += 1
@@ -118,7 +118,7 @@ class CIFAR_100S(SSLDataset):
                         data_count[1, target] += 1
                     labels[i] = target
                 else:
-                    if data_count[0, target] < (num_total_train_data - num_skewed_train_data):
+                    if data_count[0, target] < (n_total_train_data - n_skewed_train_data):
                         imgs[i] = rgb_to_grayscale(img)
                         colors[i] = 0
                         data_count[0, target] += 1
@@ -275,4 +275,5 @@ class CIFAR100(CIFAR10):
         'key': 'fine_label_names',
         'md5': '7973b15100ade9c7d40fb424638fde48',
     }
+
 

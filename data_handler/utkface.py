@@ -17,7 +17,7 @@ class UTKFaceDataset(GenericDataset):
         'gender' : 1,
         'race' : 2
     }
-    num_map = {
+    n_map = {
         'age' : 100, # will be changed if the function '_transorm_age' is called
         'gender' : 2,
         'race' : 4
@@ -46,16 +46,16 @@ class UTKFaceDataset(GenericDataset):
         filenames = list_files(self.root, '.jpg')
         filenames = natsorted(filenames)
         self._data_preprocessing(filenames)
-        self.num_groups = self.num_map[self.sensi]
-        self.num_classes = self.num_map[self.label]        
+        self.n_groups = self.n_map[self.sensi]
+        self.n_classes = self.n_map[self.label]        
         
         random.seed(1) # we want the same train / test set, so fix the seed to 1
         random.shuffle(self.features)
         
-        train, test = self._make_data(self.features, self.num_groups, self.num_classes)
+        train, test = self._make_data(self.features, self.n_groups, self.n_classes)
         self.features = train if self.split == 'train' else test
         
-        self.num_data, self.idxs_per_group = self._data_count(self.features, self.num_groups, self.num_classes)
+        self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
         
 #         self.weights = self._make_weights()
                 
@@ -106,5 +106,6 @@ class UTKFaceDataset(GenericDataset):
         filenames = [image for image in filenames
                             if ((image.split('_')[self.fea_map['race']] != '4'))]
         ages = [self._transform_age(int(image.split('_')[self.fea_map['age']])) for image in filenames]
-        self.num_map['age'] = len(set(ages))
+        self.n_map['age'] = len(set(ages))
         return filenames
+

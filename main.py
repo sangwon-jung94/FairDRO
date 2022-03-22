@@ -41,19 +41,19 @@ def main():
     ########################## get dataloader ################################
     tmp = data_handler.DataloaderFactory.get_dataloader(args.dataset, 
                                                         batch_size=args.batch_size, seed=args.seed,
-                                                        num_workers=args.num_workers,
+                                                        n_workers=args.n_workers,
                                                         target_attr=args.target,
                                                         add_attr = args.add_attr,
 #                                                         skew_ratio=args.skew_ratio,
                                                         labelwise=args.labelwise,
                                                         args=args
                                                         )
-    num_classes, num_groups, train_loader, test_loader = tmp
+    n_classes, n_groups, train_loader, test_loader = tmp
     """
     filename = 'test/{}.txt'.format(args.add_attr)
-    tmp = np.concatenate((train_loader.dataset.num_data, test_loader.dataset.num_data), axis=0)
+    tmp = np.concatenate((train_loader.dataset.n_data, test_loader.dataset.n_data), axis=0)
     np.savetxt(filename, tmp, fmt='%d')
-    if np.min(test_loader.dataset.num_data) >= 300:
+    if np.min(test_loader.dataset.n_data) >= 300:
         f = open('test/attr_list.txt', 'a+')
         f.write(args.add_attr)
         f.write(', ')
@@ -67,8 +67,8 @@ def main():
     elif 'cifar' in args.dataset:
         args.img_size = 32
 
-    model = networks.ModelFactory.get_model(args.model, num_classes, args.img_size,
-                                            pretrained=args.pretrained, num_groups=num_groups)
+    model = networks.ModelFactory.get_model(args.model, n_classes, args.img_size,
+                                            pretrained=args.pretrained, n_groups=n_groups)
 
     model.cuda('cuda:{}'.format(args.device))
     
@@ -82,13 +82,13 @@ def main():
 #     if ((args.method == 'mfd' or args.teacher_path is not None) and args.mode != 'eval'):
     if ((args.method == 'mfd' and args.teacher_path is not None) and args.mode != 'eval'):
 #     (args.method=='lgdro_chi' and args.kd):
-        teacher = networks.ModelFactory.get_model(args.teacher_type, train_loader.dataset.num_classes, args.img_size)
+        teacher = networks.ModelFactory.get_model(args.teacher_type, train_loader.dataset.n_classes, args.img_size)
         teacher.load_state_dict(torch.load(args.teacher_path, map_location=torch.device('cuda:{}'.format(args.t_device))))
         teacher.cuda('cuda:{}'.format(args.t_device))
 
     if ((args.method == 'lgdro_chi' and args.teacher_path is not None) and args.mode != 'eval'):
 #     (args.method=='lgdro_chi' and args.kd):
-        teacher = networks.ModelFactory.get_model(args.teacher_type, train_loader.dataset.num_classes, args.img_size)
+        teacher = networks.ModelFactory.get_model(args.teacher_type, train_loader.dataset.n_classes, args.img_size)
         teacher.load_state_dict(torch.load(args.teacher_path, map_location=torch.device('cuda:{}'.format(args.t_device))))
         teacher.cuda('cuda:{}'.format(args.t_device))
         
@@ -124,13 +124,13 @@ def main():
         print('Trained model loaded successfully')
 
     if args.evalset == 'all':
-        trainer_.compute_confusion_matix('train', train_loader.dataset.num_classes, train_loader, result_dir, log_name)
-        trainer_.compute_confusion_matix('test', test_loader.dataset.num_classes, test_loader, result_dir, log_name)
+        trainer_.compute_confusion_matix('train', train_loader.dataset.n_classes, train_loader, result_dir, log_name)
+        trainer_.compute_confusion_matix('test', test_loader.dataset.n_classes, test_loader, result_dir, log_name)
 
     elif args.evalset == 'train':
-        trainer_.compute_confusion_matix('train', train_loader.dataset.num_classes, train_loader, result_dir, log_name)
+        trainer_.compute_confusion_matix('train', train_loader.dataset.n_classes, train_loader, result_dir, log_name)
     else:
-        trainer_.compute_confusion_matix('test', test_loader.dataset.num_classes, test_loader, result_dir, log_name)
+        trainer_.compute_confusion_matix('test', test_loader.dataset.n_classes, test_loader, result_dir, log_name)
     if writer is not None:
         writer.close()
     print('Done!')
@@ -143,3 +143,4 @@ if __name__ == '__main__':
 
             
             
+

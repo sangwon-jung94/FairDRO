@@ -29,23 +29,23 @@ class TabularDataset(SSLDataset):
         self.features = np.concatenate((self.groups, self.dataset.labels, features), axis=1)
 
         # For prepare mean and std from the train dataset
-        self.num_data, self.idxs_per_group = self._data_count(self.features, self.num_groups, self.num_classes)
+        self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
         
       #  if self.split == 'train':
       #      self._split_group()
         
     def _split_group(self):
-        for l in range(self.num_classes):
-            for g in range(self.num_groups):
-                num_data = self.num_data[g,l]
-                num_flip = 0
+        for l in range(self.n_classes):
+            for g in range(self.n_groups):
+                n_data = self.n_data[g,l]
+                n_flip = 0
                 for idx in self.idxs_per_group[g,l]:
                     self.features[idx][0] = 2 + g
-                    num_flip += 1
-                    if num_flip>(num_data/2):
+                    n_flip += 1
+                    if n_flip>(n_data/2):
                         break
-        self.num_groups = 4
-        self.num_data, self.idxs_per_group = self._data_count(self.features, self.num_groups, self.num_classes)
+        self.n_groups = 4
+        self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
 
     def get_dim(self):
         return self.dataset.features.shape[-1]
@@ -67,3 +67,4 @@ class TabularDataset(SSLDataset):
         std = features.std(axis=0)
         std[std == 0] += 1e-7
         return mean, std
+

@@ -111,9 +111,9 @@ class Bottleneck(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self, block, layers, num_classes=1000, zero_init_residual=False,
+    def __init__(self, block, layers, n_classes=1000, zero_init_residual=False,
                  groups=1, width_per_group=64, replace_stride_with_dilation=None,
-                 norm_layer=None, hydra=False, num_groups=None, img_size=32):
+                 norm_layer=None, hydra=False, n_groups=None, img_size=32):
         super(ResNet, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
@@ -149,11 +149,11 @@ class ResNet(nn.Module):
                                        dilate=replace_stride_with_dilation[2])
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         if not hydra:
-            self.fc = nn.Linear(512 * block.expansion, num_classes)
+            self.fc = nn.Linear(512 * block.expansion, n_classes)
         else:
             self.fc = nn.ModuleList()
-            for _ in range(num_groups):
-                self.fc.append(torch.nn.Linear(512 * block.expansion, num_classes))
+            for _ in range(n_groups):
+                self.fc.append(torch.nn.Linear(512 * block.expansion, n_classes))
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -302,3 +302,4 @@ def resnet101(pretrained=False, progress=True, **kwargs) -> ResNet:
     """
     return _resnet('resnet101', Bottleneck, [3, 4, 23, 3], pretrained, progress,
                    **kwargs)
+

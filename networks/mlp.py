@@ -4,18 +4,18 @@ import torch.nn.functional as F
 from torch.autograd import Function
 
 class MLP(nn.Module):
-    def __init__(self, feature_size, hidden_dim, num_classes=None, num_layer=3, adv=False, adv_lambda=1.):
+    def __init__(self, feature_size, hidden_dim, n_classes=None, n_layer=3, adv=False, adv_lambda=1.):
         super(MLP, self).__init__()
         try: #list
             in_features = self.compute_input_size(feature_size)
         except : #int
             in_features = feature_size
 
-        num_outputs = num_classes
+        n_outputs = n_classes
         self.adv = adv
         if self.adv:
             self.adv_lambda = adv_lambda
-        self._make_layer(in_features, hidden_dim, num_classes, num_layer)
+        self._make_layer(in_features, hidden_dim, n_classes, n_layer)
         
     def forward(self, feature, get_inter=False):
         feature = torch.flatten(feature, 1)
@@ -38,19 +38,19 @@ class MLP(nn.Module):
 
         return in_features
     
-    def _make_layer(self, in_dim, h_dim, num_classes, num_layer):
+    def _make_layer(self, in_dim, h_dim, n_classes, n_layer):
         
-        if num_layer == 1:
+        if n_layer == 1:
             self.features = nn.Identity()
             h_dim = in_dim
         else:
             features = []
-            for i in range(num_layer-1):
+            for i in range(n_layer-1):
                 features.append(nn.Linear(in_dim, h_dim) if i == 0 else nn.Linear(h_dim, h_dim))
                 features.append(nn.ReLU())
             self.features = nn.Sequential(*features)
 
-        self.head = nn.Linear(h_dim, num_classes)
+        self.head = nn.Linear(h_dim, n_classes)
     
 
 class ReverseLayerF(Function):
@@ -64,3 +64,4 @@ class ReverseLayerF(Function):
     @staticmethod
     def backward(ctx, grad_output):
         return grad_output.neg() * ctx.alpha, None
+

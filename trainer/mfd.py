@@ -17,40 +17,36 @@ class Trainer(trainer.GenericTrainer):
         self.kernel = args.kernel
         
     def train(self, train_loader, test_loader, epochs, writer=None):
-        num_classes = train_loader.dataset.num_classes
-        num_groups = train_loader.dataset.num_groups
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
 
         distiller = MMDLoss(w_m=self.lamb, sigma=self.sigma,
-                            num_classes=num_classes, num_groups=num_groups, kernel=self.kernel)
+                            n_classes=n_classes, n_groups=n_groups, kernel=self.kernel)
         for epoch in range(self.epochs):
             self._train_epoch(epoch, train_loader, self.model, self.teacher, distiller=distiller)
-            eval_start_time = time.time()
-            eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc  = self.evaluate(self.model, test_loader, self.criterion)
+
+            eval_start_time = time.time()                
+            eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc  = self.evaluate(self.model, 
+                                                                                          test_loader, 
+                                                                                          self.criterion,
+                                                                                          epoch, 
+                                                                                          train=False,
+                                                                                          record=self.record,
+                                                                                          writer=writer
+                                                                                         )
             eval_end_time = time.time()
             print('[{}/{}] Method: {} '
                   'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
                   (epoch + 1, epochs, self.method,
                    eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
+
             if self.record:
-                train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc = self.evaluate(self.model, train_loader, self.criterion)
-                writer.add_scalar('train_loss', train_loss, epoch)
-                writer.add_scalar('train_acc', train_acc, epoch)
-                writer.add_scalar('train_deom', train_deom, epoch)
-                writer.add_scalar('train_deoa', train_deoa, epoch)
-                writer.add_scalar('eval_loss', eval_loss, epoch)
-                writer.add_scalar('eval_acc', eval_acc, epoch)
-                writer.add_scalar('eval_deom', eval_deom, epoch)
-                writer.add_scalar('eval_deoa', eval_deoa, epoch)
-                
-                eval_contents = {}
-                train_contents = {}
-                for g in range(num_groups):
-                    for l in range(num_classes):
-                        eval_contents[f'g{g},l{l}'] = eval_subgroup_acc[g,l]
-                        train_contents[f'g{g},l{l}'] = train_subgroup_acc[g,l]
-                writer.add_scalars('eval_subgroup_acc', eval_contents, epoch)
-                writer.add_scalars('train_subgroup_acc', train_contents, epoch)
-                
+                self.evaluate(self.model, train_loader, self.criterion, epoch, 
+                              train=True, 
+                              record=self.record,
+                              writer=writer
+                             )
+            
             if self.scheduler != None and 'Reduce' in type(self.scheduler).__name__:
                 self.scheduler.step(eval_loss)
             else:
@@ -75,8 +71,8 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda(self.device)
                 groups = groups.long().cuda(self.device)
 
-#             for l in range(train_loader.dataset.num_classes):
-#                 for g in range(train_loader.dataset.num_groups):
+#             for l in range(train_loader.dataset.n_classes):
+#                 for g in range(train_loader.dataset.n_groups):
 #                     tmp[g,l] += ((labels == l) * (groups == g)).sum().item()
 #             print(tmp)
             t_inputs = inputs.to(self.t_device)
@@ -118,27 +114,14 @@ class Trainer(trainer.GenericTrainer):
                 running_acc = 0.0
                 batch_start_time = time.time()
 
-    # def compute_feature_loss_mmd(self, inputs, t_inputs, groups, labels, student, teacher, device=0, distiller=None, lambhf=1):
-    #     stu_outputs = student(inputs, get_inter=True)
-    #     f_s = stu_outputs[-2]
-        
-    #     stu_logits = stu_outputs[-1]
-
-    #     tea_outputs = teacher(t_inputs, get_inter=True)
-    #     f_t = tea_outputs[-2].to(device)
-
-    #     tea_logits = tea_outputs[-1]
-    #     fitnet_loss = distiller.forward(f_s, f_t, groups=groups, labels=labels, jointfeature=self.jointfeature)
-    #     fitnet_loss =lambhf*fitnet_loss
-    #     return fitnet_loss, stu_logits, tea_logits, f_s, f_t
             
 class MMDLoss(nn.Module):
-    def __init__(self, w_m, sigma, num_groups, num_classes, kernel):
+    def __init__(self, w_m, sigma, n_groups, n_classes, kernel):
         super(MMDLoss, self).__init__()
         self.w_m = w_m
         self.sigma = sigma
-        self.num_groups = num_groups
-        self.num_classes = num_classes
+        self.n_groups = n_groups
+        self.n_classes = n_classes
         self.kernel = kernel
 
     def forward(self, f_s, f_t, groups, labels):
@@ -153,10 +136,10 @@ class MMDLoss(nn.Module):
         with torch.no_grad():
             _, sigma_avg = self.pdist(teacher, student, sigma_base=self.sigma, kernel=self.kernel)
 
-        for c in range(self.num_classes):
+        for c in range(self.n_classes):
             if len(teacher[labels==c]) == 0:
                 continue
-            for g in range(self.num_groups):
+            for g in range(self.n_groups):
                 if len(student[(labels==c) * (groups == g)]) == 0:
                     continue
                 K_TS, _ = self.pdist(teacher[labels == c], student[(labels == c) * (groups == g)],
@@ -189,5 +172,6 @@ class MMDLoss(nn.Module):
 
         return res, sigma_avg
     
+
 
 

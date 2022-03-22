@@ -37,7 +37,7 @@ def predict_group(model, loader, args):
     features = loader.dataset.features
     
     dataloader = DataLoader(loader.dataset, batch_size=args.batch_size, shuffle=False,
-                        num_workers=args.num_workers, pin_memory=True, drop_last=False)
+                        n_workers=args.n_workers, pin_memory=True, drop_last=False)
     model.eval()
     with torch.no_grad():
         for i, data in enumerate(dataloader):
@@ -60,18 +60,19 @@ def predict_group(model, loader, args):
                 print('[{}] in group prediction'.format(i))
 
     if args.labelwise:
-        loader.dataset.num_data, loader.dataset.idxs_per_group = loader.dataset._data_count()
+        loader.dataset.n_data, loader.dataset.idxs_per_group = loader.dataset._data_count()
         from data_handler.custom_loader import Customsampler
         def _init_fn(worker_id):
             np.random.seed(int(args.seed))
         sampler = Customsampler(loader.dataset, replacement=False, batch_size=args.batch_size)
         train_dataloader = DataLoader(loader.dataset, batch_size=args.batch_size, sampler=sampler,
-                                      num_workers=args.num_workers, worker_init_fn=_init_fn, pin_memory=True, drop_last=True)
+                                      n_workers=args.n_workers, worker_init_fn=_init_fn, pin_memory=True, drop_last=True)
 
     del dataloader
     del model
     del loader
     if args.labelwise:
         return train_dataloader            
+
 
 

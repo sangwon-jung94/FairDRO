@@ -84,8 +84,8 @@ class CelebA(data_handler.SSLDataset):
         self.feature_idx = [i for i in range(len(self.attr_names)) if i != self.target_idx and i!=self.sensi_idx]
         if self.add_attr is not None:
             self.feature_idx.remove(self.add_idx)
-        self.num_classes = 2
-        self.num_groups = 2 if self.add_attr is None else 4 
+        self.n_classes = 2
+        self.n_groups = 2 if self.add_attr is None else 4 
         
         if self.add_attr is None:
             self.features = [[int(s), int(l), filename] for s, l, filename in \
@@ -97,18 +97,18 @@ class CelebA(data_handler.SSLDataset):
         att = tmp[:,0]
         print(np.unique(att))
         print(np.shape(att))
-        self.num_data, self.idxs_per_group = self._data_count(self.features, self.num_groups, self.num_classes)
+        self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
         
         if self.split == "test" and 'group' not in self.version:
-            self.features = self._balance_test_data(self.num_data, self.num_groups, self.num_classes)
-            self.num_data, self.idxs_per_group = self._data_count(self.features, self.num_groups, self.num_classes)
+            self.features = self._balance_test_data(self.n_data, self.n_groups, self.n_classes)
+            self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
         
         if self.sv_ratio < 1: # if semi-supervised learning,
             random.seed(self.seed) # we want the different supervision according to the seed
-            self.features, self.num_data, self.idxs_per_group = self.ssl_processing(self.features, self.num_data, self.idxs_per_group)
+            self.features, self.n_data, self.idxs_per_group = self.ssl_processing(self.features, self.n_data, self.idxs_per_group)
             if 'group' in self.version:
-                a,b = self.num_groups, self.num_classes
-                self.num_groups, self.num_classes = b,a
+                a,b = self.n_groups, self.n_classes
+                self.n_groups, self.n_classes = b,a
 
     def __getitem__(self, index):
         sensitive, target, img_name = self.features[index]
@@ -143,6 +143,7 @@ class CelebA(data_handler.SSLDataset):
 
         with zipfile.ZipFile(os.path.join(self.root, "img_align_celeba.zip"), "r") as f:
             f.extractall(self.root)
+
 
 
 

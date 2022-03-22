@@ -34,9 +34,9 @@ class Trainer(trainer.GenericTrainer):
 
     def train(self, train_loader, test_loader, epochs):
         model = self.model
-        num_groups = train_loader.dataset.num_groups
-        num_classes = train_loader.dataset.num_classes
-        self._init_adversary(num_groups, num_classes, train_loader)
+        n_groups = train_loader.dataset.n_groups
+        n_classes = train_loader.dataset.n_classes
+        self._init_adversary(n_groups, n_classes, train_loader)
         self.scheduler = ReduceLROnPlateau(self.optimizer, patience=5)
 
         for epoch in range(epochs):
@@ -59,8 +59,8 @@ class Trainer(trainer.GenericTrainer):
         return model
 
     def _train_epoch(self, epoch, train_loader, model):
-        num_classes = train_loader.dataset.num_classes
-        num_groups = train_loader.dataset.num_groups
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
 
         model.train()
 
@@ -91,8 +91,8 @@ class Trainer(trainer.GenericTrainer):
 
             adv_inputs = None
             if self.target_criterion =='eo':
-                repeat_times = num_classes
-                input_loc = F.one_hot(labels.long(), num_classes).repeat_interleave(repeat_times, dim=1)
+                repeat_times = n_classes
+                input_loc = F.one_hot(labels.long(), n_classes).repeat_interleave(repeat_times, dim=1)
                 adv_inputs = inputs_for_adv.repeat(1, repeat_times) * input_loc
                 adv_inputs = torch.cat((inputs_for_adv, adv_inputs), dim=1)
 
@@ -121,7 +121,7 @@ class Trainer(trainer.GenericTrainer):
 
             running_loss += loss.item()
             running_adv_loss += adv_loss.item()
-            # binary = True if num_classes ==2 else False
+            # binary = True if n_classes ==2 else False
             running_acc += get_accuracy(outputs, labels)
 
 #             self.optimizer.step()
@@ -141,14 +141,14 @@ class Trainer(trainer.GenericTrainer):
 
     def evaluate(self, model, adversary, loader, criterion, adv_criterion):
         model.eval()
-        num_groups = loader.dataset.num_groups
-        num_classes = loader.dataset.num_classes
+        n_groups = loader.dataset.n_groups
+        n_classes = loader.dataset.n_classes
         eval_acc = 0
         eval_adv_acc = 0
         eval_loss = 0
         eval_adv_loss = 0
-        eval_eopp_list = torch.zeros(num_groups, num_classes).cuda()
-        eval_data_count = torch.zeros(num_groups, num_classes).cuda()
+        eval_eopp_list = torch.zeros(n_groups, n_classes).cuda()
+        eval_data_count = torch.zeros(n_groups, n_classes).cuda()
 
         if 'Custom' in type(loader).__name__:
             loader = loader.generate()
@@ -174,8 +174,8 @@ class Trainer(trainer.GenericTrainer):
 
                 adv_inputs = None
                 if self.target_criterion == 'eo':
-                    repeat_times = num_classes
-                    input_loc = F.one_hot(labels.long(), num_classes).repeat_interleave(repeat_times, dim=1)
+                    repeat_times = n_classes
+                    input_loc = F.one_hot(labels.long(), n_classes).repeat_interleave(repeat_times, dim=1)
                     adv_inputs = inputs_for_adv.repeat(1, repeat_times) * input_loc
                     adv_inputs = torch.cat((inputs_for_adv, adv_inputs), dim=1)
 
@@ -184,21 +184,21 @@ class Trainer(trainer.GenericTrainer):
 
                 loss = criterion(logits, labels)
                 eval_loss += loss.item() * len(labels)
-                binary = True if num_classes == 2 else False
+                binary = True if n_classes == 2 else False
                 acc = get_accuracy(outputs, labels, reduction='none')
                 eval_acc += acc.sum()
 
-                for g in range(num_groups):
-                    for l in range(num_classes):
+                for g in range(n_groups):
+                    for l in range(n_classes):
                         eval_eopp_list[g, l] += acc[(groups == g) * (labels == l)].sum()
                         eval_data_count[g, l] += torch.sum((groups == g) * (labels == l))
 
                 adv_preds = adversary(adv_inputs)
-                # groups = groups.float() if num_groups == 2 else groups.long()
+                # groups = groups.float() if n_groups == 2 else groups.long()
                 groups = groups.long()
                 adv_loss = adv_criterion(adv_preds, groups)
                 eval_adv_loss += adv_loss.item() * len(labels)
-                # binary = True if num_groups == 2 else False
+                # binary = True if n_groups == 2 else False
                 eval_adv_acc += get_accuracy(adv_preds, groups)
 
             eval_loss = eval_loss / eval_data_count.sum()
@@ -211,16 +211,16 @@ class Trainer(trainer.GenericTrainer):
         model.train()
         return eval_loss, eval_acc, eval_adv_loss, eval_adv_acc, eval_max_eopp
 
-    def _init_adversary(self, num_groups, num_classes, dataloader):
+    def _init_adversary(self, n_groups, n_classes, dataloader):
         self.model.eval()
         if self.target_criterion == 'eo':
-            feature_size = num_classes * (num_classes + 1)
+            feature_size = n_classes * (n_classes + 1)
         elif self.target_criterion == 'dp':
-            feature_size = num_classes
+            feature_size = n_classes
 
 
-        sa_clf = MLP(feature_size=feature_size, hidden_dim=32, num_classes=num_groups,
-                     num_layer=2, adv=True, adv_lambda=self.adv_lambda)
+        sa_clf = MLP(feature_size=feature_size, hidden_dim=32, n_classes=n_groups,
+                     n_layer=2, adv=True, adv_lambda=self.adv_lambda)
         if self.cuda:
             sa_clf.cuda()
         sa_clf.train()
@@ -231,3 +231,4 @@ class Trainer(trainer.GenericTrainer):
 
     def criterion(self, model, outputs, labels):
         return nn.CrossEntropyLoss()(outputs, labels)
+

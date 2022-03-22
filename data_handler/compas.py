@@ -16,8 +16,8 @@ class CompasDataset_torch(TabularDataset):
         else:
             raise Exception('Not allowed group')
 
-        self.num_groups = 2
-        self.num_classes = 2
+        self.n_groups = 2
+        self.n_classes = 2
 
         super(CompasDataset_torch, self).__init__(root=root, dataset=dataset, sen_attr_idx=sen_attr_idx,
                                                   **kwargs)

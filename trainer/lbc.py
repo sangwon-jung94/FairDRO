@@ -21,14 +21,7 @@ class Trainer(trainer.GenericTrainer):
         self.iteration = args.iteration
         self.batch_size = args.batch_size
         self.num_workers = args.num_workers
-        self.reweighting_target_criterion = args.reweighting_target_criterion ################################
-
-#         param_m = [param for name, param in self.model.named_parameters() if 'mask' in name] \
-#             if not args.no_groupmask and self.decouple else None
-#         self.mask_optimizer = optim.Adam(param_m, lr=args.mask_lr, weight_decay=args.weight_decay) \
-#             if not args.no_groupmask and self.decouple else None
-#         self.scheduler_mask = ReduceLROnPlateau(self.mask_optimizer, patience=5) \
-#             if not args.no_groupmask and self.decouple else None
+        self.reweighting_target_criterion = args.reweighting_target_criterion 
 
     def train(self, train_loader, test_loader, epochs, dummy_loader=None, writer=None):
         log_set = defaultdict(list)
@@ -39,11 +32,10 @@ class Trainer(trainer.GenericTrainer):
         
 
         multipliers_set = {}
-#         extended_multipliers = np.zeros((num_groups, num_classes))                  #############################
         extended_multipliers = torch.zeros((num_groups, num_classes))     
         # Full batch 가져오기 #통계
         _, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
-                                                  num_workers=self.num_workers)  #############################
+                                                  num_workers=self.num_workers)  
 
         eta_learning_rate = self.eta
         print('eta_learning_rate : ', eta_learning_rate)
@@ -54,41 +46,31 @@ class Trainer(trainer.GenericTrainer):
         
         for iter_ in range(n_iters):
             start_t = time.time()
-#             tmp = np.exp(extended_multipliers)
-#             tmp = tmp / tmp.sum(axis=0)
-#             multipliers_set[iter_] = tmp
-            # update weight (normalization from w_tilde)
-            weight_set = self.debias_weights(Y_train, S_train, extended_multipliers, num_groups, num_classes)   #############################
-            
+            weight_set = self.debias_weights(Y_train, S_train, extended_multipliers, num_groups, num_classes)  
             for epoch in range(epochs):
                 lb_idx = self._train_epoch(epoch, train_loader, model, weight_set)
-
-                eval_start_time = time.time()
-                eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc  = self.evaluate(self.model, test_loader, self.criterion)
+                
+                eval_start_time = time.time()                
+                eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc  = self.evaluate(self.model, 
+                                                                                              test_loader, 
+                                                                                              self.criterion,
+                                                                                              epoch, 
+                                                                                              train=False,
+                                                                                              record=self.record,
+                                                                                              writer=writer
+                                                                                             )
                 eval_end_time = time.time()
                 print('[{}/{}] Method: {} '
                       'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
                       (epoch + 1, epochs, self.method,
                        eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
-                if self.record:
-                    train_loss, train_acc, train_deom, train_deoa, train_subgroup_acc = self.evaluate(self.model, train_loader, self.criterion)
-                    writer.add_scalar('train_loss', train_loss, epoch)
-                    writer.add_scalar('train_acc', train_acc, epoch)
-                    writer.add_scalar('train_deom', train_deom, epoch)
-                    writer.add_scalar('train_deoa', train_deoa, epoch)
-                    writer.add_scalar('eval_loss', eval_loss, epoch)
-                    writer.add_scalar('eval_acc', eval_acc, epoch)
-                    writer.add_scalar('eval_deopm', eval_deom, epoch)
-                    writer.add_scalar('eval_deopa', eval_deoa, epoch)
 
-                    eval_contents = {}
-                    train_contents = {}
-                    for g in range(num_groups):
-                        for l in range(num_classes):
-                            eval_contents[f'g{g},l{l}'] = eval_subgroup_acc[g,l]
-                            train_contents[f'g{g},l{l}'] = train_subgroup_acc[g,l]
-                    writer.add_scalars('eval_subgroup_acc', eval_contents, epoch)
-                    writer.add_scalars('train_subgroup_acc', train_contents, epoch)
+                if self.record:
+                    self.evaluate(self.model, test_loader, self.criterion, epoch, 
+                                  train=False, 
+                                  record=self.record,
+                                  writer=writer
+                                 )
 
                 if self.scheduler != None and 'Reduce' in type(self.scheduler).__name__:
                     self.scheduler.step(eval_loss)

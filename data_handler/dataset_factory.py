@@ -54,14 +54,14 @@ class GenericDataset(data.Dataset):
         self.split = split
         self.transform = transform
         self.seed = seed
-        self.num_data = None
+        self.n_data = None
         
     def __len__(self):
-        return np.sum(self.num_data)
+        return np.sum(self.n_data)
     
-    def _data_count(self, features, num_groups, num_classes):
+    def _data_count(self, features, n_groups, n_classes):
         idxs_per_group = defaultdict(lambda: [])
-        data_count = np.zeros((num_groups, num_classes), dtype=int)
+        data_count = np.zeros((n_groups, n_classes), dtype=int)
 
         for idx, i in enumerate(features):
             s, l = int(i[0]), int(i[1])
@@ -69,15 +69,15 @@ class GenericDataset(data.Dataset):
             idxs_per_group[(s,l)].append(idx)
             
         print(f'mode : {self.split}')        
-        for i in range(num_groups):
+        for i in range(n_groups):
             print('# of %d group data : '%i, data_count[i, :])
         return data_count, idxs_per_group
             
-    def _make_data(self, features, num_groups, num_classes):
+    def _make_data(self, features, n_groups, n_classes):
         # if the original dataset not is divided into train / test set, this function is used
         import copy
         min_cnt = 100
-        data_count = np.zeros((num_groups, num_classes), dtype=int)
+        data_count = np.zeros((n_groups, n_classes), dtype=int)
         tmp = []
         for i in reversed(self.features):
             s, l = int(i[0]), int(i[1])
@@ -92,16 +92,16 @@ class GenericDataset(data.Dataset):
 
 #         for s, l, _ in self.features:
         
-    def _balance_test_data(self, num_data, num_groups, num_classes):
+    def _balance_test_data(self, n_data, n_groups, n_classes):
         print('balance test data...')
         # if the original dataset is divided into train / test set, this function is used        
-        num_data_min = np.min(num_data)
-        print('min : ', num_data_min)
-        data_count = np.zeros((num_groups, num_classes), dtype=int)
+        n_data_min = np.min(n_data)
+        print('min : ', n_data_min)
+        data_count = np.zeros((n_groups, n_classes), dtype=int)
         new_features = []
         for idx, i in enumerate(self.features):
             s, l = int(i[0]), int(i[1])
-            if data_count[s, l] < num_data_min:
+            if data_count[s, l] < n_data_min:
                 new_features.append(i)
                 data_count[s, l] += 1
             
@@ -109,22 +109,23 @@ class GenericDataset(data.Dataset):
 
     def make_weights(self, method):
         if method == 'fairhsic':
-            group_weights = len(self) / self.num_data.sum(axis=0)
+            group_weights = len(self) / self.n_data.sum(axis=0)
             weights = [group_weights[int(feature[1])] for feature in self.features]
         else:
-            group_weights = len(self) / self.num_data
+            group_weights = len(self) / self.n_data
             weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features]
         return weights 
 
 
             
 #         elif method == 'lgdro_chi':
-#             group_weights = np.zeros_like(self.num_data, dtype=np.float)            
-#             for l in range(self.num_classes):
-#                 group_probs = 1 / self.num_data[:, l]
+#             group_weights = np.zeros_like(self.n_data, dtype=np.float)            
+#             for l in range(self.n_classes):
+#                 group_probs = 1 / self.n_data[:, l]
 #                 group_weights[:,l] = group_probs / group_probs.sum()
 #                 print(group_weights[:,l])
-#                 group_weights[:,l] *= self.num_data[:, l].sum()
+#                 group_weights[:,l] *= self.n_data[:, l].sum()
 #                 print(group_weights[:,l])
 #             print(group_weights)
 #             weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features]
+

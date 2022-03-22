@@ -10,7 +10,7 @@ class DataloaderFactory:
         pass
 
     @staticmethod
-    def get_dataloader(name, batch_size=256, seed = 0, num_workers=4,
+    def get_dataloader(name, batch_size=256, seed = 0, n_workers=4,
                        target_attr='Blond_Hair', add_attr=None, labelwise=False, args=None):
         if name == 'adult':
             target_attr = 'sex'
@@ -25,8 +25,8 @@ class DataloaderFactory:
                                                    target_attr=target_attr, seed=seed,add_attr=add_attr)
 
             
-        num_classes = test_dataset.num_classes
-        num_groups = test_dataset.num_groups
+        n_classes = test_dataset.n_classes
+        n_groups = test_dataset.n_groups
         
         def _init_fn(worker_id):
             np.random.seed(int(seed))
@@ -48,15 +48,16 @@ class DataloaderFactory:
             shuffle = False
 
         train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, sampler=sampler,
-                                      num_workers=num_workers, worker_init_fn=_init_fn, pin_memory=True, drop_last=True)
+                                      n_workers=n_workers, worker_init_fn=_init_fn, pin_memory=True, drop_last=True)
 
         test_dataloader = DataLoader(test_dataset, batch_size=256, shuffle=False,
-                                     num_workers=num_workers, worker_init_fn=_init_fn, pin_memory=True)
+                                     n_workers=n_workers, worker_init_fn=_init_fn, pin_memory=True)
 
         print('# of test data : {}'.format(len(test_dataset)))
         print('# of train data : {}'.format(len(train_dataset)))
         print('Dataset loaded.')
-        print('# of classes, # of groups : {}, {}'.format(num_classes, num_groups))
+        print('# of classes, # of groups : {}, {}'.format(n_classes, n_groups))
 
-        return num_classes, num_groups, train_dataloader, test_dataloader
+        return n_classes, n_groups, train_dataloader, test_dataloader
+
 

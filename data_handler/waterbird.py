@@ -58,10 +58,10 @@ class WaterBird(GenericDataset):
         
         self.features = [[g,y,filename] for g,y,filename in zip(self.g_array, self.y_array, self.filenames)]
 
-        self.num_groups = 2
-        self.num_classes = 2
+        self.n_groups = 2
+        self.n_classes = 2
         
-        self.num_data, self.idxs_per_group = self._data_count(self.features, self.num_groups, self.num_classes)
+        self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
         
     def __getitem__(self, index):
         s, l, img_name = self.features[index]
@@ -73,4 +73,5 @@ class WaterBird(GenericDataset):
             image = self.transform(image)
             
         return image, 1, np.float32(s), np.int64(l), (index, img_name)
+
 
