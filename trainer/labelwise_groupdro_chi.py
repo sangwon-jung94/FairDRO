@@ -54,8 +54,27 @@ class Trainer(trainer.GenericTrainer):
         self.ibr = args.ibr
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
         self.tol = 1e-4
+        
+        self.data = args.dataset
+        self.seed = args.seed
+        self.bs = args.batch_size
+        self.wd = args.weight_decay
+        
+        
+    def cal_baseline(self, data, seed, bs, wd):
+
+        model_path = f'trained_models/scratch/{data}/scratch/mlp_seed{str(seed)}_epochs70_bs{bs}_lr0.001_AdamW_wd0.0001.pt'
+        scratch_state_dict = torch.load(model_path)
+        temp_state_dict = self.model.state_dict()
+        self.model.load_state_dict(scratch_state_dict)
+        _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, train=True)
+        self.model.load_state_dict(temp_state_dict)
+        print(train_subgroup_loss)
+        return train_subgroup_loss
 
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
+        
+        
         global loss_set
         model = self.model
         model.train()
@@ -70,6 +89,8 @@ class Trainer(trainer.GenericTrainer):
                                         num_workers=2, 
                                         pin_memory=True, 
                                         drop_last=False)
+        
+        self.baselines = self.cal_baseline(self.data, self.seed, self.bs, self.wd)        
         
         self.adv_probs_dict = {}
         self.group_dist = {}        
@@ -87,7 +108,8 @@ class Trainer(trainer.GenericTrainer):
             idxs = np.array([i * num_classes for i in range(num_groups)])  
             
             for l in range(num_classes):
-                label_group_loss = train_subgroup_loss[idxs+l]
+                label_group_loss = (train_subgroup_loss-self.baselines)[idxs+l]
+                print(label_group_loss)
 #                 label_group_loss = 1-train_subgroup_acc[:,l]
                 self.adv_probs_dict[l] *= torch.exp(self.gamma*label_group_loss)
                 self.adv_probs_dict[l] = torch.from_numpy(chi_proj(self.adv_probs_dict[l], self.rho)).cuda(device=self.device).float()

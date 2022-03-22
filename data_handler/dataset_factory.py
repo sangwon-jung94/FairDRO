@@ -9,7 +9,8 @@ dataset_dict = {'utkface' : ['data_handler.utkface','UTKFaceDataset'],
                 'adult' : ['data_handler.adult', 'AdultDataset_torch'],
                 'compas' : ['data_handler.compas', 'CompasDataset_torch'],                
                 'cifar100s' : ['data_handler.cifar100s', 'CIFAR_100S'],   
-                'waterbird' : ['data_handler.waterbird', 'WaterBird'],   
+                'waterbird' : ['data_handler.waterbird', 'WaterBird'],
+                'jigsaw' : ['data_handler.jigsaw_dataset', 'JigsawDataset'],
                }
 
 class DatasetFactory:
@@ -35,7 +36,11 @@ class DatasetFactory:
             kwargs['target_attr'] = target_attr
         elif name == 'compas':
             kwargs['target_attr'] = target_attr
+        elif name == 'jigsaw':
+            kwargs['target_attr'] = target_attr
 
+
+            
         module = importlib.import_module(dataset_dict[name][0])
         class_ = getattr(module, dataset_dict[name][1])
         

@@ -37,7 +37,7 @@ def get_args():
 
     parser.add_argument('--lamb', default=1, type=float, help='fairness strength')
     parser.add_argument('--gamma', default=0.1, type=float, help='fairness strength')
-    parser.add_argument('--model', default='', required=True, choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp', 'resnet18_dropout'])
+    parser.add_argument('--model', default='', required=True, choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp', 'resnet18_dropout', 'bert'])
     parser.add_argument('--teamodel', default='', choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp'])    
     
     parser.add_argument('--teacher-type', default=None, choices=['mlp','resnet12','resnet18', 'resnet34', 'resnet50', 'mobilenet', 'shufflenet', 'cifar_net'])

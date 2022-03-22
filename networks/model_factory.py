@@ -56,6 +56,13 @@ class ModelFactory():
         elif target_model == 'image_transformer':
             model = ImageTransformNet()
             return model
+        
+        elif target_model == 'bert':
+            from transformers import BertForSequenceClassification
+            model = BertForSequenceClassification.from_pretrained(
+                'bert-based-uncased',
+                num_labels=num_classes)
+
 
         else:
             raise NotImplementedError

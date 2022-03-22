@@ -16,6 +16,8 @@ class DataloaderFactory:
             target_attr = 'sex'
         elif name == 'compas':
             target_attr = 'race'
+        elif name == 'jigsaw' : 
+            target_attr = 'toxicity'
 
         test_dataset = DatasetFactory.get_dataset(name, split='test',
                                                   target_attr=target_attr, seed=seed, add_attr=add_attr)
