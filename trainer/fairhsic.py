@@ -81,7 +81,7 @@ class Trainer(trainer.GenericTrainer):
             stu_logits = outputs[-1]
             # stu_logits = outputs_transformed[-1]
 
-            loss = self.criterion(stu_logits, labels)
+            loss = self.criterion(stu_logits, labels).mean()
 
             running_acc += get_accuracy(stu_logits, labels)
 

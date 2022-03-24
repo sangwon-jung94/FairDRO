@@ -51,14 +51,14 @@ class Trainer(trainer.GenericTrainer):
                 lb_idx = self._train_epoch(epoch, train_loader, model, weight_set)
                 
                 eval_start_time = time.time()                
-            eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
-                                                                             test_loader, 
-                                                                             self.criterion,
-                                                                             epoch, 
-                                                                             train=False,
-                                                                             record=self.record,
-                                                                             writer=writer
-                                                                            )
+                eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
+                                                                                 test_loader, 
+                                                                                 self.criterion,
+                                                                                 epoch, 
+                                                                                 train=False,
+                                                                                 record=self.record,
+                                                                                 writer=writer
+                                                                                )
                 eval_end_time = time.time()
                 print('[{}/{}] Method: {} '
                       'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
