@@ -12,7 +12,7 @@ from torchvision.datasets.utils import download_file_from_google_drive, check_in
 from torchvision import transforms
 import data_handler
 from data_handler.utils import get_mean_std
-class CelebA(data_handler.SSLDataset):
+class CelebA(data_handler.GenericDataset):
     # There currently does not appear to be a easy way to extract 7z in python (without introducing additional
     # dependencies). The "in-the-wild" (not aligned+cropped) images are only in 7z, so they are not available
     # right now.

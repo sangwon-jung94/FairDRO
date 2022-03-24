@@ -6,7 +6,7 @@ from natsort import natsorted
 import random
 import numpy as np
 from torchvision import transforms
-from data_handler import GenericDataset, SSLDataset
+from data_handler import GenericDataset
 from data_handler.utils import get_mean_std
 
 class UTKFaceDataset(GenericDataset):
