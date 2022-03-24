@@ -65,8 +65,6 @@ class CelebA(data_handler.GenericDataset):
         }
         split = split_map[verify_str_arg(self.split.lower(), "split",
                                          ("train", "valid", "test", "all" ))]
-        if 'group' in self.version:
-            split = 0
         fn = partial(join, self.root)
         splits = pandas.read_csv(fn("list_eval_partition.txt"), delim_whitespace=True, header=None, index_col=0)
         attr = pandas.read_csv(fn("list_attr_celeba.txt"), delim_whitespace=True, header=1)
@@ -95,20 +93,11 @@ class CelebA(data_handler.GenericDataset):
                              zip(self.attr[:, self.sensi_idx], self.attr[:, self.add_idx], self.attr[:, self.target_idx], self.filename)]
         tmp = np.array(self.features)
         att = tmp[:,0]
-        print(np.unique(att))
-        print(np.shape(att))
         self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
         
-        if self.split == "test" and 'group' not in self.version:
+        if self.split == "test":
             self.features = self._balance_test_data(self.n_data, self.n_groups, self.n_classes)
             self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
-        
-        if self.sv_ratio < 1: # if semi-supervised learning,
-            random.seed(self.seed) # we want the different supervision according to the seed
-            self.features, self.n_data, self.idxs_per_group = self.ssl_processing(self.features, self.n_data, self.idxs_per_group)
-            if 'group' in self.version:
-                a,b = self.n_groups, self.n_classes
-                self.n_groups, self.n_classes = b,a
 
     def __getitem__(self, index):
         sensitive, target, img_name = self.features[index]
@@ -117,8 +106,6 @@ class CelebA(data_handler.GenericDataset):
         if self.transform is not None:
             image = self.transform(image)
 
-        if 'group' in self.version:
-            return image, 0, target, sensitive, (index, img_name)
         return image, 0, sensitive, target, (index, img_name)            
             
     def _check_integrity(self):

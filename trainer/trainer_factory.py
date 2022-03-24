@@ -137,6 +137,8 @@ class GenericTrainer:
     def write_record(self, writer, epoch, loss, acc, deom, deoa, group_loss, group_acc, train=False):
         flag = 'train' if train else 'test'
         
+        n_groups = group_acc.shape[0]
+        n_classes = group_loss.shape[1]
         writer.add_scalar(f'{flag}_loss', loss, epoch)
         writer.add_scalar(f'{flag}_acc', acc, epoch)
         writer.add_scalar(f'{flag}_deom', deom, epoch)
