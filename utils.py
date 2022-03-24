@@ -16,7 +16,7 @@ def chi_proj(pre_q, rho):
 
     constraints = [q>= 0.0,
                    cvx.sum(q)==1.0,
-                   cvx.square(cvx.norm(q-np.ones(g)/g, 2)) <= rho*2*g*g]
+                   cvx.square(cvx.norm(q-np.ones(g)/g, 2)) <= rho*2/g]
     
     prob = cvx.Problem(obj, constraints)
     prob.solve() # Returns the optimal value.

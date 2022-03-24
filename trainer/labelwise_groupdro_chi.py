@@ -97,7 +97,7 @@ class Trainer(trainer.GenericTrainer):
                                         pin_memory=True, 
                                         drop_last=False)
         
-        self.baselines = self.cal_baseline(self.data, self.seed, self.bs, self.wd)        
+  #      self.baselines = self.cal_baseline(self.data, self.seed, self.bs, self.wd)        
         
         self.adv_probs_dict = {}
 #         self.group_dist = {}        
