@@ -64,9 +64,9 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda(device=self.device)
             outputs = model(inputs)
             if criterion is not None:
-                loss = criterion(outputs, labels)
+                loss = criterion(outputs, labels).mean()
             else:
-                loss = self.criterion(outputs, labels)
+                loss = self.criterion(outputs, labels).mean()
             running_loss += loss.item()
             running_acc += get_accuracy(outputs, labels)
 

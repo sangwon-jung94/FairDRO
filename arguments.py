@@ -16,7 +16,7 @@ def get_args():
     
     parser.add_argument('--mode', default='train', choices=['train', 'eval'])
     parser.add_argument('--modelpath', default=None)
-    parser.add_argument('--evalset', default='test', choices=['all', 'train', 'test'])
+    parser.add_argument('--evalset', default='all', choices=['all', 'train', 'test'])
 
     parser.add_argument('--dataset', required=True, default='', choices=['adult', 'compas','utkface', 'celeba', 'cifar10s','cifar100s', 'waterbird','utkface_fairface'])
     parser.add_argument('--skew-ratio', default=0.8, type=float, help='skew ratio for cifar-10s')

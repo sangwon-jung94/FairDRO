@@ -106,7 +106,7 @@ class CelebA(data_handler.GenericDataset):
         if self.transform is not None:
             image = self.transform(image)
 
-        return image, 0, sensitive, target, (index, img_name)            
+        return image, 0, sensitive, target, index         
             
     def _check_integrity(self):
         for (_, md5, filename) in self.file_list:

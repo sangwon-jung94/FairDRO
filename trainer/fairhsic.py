@@ -65,7 +65,7 @@ class Trainer(trainer.GenericTrainer):
         
         for i, data in enumerate(train_loader):
             # Get the inputs
-            inputs, _, groups, targets, (idx,_) = data
+            inputs, _, groups, targets, idx = data
             labels = targets
             if self.cuda:
                 inputs = inputs.cuda(self.device)
@@ -81,7 +81,7 @@ class Trainer(trainer.GenericTrainer):
             stu_logits = outputs[-1]
             # stu_logits = outputs_transformed[-1]
 
-            loss = self.criterion(stu_logits, labels)
+            loss = self.criterion(stu_logits, labels).mean()
 
             running_acc += get_accuracy(stu_logits, labels)
 

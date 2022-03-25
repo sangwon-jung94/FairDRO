@@ -68,7 +68,7 @@ class UTKFaceDataset(GenericDataset):
         if self.transform:
             image = self.transform(image)
             
-        return image, 1, np.float32(s), np.int64(l), (index, img_name)
+        return image, 1, np.float32(s), np.int64(l), index
 
     # five functions below preprocess UTKFace dataset
     def _data_preprocessing(self, filenames):
