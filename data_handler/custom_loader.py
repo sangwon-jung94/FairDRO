@@ -9,10 +9,10 @@ class Customsampler(RandomSampler):
         super(Customsampler, self).__init__(data_source=data_source, replacement=replacement,
                                             num_samples=num_samples, generator=generator)
         
-        self.l = data_source.num_classes
-        self.g = data_source.num_groups
+        self.l = data_source.n_classes
+        self.g = data_source.n_groups
         self.nbatch_size = batch_size // (self.l*self.g)
-        self.num_data = data_source.num_data
+        self.num_data = data_source.n_data
         self.idxs_per_group = data_source.idxs_per_group
         
         self.max_pos = np.unravel_index(np.argmax(self.num_data), self.num_data.shape) # which one is a group that has the largest number of data poitns
