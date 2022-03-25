@@ -5,14 +5,14 @@ import random
 
 class Customsampler(RandomSampler):
 
-    def __init__(self, data_source, replacement=False, num_samples=None, batch_size=None, generator=None):
+    def __init__(self, data_source, replacement=False, n_samples=None, batch_size=None, generator=None):
         super(Customsampler, self).__init__(data_source=data_source, replacement=replacement,
-                                            num_samples=num_samples, generator=generator)
+                                            num_samples=n_samples, generator=generator)
         
-        self.l = data_source.num_classes
-        self.g = data_source.num_groups
+        self.l = data_source.n_classes
+        self.g = data_source.n_groups
         self.nbatch_size = batch_size // (self.l*self.g)
-        self.num_data = np.sum(data_source.num_data, axis=0)
+        self.num_data = np.sum(data_source.n_data, axis=0)
         
         self.idxs_per_group = data_source.idxs_per_group
         idxs_per_group = {}

@@ -80,7 +80,6 @@ class GenericTrainer:
             model.eval()
         else:
             model.train()
-
         n_groups = loader.dataset.n_groups
         n_classes = loader.dataset.n_classes
         n_subgroups = n_groups * n_classes        

@@ -86,7 +86,7 @@ class Trainer(trainer.GenericTrainer):
             # kd_loss = compute_hinton_loss(stu_logits, t_outputs=tea_logits,
             #                               kd_temp=self.kd_temp, device=self.device) if self.lambh != 0 else 0
 
-            loss = self.criterion(stu_logits, labels)
+            loss = self.criterion(stu_logits, labels).mean()
             # if kd_loss != 0:
             #     loss = loss / (1 + self.lambh) + self.lambh * kd_loss / (1 + self.lambh)
 
