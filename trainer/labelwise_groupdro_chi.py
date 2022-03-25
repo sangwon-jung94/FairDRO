@@ -112,6 +112,7 @@ class Trainer(trainer.GenericTrainer):
             
             # gradient ascent
             _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
+                                                               epoch,
                                                                train=True,
                                                                record=self.record,
                                                                writer=writer
