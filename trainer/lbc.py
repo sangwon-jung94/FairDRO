@@ -56,7 +56,8 @@ class Trainer(trainer.GenericTrainer):
                                                                                  self.criterion,
                                                                                  epoch, 
                                                                                  train=False,
-                                                                                 record=self.record,
+                                                                                 record=self.record
+                                                                                 )
                             
                 eval_end_time = time.time()
                 print('[{}/{}] Method: {} '
@@ -154,7 +155,7 @@ class Trainer(trainer.GenericTrainer):
     def get_statistics(self, dataset, batch_size=128, n_workers=2, model=None):
 
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
-                                n_workers=n_workers, pin_memory=True, drop_last=False)
+                                num_workers=n_workers, pin_memory=True, drop_last=False)
         n_classes = dataloader.dataset.n_classes
 
         if model != None:
