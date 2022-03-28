@@ -56,7 +56,8 @@ class Trainer(trainer.GenericTrainer):
                                                                                  self.criterion,
                                                                                  epoch, 
                                                                                  train=False,
-                                                                                 record=self.record
+                                                                                 record=self.record,
+                                                                                 writer=writer
                                                                                  )
                             
                 eval_end_time = time.time()
