@@ -4,7 +4,7 @@ from collections import defaultdict
 import time
 from utils import get_accuracy
 import trainer
-
+import torch
 
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
@@ -14,6 +14,7 @@ class Trainer(trainer.GenericTrainer):
         global loss_set
         model = self.model
         model.train()
+
 
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model,criterion)
@@ -62,7 +63,20 @@ class Trainer(trainer.GenericTrainer):
             if self.cuda:
                 inputs = inputs.cuda(device=self.device)
                 labels = labels.cuda(device=self.device)
-            outputs = model(inputs)
+                
+            if self.nlp_flag:
+                input_ids = inputs[:, :, 0]
+                input_masks = inputs[:, :, 1]
+                segment_ids = inputs[:, :, 2]
+                outputs = model(
+                    input_ids=input_ids,
+                    attention_mask=input_masks,
+                    token_type_ids=segment_ids,
+                    labels=labels,
+                )[1] 
+            else:
+                outputs = model(inputs)
+                
             if criterion is not None:
                 loss = criterion(outputs, labels).mean()
             else:
@@ -72,6 +86,9 @@ class Trainer(trainer.GenericTrainer):
 
             self.optimizer.zero_grad()
             loss.backward()
+            
+            if self.nlp_flag:
+                torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
             self.optimizer.step()
             
             if i % self.term == self.term-1: # print every self.term mini-batches

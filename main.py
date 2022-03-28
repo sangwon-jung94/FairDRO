@@ -93,19 +93,54 @@ def main():
         teacher.cuda('cuda:{}'.format(args.t_device))
         
 #     set_seed(seed)
-    
+    scheduler=None
     ########################## get trainer ##################################
     if 'Adam' == args.optim:
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     elif 'AdamP' == args.optim:
         optimizer = AdamP(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     elif 'AdamW' == args.optim:
-        optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+        if not args.model.startswith("bert"):
+            optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+        # BERT uses its own scheduler and optimizer
+        else: 
+            from pytorch_transformers import WarmupLinearSchedule
+            no_decay = ["bias", "LayerNorm.weight"]
+            optimizer_grouped_parameters = [
+                {
+                    "params": [
+                        p for n, p in model.named_parameters()
+                        if not any(nd in n for nd in no_decay)
+                    ],
+                    "weight_decay":
+                    args.weight_decay,
+                },
+                {
+                    "params": [
+                        p for n, p in model.named_parameters()
+                        if any(nd in n for nd in no_decay)
+                    ],
+                    "weight_decay":
+                    0.0,
+                },
+            ]
+            optimizer = optim.AdamW(optimizer_grouped_parameters,
+                              lr=args.lr,
+                              eps=1e-8,
+#                               eps=args.adam_epsilon
+                             )
+            t_total = len(train_loader) * args.epochs
+            print(f"\nt_total is {t_total}\n")
+            scheduler = WarmupLinearSchedule(optimizer,
+#                                              warmup_steps=args.warmup_steps,
+                                             warmup_steps=0,
+                                             t_total=t_total)        
+        
     elif 'SGD' == args.optim:
         optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
 
     trainer_ = trainer.TrainerFactory.get_trainer(args.method, model=model, args=args,
-                                                  optimizer=optimizer, teacher=teacher)
+                                                  optimizer=optimizer, teacher=teacher, scheduler=scheduler)
 
     ####################### start training or evaluating ####################
     

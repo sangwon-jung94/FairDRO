@@ -25,8 +25,9 @@ class ModelFactory():
         elif target_model == 'bert':
             from transformers import BertForSequenceClassification
             model = BertForSequenceClassification.from_pretrained(
-                'bert-based-uncased',
-                n_labels=n_classes)
+                'bert-base-uncased',
+                num_labels=n_classes)
+            return model
 
 
         else:

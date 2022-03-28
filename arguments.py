@@ -18,11 +18,12 @@ def get_args():
     parser.add_argument('--modelpath', default=None)
     parser.add_argument('--evalset', default='all', choices=['all', 'train', 'test'])
 
-    parser.add_argument('--dataset', required=True, default='', choices=['adult', 'compas','utkface', 'celeba', 'cifar10s','cifar100s', 'waterbird','utkface_fairface'])
+    parser.add_argument('--dataset', required=True, default='', choices=['adult', 'compas','utkface', 'celeba', 'cifar10s','cifar100s', 'waterbird','utkface_fairface', 'jigsaw'])
     parser.add_argument('--skew-ratio', default=0.8, type=float, help='skew ratio for cifar-10s')
     parser.add_argument('--img-size', default=176, type=int, help='img size for preprocessing')
 
     parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
+    parser.add_argument('--max-grad-norm', default=1, type=float, help='size for clip grad')
     parser.add_argument('--weight-decay', default=0.0001, type=float, help='weight decay')
     parser.add_argument('--epochs', default=50, type=int, help='number of training epochs')
     parser.add_argument('--batch-size', default=128, type=int, help='mini batch size')

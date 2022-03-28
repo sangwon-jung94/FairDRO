@@ -19,7 +19,7 @@ class DatasetFactory:
 
     @staticmethod
    # def get_dataset(name, split='Train', seed=0, sv_ratio=1, version=1, target='Attractive', add_attr=None):
-    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, method='scratch', labelwise=False):
+    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, method='scratch', labelwise=False, bs=256):
         root = f'./data/{name}' if name != 'utkface_fairface' else './data/utkface'
         kwargs = {'root':root,
                   'split':split,
@@ -37,10 +37,9 @@ class DatasetFactory:
         elif name == 'compas':
             kwargs['target_attr'] = target_attr
         elif name == 'jigsaw':
-            kwargs['target_attr'] = target_attr
-
-
-            
+            kwargs['target_name'] = target_attr
+            kwargs['batch_size'] = bs
+        
         module = importlib.import_module(dataset_dict[name][0])
         class_ = getattr(module, dataset_dict[name][1])
         

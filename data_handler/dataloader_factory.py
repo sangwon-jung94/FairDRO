@@ -20,9 +20,9 @@ class DataloaderFactory:
             target_attr = 'toxicity'
 
         test_dataset = DatasetFactory.get_dataset(name, split='test',
-                                                  target_attr=target_attr, seed=seed, add_attr=add_attr)
+                                                  target_attr=target_attr, seed=seed, add_attr=add_attr, bs=batch_size)
         train_dataset = DatasetFactory.get_dataset(name, split='train',
-                                                   target_attr=target_attr, seed=seed,add_attr=add_attr)
+                                                   target_attr=target_attr, seed=seed,add_attr=add_attr, bs=batch_size)
 
             
         n_classes = test_dataset.n_classes

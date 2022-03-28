@@ -38,7 +38,7 @@ class GenericTrainer:
     '''
     Base class for trainer; to implement a new training routine, inherit from this. 
     '''
-    def __init__(self, model, args, optimizer, teacher=None):
+    def __init__(self, model, args, optimizer, teacher=None, scheduler=None):
         self.get_inter = args.get_inter
         
         self.record = args.record
@@ -47,9 +47,11 @@ class GenericTrainer:
         self.t_device = args.t_device
         self.term = args.term
         self.lr = args.lr
+        self.max_grad_norm = args.max_grad_norm
         self.epochs = args.epochs
         self.method = args.method
         self.model_name =args.model
+        self.nlp_flag = True if self.model_name.startswith("bert") else False
         self.model = model
         self.teacher = teacher
         self.optimizer = optimizer
@@ -63,13 +65,16 @@ class GenericTrainer:
         self.log_dir = os.path.join(args.log_dir, args.date, args.dataset, args.method)
         self.save_dir = os.path.join(args.save_dir, args.date, args.dataset, args.method)
 
-        if self.optim_type == 'Adam' and self.optimizer is not None:
-            self.scheduler = ReduceLROnPlateau(self.optimizer)
-        elif (self.optim_type == 'AdamP' or self.optim_type == 'AdamW') and self.optimizer is not None:
-            self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
-        else: 
-#             self.scheduler = MultiStepLR(self.optimizer, [60, 120, 180], gamma=0.1)
-            self.scheduler = MultiStepLR(self.optimizer, [30, 60, 90], gamma=0.1)
+        if scheduler is None:
+            if self.optim_type == 'Adam' and self.optimizer is not None:
+                self.scheduler = ReduceLROnPlateau(self.optimizer)
+            elif (self.optim_type == 'AdamP' or self.optim_type == 'AdamW') and self.optimizer is not None:
+                self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
+            else: 
+    #             self.scheduler = MultiStepLR(self.optimizer, [60, 120, 180], gamma=0.1)
+                self.scheduler = MultiStepLR(self.optimizer, [30, 60, 90], gamma=0.1)
+        else:
+            self.scheduler = scheduler
             
 
     def evaluate(self, model, loader, criterion, epoch=0, device=None, train=False, record=False, writer=None):
@@ -101,14 +106,28 @@ class GenericTrainer:
                     inputs = inputs.cuda(device)
                     labels = labels.cuda(device)
                     groups = groups.cuda(device)
-                subgroups = groups * n_classes + labels
-                outputs = model(inputs)
+                    
+                if self.nlp_flag:
+                    input_ids = inputs[:, :, 0]
+                    input_masks = inputs[:, :, 1]
+                    segment_ids = inputs[:, :, 2]
+                    outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=labels,
+                    )[1] 
+                else:
+                    outputs = model(inputs)
 
+
+                
                 loss = criterion(outputs, labels)
                 preds = torch.argmax(outputs, 1)
                 acc = (preds == labels).float().squeeze()
                 
                 # calculate the labelwise losses
+                subgroups = groups * n_classes + labels                
                 group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
                 group_count += group_map.sum(1)
                 
@@ -186,9 +205,20 @@ class GenericTrainer:
                     inputs = inputs.cuda(self.device)
                     labels = labels.cuda(self.device)
 
-                # forward
-
-                outputs = self.model(inputs)
+                # forward                    
+                if self.nlp_flag:
+                    input_ids = inputs[:, :, 0]
+                    input_masks = inputs[:, :, 1]
+                    segment_ids = inputs[:, :, 2]
+                    outputs = self.model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=labels,
+                    )[1] 
+                else:
+                    outputs = self.model(inputs)
+                    
                 if self.get_inter:
                     intermediate_feature = self.model.forward(inputs, get_inter=True)[-2]
 
