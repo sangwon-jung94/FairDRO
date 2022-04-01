@@ -61,11 +61,16 @@ class GenericDataset(data.Dataset):
     def _data_count(self, features, n_groups, n_classes):
         idxs_per_group = defaultdict(lambda: [])
         data_count = np.zeros((n_groups, n_classes), dtype=int)
+    
+        if self.root == './data/jigsaw':
+            for s, l in zip(self.g_array, self.y_array):
+                data_count[s, l] += 1
+        else:
+            for idx, i in enumerate(features):
+                s, l = int(i[0]), int(i[1])
+                data_count[s, l] += 1
+                idxs_per_group[(s,l)].append(idx)
 
-        for idx, i in enumerate(features):
-            s, l = int(i[0]), int(i[1])
-            data_count[s, l] += 1
-            idxs_per_group[(s,l)].append(idx)
             
         print(f'mode : {self.split}')        
         for i in range(n_groups):
@@ -107,13 +112,22 @@ class GenericDataset(data.Dataset):
         return new_features
 
     def make_weights(self, method):
-        if method == 'fairhsic':
-            group_weights = len(self) / self.n_data.sum(axis=0)
-            weights = [group_weights[int(feature[1])] for feature in self.features]
+        if self.root != './data/jigsaw':
+            if method == 'fairhsic':
+                group_weights = len(self) / self.n_data.sum(axis=0)
+                weights = [group_weights[int(feature[1])] for feature in self.features]
+            else:
+                group_weights = len(self) / self.n_data
+                weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features]
         else:
-            group_weights = len(self) / self.n_data
-            weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features]
+            if method == 'fairhsic':
+                group_weights = len(self) / self.n_data.sum(axis=0)
+                weights = [group_weights[int(feature[1])] for feature in self.features]
+            else:
+                group_weights = len(self) / self.n_data
+                weights = [group_weights[g,l] for g,l in zip(self.g_array,self.y_array)]
         return weights 
+    
 
 
             

@@ -30,9 +30,9 @@ class JigsawDataset(GenericDataset):
         self.dataset_name = "jigsaw"
         # self.aux_dataset = args.aux_dataset
         self.target_name = target_name
-#         self.confounder_names = ['black', 'white', 'asian','latino', 'other_race_or_ethnicity']
+        self.confounder_names = ['black', 'white', 'asian','latino', 'other_race_or_ethnicity']
 #         self.confounder_names = ['christian', 'jewish', 'muslim']
-        self.confounder_names = ['male', 'female', 'homosexual_gay_or_lesbian']
+#         self.confounder_names = ['male', 'female', 'homosexual_gay_or_lesbian']
         self.model = "bert-base-uncased"
 
         if batch_size == 32:
@@ -88,8 +88,10 @@ class JigsawDataset(GenericDataset):
         self.text_array = list(self.text_array[mask])
         self.tokenizer = BertTokenizer.from_pretrained(self.model)
 
-    def __len__(self):
-        return len(self.y_array)
+        self.n_data, _ = self._data_count(None, self.n_groups, self.n_classes)
+
+#     def __len__(self):
+#         return len(self.y_array)
 
     def get_group_array(self):
         return self.g_array
