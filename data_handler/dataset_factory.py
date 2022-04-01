@@ -122,7 +122,7 @@ class GenericDataset(data.Dataset):
         else:
             if method == 'fairhsic':
                 group_weights = len(self) / self.n_data.sum(axis=0)
-                weights = [group_weights[int(feature[1])] for feature in self.features]
+                weights = [group_weights[l] for g,l in zip(self.g_array,self.y_array)]
             else:
                 group_weights = len(self) / self.n_data
                 weights = [group_weights[g,l] for g,l in zip(self.g_array,self.y_array)]

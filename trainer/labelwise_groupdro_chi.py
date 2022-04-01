@@ -241,7 +241,7 @@ class Trainer(trainer.GenericTrainer):
                 
             if self.nlp_flag:
                 self.q_update_term += 1
-                if self.q_update_term % 500 == 0:
+                if self.q_update_term % 100 == 0:
                     print('lets start')
                     start = time.time()
                     _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 

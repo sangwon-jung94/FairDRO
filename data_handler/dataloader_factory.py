@@ -34,13 +34,13 @@ class DataloaderFactory:
         shuffle = True
         sampler = None
         if labelwise:
-            if args.method == 'mfd':
-                from data_handler.custom_loader import Customsampler                
-                sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
-            else:
-                from torch.utils.data.sampler import WeightedRandomSampler
-                weights = train_dataset.make_weights(args.method)
-                sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
+#             if args.method == 'mfd':
+#                 from data_handler.custom_loader import Customsampler                
+#                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
+#             else:
+            from torch.utils.data.sampler import WeightedRandomSampler
+            weights = train_dataset.make_weights(args.method)
+            sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
 #             else:
 #                 from data_handler.custom_loader import Customsampler                
 #                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
