@@ -72,7 +72,7 @@ class GenericTrainer:
                 self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
             else: 
     #             self.scheduler = MultiStepLR(self.optimizer, [60, 120, 180], gamma=0.1)
-                self.scheduler = MultiStepLR(self.optimizer, [30, 60, 90], gamma=0.1)
+                self.scheduler = MultiStepLR(self.optimizer, [30, 60], gamma=0.1)
         else:
             self.scheduler = scheduler
             
