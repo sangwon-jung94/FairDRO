@@ -58,6 +58,7 @@ def get_args():
     parser.add_argument('--get-inter', default=False, action='store_true',
                         help='get penultimate features for TSNE visualization')
     parser.add_argument('--record', default=False, action='store_true', help='record')
+    parser.add_argument('--uc', default=False, action='store_true', help='uncertain')
 
     # For reweighting,
     parser.add_argument('--reweighting-target-criterion', default='eo', type=str, help='fairness criterion')

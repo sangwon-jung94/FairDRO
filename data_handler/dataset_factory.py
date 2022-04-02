@@ -19,7 +19,7 @@ class DatasetFactory:
 
     @staticmethod
    # def get_dataset(name, split='Train', seed=0, sv_ratio=1, version=1, target='Attractive', add_attr=None):
-    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, method='scratch', labelwise=False, bs=256):
+    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, method='scratch', labelwise=False, bs=256, uc=False):
         root = f'./data/{name}' if name != 'utkface_fairface' else './data/utkface'
         kwargs = {'root':root,
                   'split':split,
@@ -39,6 +39,7 @@ class DatasetFactory:
         elif name == 'jigsaw':
             kwargs['target_name'] = target_attr
             kwargs['batch_size'] = bs
+            kwargs['uc']=uc
         
         module = importlib.import_module(dataset_dict[name][0])
         class_ = getattr(module, dataset_dict[name][1])
@@ -48,12 +49,13 @@ class DatasetFactory:
         return class_(**kwargs)
 
 class GenericDataset(data.Dataset):
-    def __init__(self, root, split='train', transform=None, seed=0):
+    def __init__(self, root, split='train', transform=None, seed=0, uc=False):
         self.root = root
         self.split = split
         self.transform = transform
         self.seed = seed
         self.n_data = None
+        self.uc = uc
         
     def __len__(self):
         return np.sum(self.n_data)
@@ -112,6 +114,15 @@ class GenericDataset(data.Dataset):
         return new_features
 
     def make_weights(self, method):
+        if method == 'lgdro_chi' and self.uc:
+            group_weights = np.zeros((self.n_groups, self.n_classes))
+            print(self.gprob_array.shape)
+            for l in range(self.n_classes):
+                tmp = self.gprob_array[self.y_array==l].sum(axis=0)
+                group_weights[:,l] = tmp / tmp.sum()
+            weights = [group_weights[g,l] for g,l in zip(self.g_array,self.y_array)]
+            return weights
+        
         if self.root != './data/jigsaw':
             if method == 'fairhsic':
                 group_weights = len(self) / self.n_data.sum(axis=0)

@@ -60,6 +60,7 @@ class Trainer(trainer.GenericTrainer):
         self.seed = args.seed
         self.bs = args.batch_size
         self.wd = args.weight_decay
+
         
         self.alpha = 0.2
         self.lamb = 1
@@ -172,7 +173,11 @@ class Trainer(trainer.GenericTrainer):
             # Get the inputs
             inputs, _, groups, targets, idx = data
             labels = targets
-
+            
+            if self.uc:
+                groups_prob = groups
+                groups = torch.distributions.categorical.Categorical(groups_prob).sample()
+            
             if self.cuda:
                 inputs = inputs.cuda(device=self.device)
                 labels = labels.cuda(device=self.device)
@@ -285,9 +290,7 @@ class Trainer(trainer.GenericTrainer):
 #                self.adv_probs_dict[l] = torch.from_numpy(chi_proj_nonuni(self.adv_probs_dict[l], self.rho, self.group_dist[l])).cuda(device=self.device).float()
 #            self._q_update(train_subgroup_loss, n_classes, n_groups)            
 
-
                  
-                
     def _update_mw(self, losses, p_train):
         
         if losses.min() < 0:
