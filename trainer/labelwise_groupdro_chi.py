@@ -124,7 +124,7 @@ class Trainer(trainer.GenericTrainer):
                                                                    writer=writer
                                                                   )
                 # q update
-                self.q_update_pd(train_subgroup_loss, n_classes, n_groups)
+                self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
 
             eval_start_time = time.time()
             eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
