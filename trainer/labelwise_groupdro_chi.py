@@ -259,6 +259,7 @@ class Trainer(trainer.GenericTrainer):
                     # q update
                     self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
                     self.q_update_term = 0
+                    break
                 
 
     def _q_update_ibr(self, losses, n_classes, n_groups):
