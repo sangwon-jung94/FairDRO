@@ -75,7 +75,7 @@ class JigsawDataset(GenericDataset):
             if self.uc:
                 mask = (max_val == 1) * (attr.sum(axis=1)==1)
             else:
-                mask = mask_val>=0.1
+                mask = max_val>=0.1
         self.g_array = argmax_val[mask]
         if self.uc:
             tmp = attr[mask]
