@@ -41,7 +41,7 @@ def get_args():
     parser.add_argument('--model', default='', required=True, choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp', 'resnet18_dropout', 'bert'])
     parser.add_argument('--teamodel', default='', choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp'])    
     
-    parser.add_argument('--teacher-type', default=None, choices=['mlp','resnet12','resnet18', 'resnet34', 'resnet50', 'mobilenet', 'shufflenet', 'cifar_net', 'None'])
+    parser.add_argument('--teacher-type', default=None, choices=['mlp','resnet12','bert','resnet18', 'resnet34', 'resnet50', 'mobilenet', 'shufflenet', 'cifar_net', 'None'])
     parser.add_argument('--teacher-path', default=None, help='teacher model path')
 
     parser.add_argument('--pretrained', default=False, action='store_true', help='load imagenet pretrained model')
@@ -58,6 +58,7 @@ def get_args():
     parser.add_argument('--get-inter', default=False, action='store_true',
                         help='get penultimate features for TSNE visualization')
     parser.add_argument('--record', default=False, action='store_true', help='record')
+    parser.add_argument('--uc', default=False, action='store_true', help='uncertain')
 
     # For reweighting,
     parser.add_argument('--reweighting-target-criterion', default='eo', type=str, help='fairness criterion')

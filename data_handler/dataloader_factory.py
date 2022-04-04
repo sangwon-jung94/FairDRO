@@ -20,9 +20,9 @@ class DataloaderFactory:
             target_attr = 'toxicity'
 
         test_dataset = DatasetFactory.get_dataset(name, split='test',
-                                                  target_attr=target_attr, seed=seed, add_attr=add_attr, bs=batch_size)
+                                                  target_attr=target_attr, seed=seed, add_attr=add_attr, bs=batch_size,uc=args.uc,method=args.method)
         train_dataset = DatasetFactory.get_dataset(name, split='train',
-                                                   target_attr=target_attr, seed=seed,add_attr=add_attr, bs=batch_size)
+                                                   target_attr=target_attr, seed=seed,add_attr=add_attr, bs=batch_size,uc=args.uc,method=args.method)
 
             
         n_classes = test_dataset.n_classes
@@ -34,13 +34,13 @@ class DataloaderFactory:
         shuffle = True
         sampler = None
         if labelwise:
-            if args.method == 'mfd':
-                from data_handler.custom_loader import Customsampler                
-                sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
-            else:
-                from torch.utils.data.sampler import WeightedRandomSampler
-                weights = train_dataset.make_weights(args.method)
-                sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
+#             if args.method == 'mfd':
+#                 from data_handler.custom_loader import Customsampler                
+#                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
+#             else:
+            from torch.utils.data.sampler import WeightedRandomSampler
+            weights = train_dataset.make_weights(args.method)
+            sampler = WeightedRandomSampler(weights, len(weights), replacement=True)
 #             else:
 #                 from data_handler.custom_loader import Customsampler                
 #                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)

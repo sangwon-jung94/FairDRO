@@ -70,18 +70,44 @@ class Trainer(trainer.GenericTrainer):
                 inputs = inputs.cuda(self.device)
                 labels = labels.cuda(self.device)
                 groups = groups.long().cuda(self.device)
-
-#             for l in range(train_loader.dataset.n_classes):
-#                 for g in range(train_loader.dataset.n_groups):
-#                     tmp[g,l] += ((labels == l) * (groups == g)).sum().item()
-#             print(tmp)
+            
             t_inputs = inputs.to(self.t_device)
+            
+            if self.nlp_flag:
+                input_ids = inputs[:, :, 0]
+                input_masks = inputs[:, :, 1]
+                segment_ids = inputs[:, :, 2]
+                outputs = model(
+                    input_ids=input_ids,
+                    attention_mask=input_masks,
+                    token_type_ids=segment_ids,
+                    labels=labels,
+                    output_hidden_states=True
+                )
+                stu_logits = outputs[1]
+                f_s = outputs[2][0][:,0,:]
+                with torch.no_grad():
+                    t_outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=labels,
+                        output_hidden_states=True
+                    )
+                    tea_logits = t_outputs[1]
+                    f_t = t_outputs[2][0][:,0,:]
 
-            outputs = model(inputs, get_inter=True)
-            stu_logits = outputs[-1]
+            else:
+                
+                outputs = model(inputs, get_inter=True)
+                stu_logits = outputs[-1]
 
-            t_outputs = teacher(t_inputs, get_inter=True)
-            tea_logits = t_outputs[-1]
+                t_outputs = teacher(t_inputs, get_inter=True)
+                tea_logits = t_outputs[-1]
+                
+                f_s = outputs[-2]
+
+                f_t = t_outputs[-2].detach()
 
             # kd_loss = compute_hinton_loss(stu_logits, t_outputs=tea_logits,
             #                               kd_temp=self.kd_temp, device=self.device) if self.lambh != 0 else 0
@@ -91,9 +117,6 @@ class Trainer(trainer.GenericTrainer):
             #     loss = loss / (1 + self.lambh) + self.lambh * kd_loss / (1 + self.lambh)
 
             running_acc += get_accuracy(stu_logits, labels)
-            f_s = outputs[-2]
-
-            f_t = t_outputs[-2].detach()
 
             
             mmd_loss = distiller.forward(f_s, f_t, groups=groups, labels=labels)

@@ -21,6 +21,7 @@ class JigsawDataset(GenericDataset):
         target_name,
 #         confounder_names,
         batch_size=None,
+        method=None,
         **kwargs
     ):
         
@@ -30,11 +31,14 @@ class JigsawDataset(GenericDataset):
         self.dataset_name = "jigsaw"
         # self.aux_dataset = args.aux_dataset
         self.target_name = target_name
-        self.confounder_names = ['black', 'white', 'asian','latino', 'other_race_or_ethnicity']
+        if not self.uc:
+            self.confounder_names = ['black', 'white', 'asian','latino', 'other_race_or_ethnicity']
+        else:
+            self.confounder_names = ['male', 'female', 'homosexual_gay_or_lesbian']
 #         self.confounder_names = ['christian', 'jewish', 'muslim']
 #         self.confounder_names = ['male', 'female', 'homosexual_gay_or_lesbian']
         self.model = "bert-base-uncased"
-
+        self.method = method
         if batch_size == 32:
             self.max_length = 128
         elif batch_size == 24:
@@ -66,8 +70,18 @@ class JigsawDataset(GenericDataset):
         attr = (self.metadata_df.loc[self.metadata_df["split"]==self.split,self.confounder_names]).values
         max_val = attr.max(axis=1)
         argmax_val = attr.argmax(axis=1)
-        mask = max_val>=0.1
+        if self.split == "train":
+            mask = max_val>=0.1
+        else:
+            if self.uc:
+                mask = (max_val == 1) * (attr.sum(axis=1)==1)
+            else:
+                mask = max_val>=0.1
         self.g_array = argmax_val[mask]
+        if self.uc:
+            tmp = attr[mask]
+            self.gprob_array = tmp / tmp.sum(axis=1)[:,None]
+            self.gprob_array = self.gprob_array.astype(float)
         self.n_groups = len(self.confounder_names)
         
         self.y_array = self.y_array[mask]
@@ -116,8 +130,11 @@ class JigsawDataset(GenericDataset):
             dim=2,
         )
         x = torch.squeeze(x, dim=0)  # First shape dim is always 1
-
-        return x, 1, np.float32(g), np.int64(y), idx
+        
+        if self.uc and self.split == 'train' and self.method == 'lgdro_chi':
+            return x, 1, np.float32(self.gprob_array[idx]), np.int64(y), idx
+        else:
+            return x, 1, np.float32(g), np.int64(y), idx
 
     def group_str(self, group_idx):
         if self.n_groups == self.n_classes:

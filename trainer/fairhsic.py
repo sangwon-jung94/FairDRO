@@ -71,21 +71,29 @@ class Trainer(trainer.GenericTrainer):
                 inputs = inputs.cuda(self.device)
                 labels = labels.cuda(self.device)
                 groups = groups.long().cuda(self.device)
-            # inputs_transformed = self.image_transformer(inputs)
+                
+            if self.nlp_flag:
+                input_ids = inputs[:, :, 0]
+                input_masks = inputs[:, :, 1]
+                segment_ids = inputs[:, :, 2]
+                outputs = model(
+                    input_ids=input_ids,
+                    attention_mask=input_masks,
+                    token_type_ids=segment_ids,
+                    labels=labels,
+                    output_hidden_states=True
+                )
+            else:
+                outputs = model(inputs, get_inter=True)
 
-            t_inputs = inputs.to(self.t_device)
-
-            outputs = model(inputs, get_inter=True)
-            # outputs_transformed = model(inputs_transformed, get_inter=True)
-
-            stu_logits = outputs[-1]
+            logits = outputs[1]
             # stu_logits = outputs_transformed[-1]
 
-            loss = self.criterion(stu_logits, labels).mean()
+            loss = self.criterion(logits, labels).mean()
 
-            running_acc += get_accuracy(stu_logits, labels)
+            running_acc += get_accuracy(logits, labels)
 
-            f_s = outputs[-2]
+            f_s = outputs[-2] if not self.nlp_flag else outputs[2][0][:,0,:]
             # f_s_transformed = outputs_transformed[-2]
 
             # if self.slmode and self.version == 2:
