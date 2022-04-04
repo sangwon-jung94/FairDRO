@@ -91,6 +91,8 @@ class Trainer(trainer.GenericTrainer):
             else:
                 outputs = model(inputs)
 
+            loss = self.train_criterion(outputs, labels)
+
             # calculate the groupwise losses
             group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
             group_count = group_map.sum(1)

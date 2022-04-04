@@ -37,7 +37,7 @@ def main():
         log_dir = os.path.join(args.log_dir, args.date, dataset, args.method)
         check_log_dir(log_dir)
         writer = SummaryWriter(log_dir + '/' + log_name)
-    
+    print(log_name)    
     ########################## get dataloader ################################
     tmp = data_handler.DataloaderFactory.get_dataloader(args.dataset, 
                                                         batch_size=args.batch_size, seed=args.seed,
