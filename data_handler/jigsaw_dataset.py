@@ -21,6 +21,7 @@ class JigsawDataset(GenericDataset):
         target_name,
 #         confounder_names,
         batch_size=None,
+        method=None,
         **kwargs
     ):
         
@@ -37,7 +38,7 @@ class JigsawDataset(GenericDataset):
 #         self.confounder_names = ['christian', 'jewish', 'muslim']
 #         self.confounder_names = ['male', 'female', 'homosexual_gay_or_lesbian']
         self.model = "bert-base-uncased"
-
+        self.method = method
         if batch_size == 32:
             self.max_length = 128
         elif batch_size == 24:
@@ -130,7 +131,7 @@ class JigsawDataset(GenericDataset):
         )
         x = torch.squeeze(x, dim=0)  # First shape dim is always 1
         
-        if self.uc and self.split == 'train':
+        if self.uc and self.split == 'train' and self.method == 'lgdro_chi':
             return x, 1, np.float32(self.gprob_array[idx]), np.int64(y), idx
         else:
             return x, 1, np.float32(g), np.int64(y), idx
