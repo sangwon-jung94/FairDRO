@@ -126,22 +126,22 @@ class GenericTrainer:
                 acc = (preds == labels).float().squeeze()
                 
                 # calculate the labelwise losses
-                if not self.uc:
-                    subgroups = groups * n_classes + labels                
-                    group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
-                    group_count += group_map.sum(1)
+#                 if not self.uc:
+                subgroups = groups * n_classes + labels                
+                group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                group_count += group_map.sum(1)
 
-                    group_loss += (group_map @ loss.view(-1))
-                    group_acc += group_map @ acc
-                else:
-                    idxs = np.array([i * n_classes for i in range(n_groups)])
-                    for l in range(n_classes):
-                        mask = classes == l
-#                         print((groups[mask].T @ loss[mask]).float())
-#                         print(groups[mask].sum(dim=0).float())
-                        group_count[idxs+l] += groups[mask].sum(dim=0).float()
-                        group_loss[idxs+l] += (groups[mask].T @ loss[mask]).float()
-                        group_acc[idxs+l] += (groups[mask].T @ acc[mask]).float()
+                group_loss += (group_map @ loss.view(-1))
+                group_acc += group_map @ acc
+#                 else:
+#                     idxs = np.array([i * n_classes for i in range(n_groups)])
+#                     for l in range(n_classes):
+#                         mask = classes == l
+# #                         print((groups[mask].T @ loss[mask]).float())
+# #                         print(groups[mask].sum(dim=0).float())
+#                         group_count[idxs+l] += groups[mask].sum(dim=0).float()
+#                         group_loss[idxs+l] += (groups[mask].T @ loss[mask]).float()
+#                         group_acc[idxs+l] += (groups[mask].T @ acc[mask]).float()
             loss = group_loss.sum() / group_count.sum() 
             acc = group_acc.sum() / group_count.sum() 
 

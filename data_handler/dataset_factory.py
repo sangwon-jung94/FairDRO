@@ -115,14 +115,14 @@ class GenericDataset(data.Dataset):
         return new_features
 
     def make_weights(self, method):
-        if method == 'lgdro_chi' and self.uc:
-            group_weights = np.zeros((self.n_groups, self.n_classes))
-            print(self.gprob_array.shape)
-            for l in range(self.n_classes):
-                tmp = self.gprob_array[self.y_array==l].sum(axis=0)
-                group_weights[:,l] = tmp / tmp.sum()
-            weights = [group_weights[g,l] for g,l in zip(self.g_array,self.y_array)]
-            return weights
+#         if method == 'lgdro_chi' and self.uc:
+#             group_weights = np.zeros((self.n_groups, self.n_classes))
+#             print(self.gprob_array.shape)
+#             for l in range(self.n_classes):
+#                 tmp = self.gprob_array[self.y_array==l].sum(axis=0)
+#                 group_weights[:,l] = tmp / tmp.sum()
+#             weights = [group_weights[g,l] for g,l in zip(self.g_array,self.y_array)]
+#             return weights
         
         if self.root != './data/jigsaw':
             if method == 'fairhsic':

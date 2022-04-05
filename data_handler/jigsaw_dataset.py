@@ -131,10 +131,10 @@ class JigsawDataset(GenericDataset):
         )
         x = torch.squeeze(x, dim=0)  # First shape dim is always 1
         
-        if self.uc and self.split == 'train' and self.method == 'lgdro_chi':
-            return x, 1, np.float32(self.gprob_array[idx]), np.int64(y), idx
-        else:
-            return x, 1, np.float32(g), np.int64(y), idx
+#         if self.uc and self.split == 'train' and self.method == 'lgdro_chi':
+#             return x, 1, np.float32(self.gprob_array[idx]), np.int64(y), idx
+#         else:
+        return x, 1, np.float32(g), np.int64(y), idx
 
     def group_str(self, group_idx):
         if self.n_groups == self.n_classes:
