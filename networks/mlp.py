@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch.autograd import Function
 
 class MLP(nn.Module):
-    def __init__(self, feature_size, hidden_dim, n_classes=None, n_layer=3, adv=False, adv_lambda=1.):
+    def __init__(self, feature_size, hidden_dim, n_classes=None, n_layer=2, adv=False, adv_lambda=1.):
         super(MLP, self).__init__()
         try: #list
             in_features = self.compute_input_size(feature_size)
@@ -15,8 +15,8 @@ class MLP(nn.Module):
         self.adv = adv
         if self.adv:
             self.adv_lambda = adv_lambda
+        self.drop = nn.Dropout(0.5)
         self._make_layer(in_features, hidden_dim, n_classes, n_layer)
-        
     def forward(self, feature, get_inter=False):
         feature = torch.flatten(feature, 1)
         if self.adv:
@@ -48,6 +48,7 @@ class MLP(nn.Module):
             for i in range(n_layer-1):
                 features.append(nn.Linear(in_dim, h_dim) if i == 0 else nn.Linear(h_dim, h_dim))
                 features.append(nn.ReLU())
+                features.append(self.drop)
             self.features = nn.Sequential(*features)
 
         self.head = nn.Linear(h_dim, n_classes)

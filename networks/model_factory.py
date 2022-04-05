@@ -2,6 +2,7 @@ import torch.nn as nn
 
 from networks.resnet import resnet10, resnet12,resnet18, resnet34, resnet50, resnet101
 from networks.mlp import MLP
+from networks.cifar_net import Net
 
 class ModelFactory():
     def __init__(self):
@@ -12,6 +13,11 @@ class ModelFactory():
 
         if target_model == 'mlp': 
             return MLP(feature_size=img_size, hidden_dim=64, n_classes=n_classes)
+        
+        elif target_model == 'lr': 
+            return MLP(feature_size=img_size, hidden_dim=64, n_classes=n_classes, n_layer=1)
+
+
 
         elif 'resnet' in target_model:
             model_class = eval(target_model)
@@ -22,6 +28,9 @@ class ModelFactory():
                 model = model_class(pretrained=False, n_classes=n_classes, n_groups=n_groups, img_size=img_size)
             return model
 
+        elif target_model == 'cifar_net':
+            return Net(n_classes=n_classes)
+        
         elif target_model == 'bert':
             from transformers import BertForSequenceClassification
             model = BertForSequenceClassification.from_pretrained(

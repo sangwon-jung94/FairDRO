@@ -3,10 +3,10 @@ import os.path
 from PIL import Image
 import numpy as np
 import pickle
-
+from torchvision import transforms
 from torchvision.datasets.vision import VisionDataset
 from torchvision.datasets.utils import check_integrity, download_and_extract_archive
-
+from data_handler.dataset_factory import GenericDataset
 
 def rgb_to_grayscale(img):
     """Convert image to gray scale"""
@@ -17,43 +17,37 @@ def rgb_to_grayscale(img):
     return np_gray_img
 
 
-class CIFAR_10S(VisionDataset):
-    def __init__(self, root, split='train', transform=None, target_transform=None,
-                 seed=0, skewed_ratio=0.8, labelwise=False):
-        super(CIFAR_10S, self).__init__(root, transform=transform, target_transform=target_transform)
+class CIFAR_10S(GenericDataset):
+    train_transform = transforms.Compose(
+            [transforms.ToPILImage(),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor()]
+            )
+    test_transform = transforms.Compose(
+            [transforms.ToTensor()]
+            )
+                     
+    def __init__(self, skewed_ratio=0.8, **kwargs):
 
-        self.split = split
-        self.seed = seed
-
+        transform = self.train_transform if kwargs['split'] == 'train' else self.test_transform
+        GenericDataset.__init__(self, **kwargs)
         self.n_classes = 10
         self.n_groups = 2
 
-        imgs, labels, colors, data_count = self._make_skewed(split, seed, skewed_ratio, self.n_classes)
+        imgs, labels, colors, data_count = self._make_skewed(self.split, self.seed, skewed_ratio, self.n_classes)
 
         self.dataset = {}
         self.dataset['image'] = np.array(imgs)
         self.dataset['label'] = np.array(labels)
         self.dataset['color'] = np.array(colors)
-
+        
+        self.features = []
+        for c, l, img in zip(self.dataset['color'], self.dataset['label'], self.dataset['image']):
+            self.features.append([c,l,img])
         self._get_label_list()
-        self.labelwise = labelwise
 
-        self.n_data = data_count
+        self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
 
-        if self.labelwise:
-            self.idx_map = self._make_idx_map()
-
-    def _make_idx_map(self):
-        idx_map = [[] for i in range(self.n_groups * self.n_classes)]
-        for j, i in enumerate(self.dataset['image']):
-            y = self.dataset['label'][j]
-            s = self.dataset['color'][j]
-            pos = s * self.n_classes + y
-            idx_map[int(pos)].append(j)
-        final_map = []
-        for l in idx_map:
-            final_map.extend(l)
-        return final_map
 
     def _get_label_list(self):
         self.label_list = []
@@ -72,8 +66,6 @@ class CIFAR_10S(VisionDataset):
         return len(self.dataset['image'])
 
     def __getitem__(self, index):
-        if self.labelwise:
-            index = self.idx_map[index]
         image = self.dataset['image'][index]
         label = self.dataset['label'][index]
         color = self.dataset['color'][index]
@@ -81,10 +73,7 @@ class CIFAR_10S(VisionDataset):
         if self.transform:
             image = self.transform(image)
 
-        if self.target_transform:
-            label = self.target_transform(label)
-
-        return image, 0, np.float32(color), np.int64(label), (index, 0)
+        return image, 0, np.float32(color), np.int64(label), index
 
     def _make_skewed(self, split='train', seed=0, skewed_ratio=1., n_classes=10):
 

@@ -9,6 +9,7 @@ dataset_dict = {'utkface' : ['data_handler.utkface','UTKFaceDataset'],
                 'adult' : ['data_handler.adult', 'AdultDataset_torch'],
                 'compas' : ['data_handler.compas', 'CompasDataset_torch'],                
                 'cifar100s' : ['data_handler.cifar100s', 'CIFAR_100S'],   
+                'cifar10s' : ['data_handler.cifar10s', 'CIFAR_10S'],   
                 'waterbird' : ['data_handler.waterbird', 'WaterBird'],
                 'jigsaw' : ['data_handler.jigsaw_dataset', 'JigsawDataset'],
                }

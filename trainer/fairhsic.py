@@ -107,6 +107,8 @@ class Trainer(trainer.GenericTrainer):
             hsic_loss = 0
             for l in range(n_classes):
                 mask = targets == l
+                if mask.sum()==0:
+                    continue
                 hsic_loss += hsic.unbiased_estimator(f_s[mask], group_onehot[mask])
             # hsic_loss = hsic.unbiased_estimator(f_s-f_s_transformed, group_onehot)
             # hsic_loss2 = hsic.unbiased_estimator(f_s_transformed, group_onehot)
