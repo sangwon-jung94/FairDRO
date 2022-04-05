@@ -59,7 +59,7 @@ class Trainer(trainer.GenericTrainer):
         
             inputs, _, groups, targets, idx = data
             labels = targets
-
+            print(inputs.shape)
             if self.cuda:
                 inputs = inputs.cuda(device=self.device)
                 labels = labels.cuda(device=self.device)

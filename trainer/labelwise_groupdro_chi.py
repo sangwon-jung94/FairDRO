@@ -174,9 +174,9 @@ class Trainer(trainer.GenericTrainer):
             inputs, _, groups, targets, idx = data
             labels = targets
             
-            if self.uc:
-                groups_prob = groups
-                groups = torch.distributions.categorical.Categorical(groups_prob).sample()
+#             if self.uc:
+#                 groups_prob = groups
+#                 groups = torch.distributions.categorical.Categorical(groups_prob).sample()
             
             if self.cuda:
                 inputs = inputs.cuda(device=self.device)
@@ -259,7 +259,6 @@ class Trainer(trainer.GenericTrainer):
                     # q update
                     self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
                     self.q_update_term = 0
-                    break
                 
 
     def _q_update_ibr(self, losses, n_classes, n_groups):
