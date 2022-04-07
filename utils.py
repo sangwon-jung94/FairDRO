@@ -130,6 +130,7 @@ def make_log_name(args):
     log_name += f'_seed{args.seed}_epochs{args.epochs}_bs{args.batch_size}_lr{args.lr}_{args.optim}_wd{args.weight_decay}'
     if args.uc:
         log_name += '_uc'
+        
     if args.method == 'adv':
         log_name += f'_lamb{args.lamb}_eta{args.eta}'
 
@@ -142,6 +143,10 @@ def make_log_name(args):
 
         if 'chi' in args.method:
             log_name += f'_rho{args.rho}'
+            if args.optim_q != 'pd':
+                log_name += f'_{args.optim_q}'
+            if args.margin:
+                log_name += f'_margin'
 
     if args.labelwise:
         log_name += '_labelwise'

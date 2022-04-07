@@ -37,7 +37,10 @@ def get_args():
                         help='(default=%(default)s)')
 
     parser.add_argument('--lamb', default=1, type=float, help='fairness strength')
-    parser.add_argument('--gamma', default=0.1, type=float, help='fairness strength')
+    parser.add_argument('--gamma', default=0.1, type=float, help='learning rate for q')
+    parser.add_argument('--optim-q', default='pd', type=str, help='the type of optimization for q')
+    parser.add_argument('--margin', default=False, action='store_true', help='whether use a margin scheme or not')
+    
     parser.add_argument('--model', default='', required=True, choices=['resnet12', 'resnet50','cifar_net', 'resnet34', 'resnet18', 'resnet101','mlp', 'resnet18_dropout', 'bert','lr'])
     parser.add_argument('--teamodel', default='', choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp'])    
     

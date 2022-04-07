@@ -43,10 +43,13 @@ class Trainer(trainer.GenericTrainer):
         print('n_iters : ', n_iters)
         
         violations = 0
-        
         for iter_ in range(n_iters):
             start_t = time.time()
             weight_set = self.debias_weights(Y_train, S_train, extended_multipliers, n_groups, n_classes)  
+            if self.model == 'lr':
+                # initialize the models
+                self.initialize_all()
+
             for epoch in range(epochs):
                 lb_idx = self._train_epoch(epoch, train_loader, model, weight_set)
                 
@@ -262,7 +265,6 @@ class Trainer(trainer.GenericTrainer):
             
 #         return binarized_acc, violations
 
-
     # update weight
     def debias_weights(self, label, sen_attrs, extended_multipliers, n_groups, n_classes):  ####################################################
 #         weights = np.zeros(len(label))
@@ -286,3 +288,11 @@ class Trainer(trainer.GenericTrainer):
         #     return nn.BCEWithLogitsLoss()(outputs, labels)
         # else:
         return nn.CrossEntropyLoss()(outputs, labels)
+    
+    
+    def initialize_all(self):
+        from networks import ModelFactory
+        self.model = ModelFactory.get_model('lr', hidden_dim=64, n_classes=2, n_layer = 1)
+        self.optimizer =optim.SGD(self.model.parameters(), lr=self.lr, momentum=0.9)
+        self.scheduler = MultiStepLR(self.optimizer, [10,20], gamma=0.1)
+        
