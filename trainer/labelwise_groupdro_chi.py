@@ -254,9 +254,6 @@ class Trainer(trainer.GenericTrainer):
                     torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
                 self.optimizer.second_step(zero_grad=True)
 
-            running_loss += loss.item()
-            running_acc += get_accuracy(outputs, labels)
-
             running_loss += robust_loss.item()
             running_acc += get_accuracy(outputs, labels)
             if i % self.term == self.term-1: # print every self.term mini-batches
