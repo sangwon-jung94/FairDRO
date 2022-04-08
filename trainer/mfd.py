@@ -73,59 +73,70 @@ class Trainer(trainer.GenericTrainer):
             
             t_inputs = inputs.to(self.t_device)
             
-            if self.nlp_flag:
-                input_ids = inputs[:, :, 0]
-                input_masks = inputs[:, :, 1]
-                segment_ids = inputs[:, :, 2]
-                outputs = model(
-                    input_ids=input_ids,
-                    attention_mask=input_masks,
-                    token_type_ids=segment_ids,
-                    labels=labels,
-                    output_hidden_states=True
-                )
-                stu_logits = outputs[1]
-                f_s = outputs[2][0][:,0,:]
-                with torch.no_grad():
-                    t_outputs = model(
+            def closure():
+                if self.nlp_flag:
+                    input_ids = inputs[:, :, 0]
+                    input_masks = inputs[:, :, 1]
+                    segment_ids = inputs[:, :, 2]
+                    outputs = model(
                         input_ids=input_ids,
                         attention_mask=input_masks,
                         token_type_ids=segment_ids,
                         labels=labels,
                         output_hidden_states=True
                     )
-                    tea_logits = t_outputs[1]
-                    f_t = t_outputs[2][0][:,0,:]
+                    stu_logits = outputs[1]
+                    f_s = outputs[2][0][:,0,:]
+                    with torch.no_grad():
+                        t_outputs = model(
+                            input_ids=input_ids,
+                            attention_mask=input_masks,
+                            token_type_ids=segment_ids,
+                            labels=labels,
+                            output_hidden_states=True
+                        )
+                        tea_logits = t_outputs[1]
+                        f_t = t_outputs[2][0][:,0,:]
 
-            else:
-                
-                outputs = model(inputs, get_inter=True)
-                stu_logits = outputs[-1]
+                else:
 
-                t_outputs = teacher(t_inputs, get_inter=True)
-                tea_logits = t_outputs[-1]
-                
-                f_s = outputs[-2]
+                    outputs = model(inputs, get_inter=True)
+                    stu_logits = outputs[-1]
 
-                f_t = t_outputs[-2].detach()
+                    t_outputs = teacher(t_inputs, get_inter=True)
+                    tea_logits = t_outputs[-1]
 
-            # kd_loss = compute_hinton_loss(stu_logits, t_outputs=tea_logits,
-            #                               kd_temp=self.kd_temp, device=self.device) if self.lambh != 0 else 0
+                    f_s = outputs[-2]
 
-            loss = self.criterion(stu_logits, labels).mean()
-            # if kd_loss != 0:
-            #     loss = loss / (1 + self.lambh) + self.lambh * kd_loss / (1 + self.lambh)
+                    f_t = t_outputs[-2].detach()
 
-            running_acc += get_accuracy(stu_logits, labels)
+                # kd_loss = compute_hinton_loss(stu_logits, t_outputs=tea_logits,
+                #                               kd_temp=self.kd_temp, device=self.device) if self.lambh != 0 else 0
 
+                loss = self.criterion(stu_logits, labels).mean()
+                # if kd_loss != 0:
+                #     loss = loss / (1 + self.lambh) + self.lambh * kd_loss / (1 + self.lambh)
+                mmd_loss = distiller.forward(f_s, f_t, groups=groups, labels=labels)
+                loss = loss + mmd_loss 
+                return stu_logits, loss
             
-            mmd_loss = distiller.forward(f_s, f_t, groups=groups, labels=labels)
-
-            loss = loss + mmd_loss 
-            running_loss += loss.item()
-            self.optimizer.zero_grad()
+            stu_logits, loss = closure()            
             loss.backward()
-            self.optimizer.step()
+            if not self.sam:
+                if self.nlp_flag:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+                self.optimizer.step()
+                self.optimizer.zero_grad()
+            else:
+                self.optimizer.first_step(zero_grad=True)
+                outputs, loss = closure()
+                loss.backward()
+                if self.nlp_flag:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+                self.optimizer.second_step(zero_grad=True)
+                
+            running_acc += get_accuracy(stu_logits, labels)
+            running_loss += loss.item()
             if i % self.term == self.term - 1:  # print every self.term mini-batches
                 avg_batch_time = time.time() - batch_start_time
                 print('[{}/{}, {:5d}] Method: {} Train Loss: {:.3f} Train Acc: {:.2f} '

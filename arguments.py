@@ -35,7 +35,7 @@ def get_args():
     parser.add_argument('--optim', default='Adam', type=str, required=False,
                         choices=['AdamP', 'AdamW','SGD', 'SGD_momentum_decay', 'Adam'],
                         help='(default=%(default)s)')
-
+    parser.add_argument('--sam', default=False, action='store_true', help='sam')
     parser.add_argument('--lamb', default=1, type=float, help='fairness strength')
     parser.add_argument('--gamma', default=0.1, type=float, help='learning rate for q')
     parser.add_argument('--optim-q', default='pd', type=str, help='the type of optimization for q')

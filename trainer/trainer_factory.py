@@ -56,6 +56,7 @@ class GenericTrainer:
         self.teacher = teacher
         self.optimizer = optimizer
         self.optim_type = args.optim
+        self.sam = args.sam
         self.log_dir = args.log_dir
         self.criterion=torch.nn.CrossEntropyLoss(reduction='none')
         self.scheduler = None
@@ -68,12 +69,25 @@ class GenericTrainer:
 
         if scheduler is None:
             if self.optim_type == 'Adam' and self.optimizer is not None:
-                self.scheduler = ReduceLROnPlateau(self.optimizer)
+                if self.sam:
+                    self.scheduler = ReduceLROnPlateau(self.optimizer.base_optimizer)
+                else:
+                    self.scheduler = ReduceLROnPlateau(self.optimizer)
             elif (self.optim_type == 'AdamP' or self.optim_type == 'AdamW') and self.optimizer is not None:
-                self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
+                if self.sam:
+                    self.scheduler = CosineAnnealingLR(self.optimizer.base_optimizer, self.epochs)
+                else:
+                    self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
             else: 
-    #             self.scheduler = MultiStepLR(self.optimizer, [60, 120, 180], gamma=0.1)
-                self.scheduler = MultiStepLR(self.optimizer, [10,20], gamma=0.1)
+                if self.epochs == 70:
+                    interval = [30, 60]
+                else:
+                    interval = [10, 20]
+                if self.sam:
+        #             self.scheduler = MultiStepLR(self.optimizer, [60, 120, 180], gamma=0.1)
+                    self.scheduler = MultiStepLR(self.optimizer.base_optimizer, interval, gamma=0.1)
+                else:
+                    self.scheduler = MultiStepLR(self.optimizer, interval, gamma=0.1)
         else:
             self.scheduler = scheduler
             

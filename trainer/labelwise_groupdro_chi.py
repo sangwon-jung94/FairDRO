@@ -192,56 +192,73 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda(device=self.device)
                 groups = groups.cuda(device=self.device)
                 
-            subgroups = groups * n_classes + labels
-            if self.nlp_flag:
-                input_ids = inputs[:, :, 0]
-                input_masks = inputs[:, :, 1]
-                segment_ids = inputs[:, :, 2]
-                outputs = model(
-                    input_ids=input_ids,
-                    attention_mask=input_masks,
-                    token_type_ids=segment_ids,
-                    labels=labels,
-                )[1] 
-            else:
-                outputs = model(inputs)
+            def closure():
+                subgroups = groups * n_classes + labels
+                if self.nlp_flag:
+                    input_ids = inputs[:, :, 0]
+                    input_masks = inputs[:, :, 1]
+                    segment_ids = inputs[:, :, 2]
+                    outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=labels,
+                    )[1] 
+                else:
+                    outputs = model(inputs)
 
-            if criterion is not None:
-                loss = criterion(outputs, labels)
-            else:
-                loss = self.train_criterion(outputs, labels)
+                if criterion is not None:
+                    loss = criterion(outputs, labels)
+                else:
+                    loss = self.train_criterion(outputs, labels)
 
-            kd_loss = 0
-            if self.kd:
-                with torch.no_grad():
-                    t_outputs = self.teacher(inputs)
-                kd_loss = compute_hinton_loss(outputs, t_outputs, kd_temp=self.temp)
-                kd_loss = kd_loss.sum(dim=1)
-        
-            loss = loss + self.lamb * kd_loss
+                kd_loss = 0
+                if self.kd:
+                    with torch.no_grad():
+                        t_outputs = self.teacher(inputs)
+                    kd_loss = compute_hinton_loss(outputs, t_outputs, kd_temp=self.temp)
+                    kd_loss = kd_loss.sum(dim=1)
             
-            # calculate the labelwise losses
-            group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
-            group_count = group_map.sum(1)
-            group_denom = group_count + (group_count==0).float() # avoid nans
-            group_loss = (group_map @ loss.view(-1))/group_denom
+                loss = loss + self.lamb * kd_loss
             
-#             total_loss += group_loss.detach().clone()
+                # calculate the labelwise losses
+                group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                group_count = group_map.sum(1)
+                group_denom = group_count + (group_count==0).float() # avoid nans
+                group_loss = (group_map @ loss.view(-1))/group_denom
             
-            robust_loss = 0
-            idxs = np.array([i * n_classes for i in range(n_groups)])            
-            for l in range(n_classes):
-                label_group_loss = group_loss[idxs+l]
-                robust_loss += label_group_loss @ self.adv_probs_dict[l]
+    #             total_loss += group_loss.detach().clone()
+                
+                robust_loss = 0
+                idxs = np.array([i * n_classes for i in range(n_groups)])            
+                for l in range(n_classes):
+                    label_group_loss = group_loss[idxs+l]
+                    robust_loss += label_group_loss @ self.adv_probs_dict[l]
+                robust_loss /= n_classes        
+#                 robust_loss.backward()                
+                return outputs, robust_loss
             
-            robust_loss /= n_classes
-            running_loss += robust_loss.item()
+            outputs, robust_loss = closure()
+            robust_loss.backward()                
+            
+            if not self.sam:
+                if self.nlp_flag:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+                self.optimizer.step()
+                self.optimizer.zero_grad()
+            else:
+                self.optimizer.first_step(zero_grad=True)
+                outputs, loss = closure()
+                loss.backward()
+                if self.nlp_flag:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+                self.optimizer.second_step(zero_grad=True)
+
+            running_loss += loss.item()
             running_acc += get_accuracy(outputs, labels)
 
-            self.optimizer.zero_grad()
-            robust_loss.backward()
-            self.optimizer.step()
-            
+            running_loss += robust_loss.item()
+            running_acc += get_accuracy(outputs, labels)
             if i % self.term == self.term-1: # print every self.term mini-batches
                 avg_batch_time = time.time()-batch_start_time
                 print('[{}/{}, {:5d}] Method: {} Train Loss: {:.3f} Train Acc: {:.2f} '

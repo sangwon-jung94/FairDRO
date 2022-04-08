@@ -127,7 +127,10 @@ def make_log_name(args):
 #     else:
     if args.pretrained:
         log_name += '_pretrained'
-    log_name += f'_seed{args.seed}_epochs{args.epochs}_bs{args.batch_size}_lr{args.lr}_{args.optim}_wd{args.weight_decay}'
+    log_name += f'_seed{args.seed}_epochs{args.epochs}_bs{args.batch_size}_lr{args.lr}_{args.optim}'
+    if args.sam:
+        log_name += 'sam'
+    log_name += f'_wd{args.weight_decay}'
     if args.uc:
         log_name += '_uc'
         

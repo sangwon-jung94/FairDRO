@@ -71,53 +71,55 @@ class Trainer(trainer.GenericTrainer):
                 inputs = inputs.cuda(self.device)
                 labels = labels.cuda(self.device)
                 groups = groups.long().cuda(self.device)
-                
-            if self.nlp_flag:
-                input_ids = inputs[:, :, 0]
-                input_masks = inputs[:, :, 1]
-                segment_ids = inputs[:, :, 2]
-                outputs = model(
-                    input_ids=input_ids,
-                    attention_mask=input_masks,
-                    token_type_ids=segment_ids,
-                    labels=labels,
-                    output_hidden_states=True
-                )
-            else:
-                outputs = model(inputs, get_inter=True)
-
-            logits = outputs[1]
-            # stu_logits = outputs_transformed[-1]
-
-            loss = self.criterion(logits, labels).mean()
-
-            running_acc += get_accuracy(logits, labels)
-
-            f_s = outputs[-2] if not self.nlp_flag else outputs[2][0][:,0,:]
-            # f_s_transformed = outputs_transformed[-2]
-
-            # if self.slmode and self.version == 2:
-            #    idxs = groups != -1 
-            #    f_s = f_s[idxs]
-            #    f_t = f_t[idxs]
-            #    groups = groups[idxs]
-            #    labels = labels[idxs]
             
-            group_onehot = F.one_hot(groups).float()
-            hsic_loss = 0
-            for l in range(n_classes):
-                mask = targets == l
-                if mask.sum()==0:
-                    continue
-                hsic_loss += hsic.unbiased_estimator(f_s[mask], group_onehot[mask])
-            # hsic_loss = hsic.unbiased_estimator(f_s-f_s_transformed, group_onehot)
-            # hsic_loss2 = hsic.unbiased_estimator(f_s_transformed, group_onehot)
+            def closure():
+                if self.nlp_flag:
+                    input_ids = inputs[:, :, 0]
+                    input_masks = inputs[:, :, 1]
+                    segment_ids = inputs[:, :, 2]
+                    outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=labels,
+                        output_hidden_states=True
+                    )
+                else:
+                    outputs = model(inputs, get_inter=True)
 
-            loss = loss + self.lamb * hsic_loss 
-            running_loss += loss.item()
-            self.optimizer.zero_grad()
+                logits = outputs[1]
+                # stu_logits = outputs_transformed[-1]
+
+                loss = self.criterion(logits, labels).mean()
+                f_s = outputs[-2] if not self.nlp_flag else outputs[2][0][:,0,:]
+                group_onehot = F.one_hot(groups).float()
+                hsic_loss = 0
+                for l in range(n_classes):
+                    mask = targets == l
+                    if mask.sum()==0:
+                        continue
+                    hsic_loss += hsic.unbiased_estimator(f_s[mask], group_onehot[mask])
+                    
+                loss = loss + self.lamb * hsic_loss 
+                return logits,loss
+            
+            logits, loss = closure()            
             loss.backward()
-            self.optimizer.step()
+            if not self.sam:
+                if self.nlp_flag:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+                self.optimizer.step()
+                self.optimizer.zero_grad()
+            else:
+                self.optimizer.first_step(zero_grad=True)
+                outputs, loss = closure()
+                loss.backward()
+                if self.nlp_flag:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+                self.optimizer.second_step(zero_grad=True)
+                
+            running_acc += get_accuracy(logits, labels)
+            running_loss += loss.item()
             if i % self.term == self.term - 1:  # print every self.term mini-batches
                 avg_batch_time = time.time() - batch_start_time
                 print('[{}/{}, {:5d}] Method: {} Train Loss: {:.3f} Train Acc: {:.2f} '

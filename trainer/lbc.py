@@ -126,30 +126,45 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda()
                 weights = weights.cuda()
                 groups = groups.cuda()
+                
+            def closure():
+                if self.nlp_flag:
+                    input_ids = inputs[:, :, 0]
+                    input_masks = inputs[:, :, 1]
+                    segment_ids = inputs[:, :, 2]
+                    outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=labels,
+                    )[1] 
+                else:
+                    outputs = model(inputs)
 
-            if self.nlp_flag:
-                input_ids = inputs[:, :, 0]
-                input_masks = inputs[:, :, 1]
-                segment_ids = inputs[:, :, 2]
-                outputs = model(
-                    input_ids=input_ids,
-                    attention_mask=input_masks,
-                    token_type_ids=segment_ids,
-                    labels=labels,
-                )[1] 
+                loss = torch.mean(weights * nn.CrossEntropyLoss(reduction='none')(outputs, labels))
+                
+                return outputs, loss
+
+            outputs, loss = closure()            
+            loss.backward()
+            if not self.sam:
+                if self.nlp_flag:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+                self.optimizer.step()
+                self.optimizer.zero_grad()
             else:
-                outputs = model(inputs)
-
-            loss = torch.mean(weights * nn.CrossEntropyLoss(reduction='none')(outputs, labels))
+                self.optimizer.first_step(zero_grad=True)
+                outputs, loss = closure()
+                loss.backward()
+                if self.nlp_flag:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+                self.optimizer.second_step(zero_grad=True)
+                            
+            
             running_loss += loss.item()
             # binary = True if n_classes == 2 else False
             # running_acc += get_accuracy(outputs, labels, binary=binary)
             running_acc += get_accuracy(outputs, labels)
-
-            # zero the parameter gradients + backward + optimize
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
 
             batch_end_time = time.time()
             avg_batch_time += batch_end_time - batch_start_time
