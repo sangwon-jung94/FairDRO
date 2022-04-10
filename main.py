@@ -97,7 +97,7 @@ def main():
     ########################## get trainer ##################################
     if 'Adam' == args.optim:
         if args.sam:
-            optimizer = SAM(model.parameters(), Adam, lr=args.lr, weight_decay=args.weight_decay)
+            optimizer = SAM(model.parameters(), optim.Adam, lr=args.lr, weight_decay=args.weight_decay)
         else:
             optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     elif 'AdamP' == args.optim:
