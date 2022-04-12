@@ -22,6 +22,8 @@ class Trainer(trainer.GenericTrainer):
         self.mu = args.mu
         self.max_iters = args.max_iters
         self.max_iter_dccp = args.max_iter_dccp
+        self.seed = args.seed
+        np.random.seed(self.seed)
         
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         global loss_set
@@ -74,27 +76,7 @@ class Trainer(trainer.GenericTrainer):
                        (N0/N)* cvx.sum( cvx.minimum(0, FPR_N1) )>= (N1)*cvx.sum( cvx.minimum(0, FPR_N0/N) )-self.epsilon,
                        (N0/N)* cvx.sum( cvx.minimum(0, FNR_N1) )<= (N1)*cvx.sum( cvx.minimum(0, FNR_N0/N) )+self.epsilon,
                        (N0/N)* cvx.sum( cvx.minimum(0, FNR_N1) )>= (N1)*cvx.sum( cvx.minimum(0, FNR_N0/N) )-self.epsilon]
-        
-        
-        
-        
-#         y_dist_db_N0 = cvx.multiply(y_train[N0_idx], X_train[N0_idx] * w) # y.f(x) for N0
-#         y_dist_db_N1 = cvx.multiply(y_train[N1_idx], X_train[N1_idx] * w) # y.f(x) for N1
-        
-#         g_FPR_N0 = cvx.minimum(0, cvx.multiply((1-y_train[N0_idx])/2.0, y_dist_db_N0)) #Y=0일때 1이 되도록
-#         g_FPR_N1 = cvx.minimum(0, cvx.multiply((1-y_train[N1_idx])/2.0, y_dist_db_N1))
-#         g_FNR_N0 = cvx.minimum(0, cvx.multiply((1+y_train[N0_idx])/2.0, y_dist_db_N0))
-#         g_FNR_N1 = cvx.minimum(0, cvx.multiply((1+y_train[N1_idx])/2.0, y_dist_db_N1))
-        
-        
-        
-#         #constraints = []
-#         constraints = [(N0/N)* cvx.sum( g_FPR_N1 )<= (N1/N)*cvx.sum( g_FPR_N0 )+self.epsilon,
-#                        (N0/N)* cvx.sum( cvx.minimum(0, cvx.multiply((1-y_train[N1_idx])/2.0, y_dist_db_N1)) )>= (N1/N)*cvx.sum( g_FPR_N0 )-self.epsilon,
-#                        (N0/N)* cvx.sum( g_FNR_N1 )<= (N1/N)*cvx.sum( g_FNR_N0 )+self.epsilon,
-#                        (N0/N)* cvx.sum( g_FNR_N1 )>= (N1/N)*cvx.sum( g_FNR_N0 )-self.epsilon]
 
-        
         
         problem = cvx.Problem(cvx.Minimize(loss), constraints)
         print("Problem is DCP (disciplined convex program):", problem.is_dcp())
@@ -108,7 +90,7 @@ class Trainer(trainer.GenericTrainer):
         max_iter_dccp = self.max_iter_dccp
         
         problem.solve(method='dccp', tau=tau, mu=mu, tau_max=1e10,
-            solver=cvx.SCS, verbose=True,max_iters=max_iters, max_iter=max_iter_dccp)
+            solver=cvx.SCS, verbose=False,max_iters=max_iters, max_iter=max_iter_dccp)
 
         w_opt = np.array(w.value)
         print('status : ', problem.status)

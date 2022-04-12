@@ -22,7 +22,6 @@ def main():
 
     seed = args.seed
     set_seed(seed)
-
     np.set_printoptions(precision=4)
     torch.set_printoptions(precision=4)
 
