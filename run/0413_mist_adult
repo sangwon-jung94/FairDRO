@@ -1,27 +1,3 @@
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 1  &
-wait
-
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
@@ -40,10 +16,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 0  &
@@ -64,34 +40,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 0  &
@@ -112,10 +64,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 0  &
@@ -136,34 +88,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 0  &
@@ -184,10 +112,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 0  &
@@ -208,34 +136,58 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 0  &
@@ -256,10 +208,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 0  &
@@ -280,34 +232,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 0  &
@@ -328,10 +256,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 0  &
@@ -352,34 +280,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 0  &
@@ -400,10 +304,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 0  &
@@ -424,466 +328,442 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.0001 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 0.01 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 0  &
@@ -904,10 +784,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 0  &
@@ -928,34 +808,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 0  &
@@ -976,10 +832,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 0  &
@@ -1000,34 +856,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 0  &
@@ -1048,10 +880,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 0  &
@@ -1072,34 +904,58 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 1 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 1.2 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 0.005 --seed 0  &
@@ -1120,10 +976,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 0.005 --seed 0  &
@@ -1144,34 +1000,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 2.5 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 0.005 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 1 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 1 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 0.005 --seed 0  &
@@ -1192,10 +1024,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 0.005 --seed 0  &
@@ -1216,34 +1048,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 2.5 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 0.005 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 1 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2 --seed 1  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 0  &
-wait
-
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 50 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 5 --max_iters 200 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 0.005 --seed 0  &
@@ -1264,10 +1072,10 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 100 --tau 5 --seed 1  &
 wait
 
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 0.005 --seed 0  &
@@ -1288,9 +1096,57 @@ wait
 CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 2.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 10 --max_iters 200 --tau 5 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 0.005 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 1 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 2 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 100 --tau 5 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 0.005 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 1 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 2 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0413_mist_adult --method disp_mist --lr 0.0 --epochs 0 --img-size 224 --evalset test --optim SGD --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0 --epsilon 1 --mu 2.0 --max_iter_dccp 50 --max_iters 200 --tau 5 --seed 1  &
 wait
 python ../../slack_sender.py --name "date : 0413_mist_adult / method : disp_mist / dataset : ['adult']"
