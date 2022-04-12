@@ -30,7 +30,7 @@ def get_args():
     parser.add_argument('--seed', default=0, type=int, help='seed for randomness')
     parser.add_argument('--date', default='20200101', type=str, help='experiment date')
     parser.add_argument('--method', default='scratch', type=str, required=True,
-                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro', 'lgdro_chi'])
+                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro', 'lgdro_chi', 'disp_mist'])
 
     parser.add_argument('--optim', default='Adam', type=str, required=False,
                         choices=['AdamP', 'AdamW','SGD', 'SGD_momentum_decay', 'Adam'],
@@ -71,6 +71,14 @@ def get_args():
     parser.add_argument('--kd', default=False, action='store_true', help='kd')
     parser.add_argument('--rho', default=0.5, type=float, help='uncertainty box length')
     parser.add_argument('--ibr', default=False, action='store_true', help='iterated best response')
+    
+    # For disparate mistreatment,
+    parser.add_argument('--epsilon', default=1.0, type=float, help='epsilon for constraints')
+    parser.add_argument('--tau', default=0.005, type=float, help='DCCP parameter, controls how much weight to put on the constraints, if the constraints are not satisfied, then increase tau')
+    parser.add_argument('--mu', default=1.2, type=float, help='DCCP parameter, controls the multiplicative factor by which the tau increases in each DCCP iteration')
+    parser.add_argument('--max_iters', default=100, type=int, help='for dccp')
+    parser.add_argument('--max_iter_dccp', default=50, type=int, help='for dccp')
+
     args = parser.parse_args()
     args.cuda=True
     if args.mode == 'train' and args.method == 'mfd':

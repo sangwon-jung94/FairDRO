@@ -29,6 +29,8 @@ class TrainerFactory:
             import trainer.groupdro as trainer
         elif method == 'lgdro_chi':
             import trainer.labelwise_groupdro_chi as trainer
+        elif method == 'disp_mist':
+            import trainer.disparate_mistreatment as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)
