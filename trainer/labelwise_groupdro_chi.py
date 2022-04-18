@@ -327,7 +327,8 @@ class Trainer(trainer.GenericTrainer):
         q_start = copy.deepcopy(self.adv_probs_dict)
         q_ibr = copy.deepcopy(self.adv_probs_dict)
         
-        cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
+        #cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
+        cur_step_size = 1 - epoch/epochs
         for l in range(n_classes):
             label_group_loss = train_subgroup_loss[idxs+l]
             if not self.margin:
