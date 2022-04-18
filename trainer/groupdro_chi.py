@@ -6,19 +6,36 @@ from utils import get_accuracy
 import trainer
 import torch
 import numpy as np
-
+from torch.utils.data import DataLoader
+from utils import get_accuracy, chi_proj, chi_proj_nonuni
 
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
         super().__init__(args=args, **kwargs)
         self.gamma = args.gamma # learning rate of adv_probs
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
+        self.rho = args.rho
 
+    def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups):
+        train_subgroup_loss = torch.flatten(train_subgroup_loss)
+        
+        idxs = np.array([i * n_classes for i in range(n_groups)])  
+            
+        self.adv_probs *= torch.exp(self.gamma*train_subgroup_loss)
+        self.adv_probs = torch.from_numpy(chi_proj(self.adv_probs, self.rho)).cuda(device=self.device).float()
+        
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         global loss_set
         model = self.model
         model.train()
         
+        self.normal_loader = DataLoader(train_loader.dataset, 
+                                        batch_size=128, 
+                                        shuffle=False, 
+                                        num_workers=2, 
+                                        pin_memory=True, 
+                                        drop_last=False)
+
         n_classes = train_loader.dataset.n_classes
         n_groups = train_loader.dataset.n_groups
         
@@ -27,6 +44,15 @@ class Trainer(trainer.GenericTrainer):
         for epoch in range(epochs):
             
             self._train_epoch(epoch, train_loader, model,criterion)
+            _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
+                                                               epoch,
+                                                               train=True,
+                                                               record=self.record,
+                                                               writer=writer
+                                                              )
+            
+            # update q
+            self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
 
             eval_start_time = time.time()                
             eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -99,10 +125,6 @@ class Trainer(trainer.GenericTrainer):
                 group_count = group_map.sum(1)
                 group_denom = group_count + (group_count==0).float() # avoid nans
                 group_loss = (group_map @ loss.view(-1))/group_denom
-
-                # update q
-                self.adv_probs = self.adv_probs * torch.exp(self.gamma*group_loss.data)
-                self.adv_probs = self.adv_probs/(self.adv_probs.sum()) # proj
 
                 robust_loss = group_loss @ self.adv_probs
                 

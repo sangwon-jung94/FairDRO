@@ -6,7 +6,7 @@ from utils import get_accuracy
 import trainer
 import torch
 import numpy as np
-
+from torch.utils.data import DataLoader
 
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
@@ -18,18 +18,49 @@ class Trainer(trainer.GenericTrainer):
         global loss_set
         model = self.model
         model.train()
+        self.normal_loader = DataLoader(train_loader.dataset, 
+                                        batch_size=128, 
+                                        shuffle=False, 
+                                        num_workers=2, 
+                                        pin_memory=True, 
+                                        drop_last=False)        
         
-        num_classes = train_loader.dataset.num_classes
-        num_groups = train_loader.dataset.num_groups
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
         
         self.adv_probs_dict = {}
-        for l in range(num_classes):
-            self.adv_probs_dict[l] = torch.ones(num_groups).cuda() / num_groups
-#             self.adv_probs = torch.ones(num_groups*num_classes).cuda() / num_groups*num_classes
+        for l in range(n_classes):
+            self.adv_probs_dict[l] = torch.ones(n_groups).cuda() / n_groups
+            
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model,criterion)
             eval_start_time = time.time()
-            eval_loss, eval_acc, eval_deom, eval_deoa, eval_subgroup_acc  = self.evaluate(self.model, test_loader, self.criterion)
+            _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
+                                                               epoch,
+                                                               train=True,
+                                                               record=self.record,
+                                                               writer=writer
+                                                              )
+            # q update
+            train_subgroup_loss = torch.flatten(train_subgroup_loss)
+        
+            idxs = np.array([i * n_classes for i in range(n_groups)])  
+            
+            for l in range(n_classes):
+                label_group_loss = train_subgroup_loss[idxs+l]
+                self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma*label_group_loss.data)
+                self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum()) # proj
+
+
+            eval_start_time = time.time()
+            eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
+                                                                             test_loader, 
+                                                                             self.criterion,
+                                                                             epoch, 
+                                                                             train=False,
+                                                                             record=self.record,
+                                                                             writer=writer
+                                                                            )
             eval_end_time = time.time()
             print('[{}/{}] Method: {} '
                   'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
@@ -48,8 +79,8 @@ class Trainer(trainer.GenericTrainer):
                 
                 eval_contents = {}
                 train_contents = {}
-                for g in range(num_groups):
-                    for l in range(num_classes):
+                for g in range(n_groups):
+                    for l in range(n_classes):
                         eval_contents[f'g{g},l{l}'] = eval_subgroup_acc[g,l]
                         train_contents[f'g{g},l{l}'] = train_subgroup_acc[g,l]
                 writer.add_scalars('eval_subgroup_acc', eval_contents, epoch)
@@ -69,9 +100,9 @@ class Trainer(trainer.GenericTrainer):
         running_loss = 0.0
         total = 0
         batch_start_time = time.time()
-        num_classes = train_loader.dataset.num_classes
-        num_groups = train_loader.dataset.num_groups
-        num_subgroups = num_classes * num_groups
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
+        n_subgroups = n_classes * n_groups
         for i, data in enumerate(train_loader):
             # Get the inputs
             inputs, _, groups, targets, _ = data
@@ -82,7 +113,7 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda(device=self.device)
                 groups = groups.cuda(device=self.device)
                 
-            subgroups = groups * num_classes + labels
+            subgroups = groups * n_classes + labels
             outputs = model(inputs)
             if criterion is not None:
                 loss = criterion(outputs, labels)
@@ -90,25 +121,21 @@ class Trainer(trainer.GenericTrainer):
                 loss = self.train_criterion(outputs, labels)
             
             # calculate the labelwise losses
-            group_map = (subgroups == torch.arange(num_subgroups).unsqueeze(1).long().cuda()).float()
+            group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
             group_count = group_map.sum(1)
             group_denom = group_count + (group_count==0).float() # avoid nans
             group_loss = (group_map @ loss.view(-1))/group_denom
             
             # update q
             robust_loss = 0
-            idxs = np.array([i * num_classes for i in range(num_groups)])
-            for l in range(num_classes):
+            idxs = np.array([i * n_classes for i in range(n_groups)])
+            for l in range(n_classes):
                 label_group_loss = group_loss[idxs+l]
                 self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma * label_group_loss.data)
                 self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum())
                 robust_loss += label_group_loss @ self.adv_probs_dict[l]
-#             self.adv_probs = self.adv_probs * torch.exp(self.gamma*group_loss.data)
-#             self.adv_probs = self.adv_probs/(self.adv_probs.sum())
-            
-#             robust_loss = group_loss @ self.adv_probs
 
-            robust_loss /= num_classes
+            robust_loss /= n_classes
             running_loss += robust_loss.item()
             running_acc += get_accuracy(outputs, labels)
 
