@@ -1,60 +1,80 @@
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15 --seed 0  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15 --seed 1  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15 --seed 2  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.001 --seed 0  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.001 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.001 --seed 2  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15 --seed 3  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15.5 --seed 0  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.001 --seed 3  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.003 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.003 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15.5 --seed 2  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15.5 --seed 3  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 16 --seed 0  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.003 --seed 2  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.003 --seed 3  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.005 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 16 --seed 1  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 16 --seed 2  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 16 --seed 3  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.005 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.005 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.005 --seed 3  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 16.5 --seed 0  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 16.5 --seed 1  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 16.5 --seed 2  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.0005 --seed 0  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.0005 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.0005 --seed 2  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 16.5 --seed 3  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 14.5 --seed 0  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 14.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.0005 --seed 3  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.0007 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.0007 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 14.5 --seed 2  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 14.5 --seed 3  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 14 --seed 0  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.0007 --seed 2  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.0007 --seed 3  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.01 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 14 --seed 1  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 14 --seed 2  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 14 --seed 3  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.01 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.01 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.01 --seed 3  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 17 --seed 0  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 17 --seed 1  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 17 --seed 2  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.05 --seed 0  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.05 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.05 --seed 2  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 17 --seed 3  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13.5 --seed 0  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.05 --seed 3  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.1 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.1 --seed 1  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13.5 --seed 2  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13.5 --seed 3  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13 --seed 0  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.1 --seed 2  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.1 --seed 3  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.5 --seed 0  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13 --seed 1  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13 --seed 2  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13 --seed 3  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.5 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.5 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 0.5 --seed 3  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 1.0 --seed 0  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 1.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 1.0 --seed 2  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 1.0 --seed 3  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 3.0 --seed 0  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 3.0 --seed 1  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 3.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 3.0 --seed 3  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 5.0 --seed 0  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 5.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 5.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_compas --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset compas --model lr --batch-size 128 --weight-decay 0.0001 --lamb 5.0 --seed 3  &
 wait
 python ../../slack_sender.py --name "date : 0419_mist_compas / method : disp_mist / dataset : ['compas']"
