@@ -43,7 +43,9 @@ class FairBatch(Sampler):
         y_data = []
         z_data = []
         if 'Jigsaw' not in type(Dataset).__name__:
-            for z, y, _ in Dataset.features:
+            for rows in Dataset.features:
+                z = rows[0]
+                y = rows[1]
                 y_data.append(y)
                 z_data.append(z)
         else:
