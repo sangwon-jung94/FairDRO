@@ -22,7 +22,7 @@ class Trainer(trainer.GenericTrainer):
         n_classes = train_loader.dataset.n_classes
         n_groups = train_loader.dataset.n_groups
 
-        hsic = RbfHSIC(1, 1)
+        hsic = RbfHSIC(1, 1, nlp_flag=self.nlp_flag)
         
         for epoch in range(self.epochs):
             self._train_epoch(epoch, train_loader, self.model, hsic=hsic, n_classes=n_classes)

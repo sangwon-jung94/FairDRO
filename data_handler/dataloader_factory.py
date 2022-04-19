@@ -44,7 +44,10 @@ class DataloaderFactory:
 #             else:
 #                 from data_handler.custom_loader import Customsampler                
 #                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)
-
+            shuffle = False
+        elif args.method == 'fairbatch':
+            from data_handler.fairbatch import FairBatch
+            sampler = FairBatch(train_dataset, batch_size, gamma=args.gamma, target_fairness='eo', seed=seed)
             shuffle = False
 
         train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=shuffle, sampler=sampler,

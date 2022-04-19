@@ -37,7 +37,7 @@ class HSIC(nn.Module):
     reduction: not used (for compatibility with other losses).
     """
     def __init__(self, sigma_x, sigma_y=None, algorithm='unbiased',
-                 reduction=None):
+                 reduction=None, nlp_flag=False):
         super(HSIC, self).__init__()
 
         if sigma_y is None:
@@ -45,6 +45,7 @@ class HSIC(nn.Module):
 
         self.sigma_x = sigma_x
         self.sigma_y = sigma_y
+        self.nlp_flag = nlp_flag
 
         if algorithm == 'biased':
             self.estimator = self.biased_estimator
@@ -100,18 +101,27 @@ class RbfHSIC(HSIC):
     """Radial Basis Function (RBF) kernel HSIC implementation.
     """
     def _kernel(self, X, sigma):
-        X = X.view(len(X), -1)
-        Xn = X.norm(2, dim=1, keepdim=True)
-        X = X.div(Xn)
-        XX = X @ X.t()
-        X_sqnorms = torch.diag(XX)
-        X_L2 = -2 * XX + X_sqnorms.unsqueeze(1) + X_sqnorms.unsqueeze(0)
-        X_L2 = X_L2.clamp(1e-12)
-        sigma_avg = X_L2.mean().detach()
-        gamma = 1/(2*sigma_avg)
-#        gamma = 1 / (2 * sigma ** 2)
+        if not self.nlp_flag:
+            X = X.view(len(X), -1)
+            Xn = X.norm(2, dim=1, keepdim=True)
+            X = X.div(Xn)
+            XX = X @ X.t()
+            X_sqnorms = torch.diag(XX)
+            X_L2 = -2 * XX + X_sqnorms.unsqueeze(1) + X_sqnorms.unsqueeze(0)
+            X_L2 = X_L2.clamp(1e-12)
+            sigma_avg = X_L2.mean().detach()
 
-        kernel_XX = torch.exp(-gamma * X_L2)
+            gamma = 1/(2*sigma_avg)
+    #        gamma = 1 / (2 * sigma ** 2)
+
+            kernel_XX = torch.exp(-gamma * X_L2)
+        
+        else:
+            X = X.view(len(X), -1)
+            Xn = X.norm(2, dim=1, keepdim=True)
+            X = X.div(Xn)
+#             XX = X @ X.t()
+            kernel_XX = torch.matmul(X, X.t()).pow(2)
         return kernel_XX
 
     def _kernel_x(self, X):

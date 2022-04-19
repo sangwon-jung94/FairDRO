@@ -29,6 +29,8 @@ class TrainerFactory:
             import trainer.groupdro as trainer
         elif method == 'lgdro_chi':
             import trainer.labelwise_groupdro_chi as trainer
+        elif method == 'fairbatch':
+            import trainer.fairbatch as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)
@@ -62,6 +64,7 @@ class GenericTrainer:
         self.scheduler = None
         self.dataset = args.dataset
         self.uc = args.uc
+        self.batch_size = args.batch_size
 
         self.log_name = make_log_name(args)
         self.log_dir = os.path.join(args.log_dir, args.date, args.dataset, args.method)

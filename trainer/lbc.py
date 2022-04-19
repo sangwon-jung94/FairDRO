@@ -29,29 +29,32 @@ class Trainer(trainer.GenericTrainer):
         model.train()
         n_groups = train_loader.dataset.n_groups
         n_classes = train_loader.dataset.n_classes
-        
 
         multipliers_set = {}
-        extended_multipliers = torch.zeros((n_groups, n_classes))     
+        self.extended_multipliers = torch.zeros((n_groups, n_classes))     
         # Full batch 가져오기 #통계
-        _, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
+        _, self.Y_train, self.S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
                                                   n_workers=self.n_workers)  
+        self.weight_set = self.debias_weights(self.Y_train, self.S_train, self.extended_multipliers, n_groups, n_classes) 
 
-        eta_learning_rate = self.eta
-        print('eta_learning_rate : ', eta_learning_rate)
+        print('eta_learning_rate : ', self.eta)
         n_iters = self.iteration
         print('n_iters : ', n_iters)
         
         violations = 0
         for iter_ in range(n_iters):
             start_t = time.time()
-            weight_set = self.debias_weights(Y_train, S_train, extended_multipliers, n_groups, n_classes)  
+                
             if self.model == 'lr':
                 # initialize the models
                 self.initialize_all()
+            if self.nlp_flag:
+                assert n_iters == 1
+                self.weight_update_term = 100
+                self.weight_update_count = 0
 
             for epoch in range(epochs):
-                lb_idx = self._train_epoch(epoch, train_loader, model, weight_set)
+                lb_idx = self._train_epoch(epoch, train_loader, model, self.weight_set)
                 
                 eval_start_time = time.time()                
                 eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -85,20 +88,18 @@ class Trainer(trainer.GenericTrainer):
             train_t = int((end_t - start_t) / 60)
             print('Training Time : {} hours {} minutes / iter : {}/{}'.format(int(train_t / 60), (train_t % 60),
                                                                               (iter_ + 1), n_iters))
+            if not self.nlp_flag:
+                # 모델결과 통계
+                Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
+                                                                     n_workers=self.n_workers, model=model)
 
-            # 모델결과 통계
-            Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
-                                                                 n_workers=self.n_workers, model=model)  ############################# ㅇㅋ
-
-            # violation 계산 (for each class y)
-            if self.reweighting_target_criterion == 'dp':
-                acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, n_groups, n_classes)
-            elif self.reweighting_target_criterion == 'eo':
-                acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, n_groups, n_classes)
-            extended_multipliers -= eta_learning_rate * violations                     ############################# eo 일 떈 ?
-#         with open(os.path.join(self.log_dir, self.log_name + '_probs'),'wb') as f:
-#             pickle.dump(multipliers_set, f)
-#         print('Training Finished!')
+                # violation 계산 (for each class y)
+                if self.reweighting_target_criterion == 'dp':
+                    acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, n_groups, n_classes)
+                elif self.reweighting_target_criterion == 'eo':
+                    acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, n_groups, n_classes)
+                self.extended_multipliers -= self.eta * violations 
+                self.weight_set = self.debias_weights(self.Y_train, self.S_train, self.extended_multipliers, n_groups, n_classes) 
 
     def _train_epoch(self, epoch, train_loader, model, weight_set):
         model.train()
@@ -109,6 +110,7 @@ class Trainer(trainer.GenericTrainer):
 
         n_batches = len(train_loader)
         n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
 
         for i, data in enumerate(train_loader):
             batch_start_time = time.time()
@@ -119,7 +121,7 @@ class Trainer(trainer.GenericTrainer):
             # labels = labels.float() if n_classes == 2 else labels.long()
             labels = labels.long()
 
-            weights = weight_set[indexes[0]]
+            weights = self.weight_set[indexes[0]]
 
             if self.cuda:
                 inputs = inputs.cuda()
@@ -159,8 +161,22 @@ class Trainer(trainer.GenericTrainer):
                 if self.nlp_flag:
                     torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
                 self.optimizer.second_step(zero_grad=True)
-                            
             
+            if self.nlp_flag:
+                self.weight_update_count += 1
+                if self.weight_update_count % self.weight_update_term == 0:
+                    # 모델결과 통계
+                    Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
+                                                                         n_workers=self.n_workers, model=model)
+
+                    # violation 계산 (for each class y)
+                    if self.reweighting_target_criterion == 'dp':
+                        acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, n_groups, n_classes)
+                    elif self.reweighting_target_criterion == 'eo':
+                        acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, n_groups, n_classes)
+                    self.extended_multipliers -= self.eta * violations 
+                    self.weight_set = self.debias_weights(Y_train, S_train, self.extended_multipliers, n_groups, n_classes) 
+
             running_loss += loss.item()
             # binary = True if n_classes == 2 else False
             # running_acc += get_accuracy(outputs, labels, binary=binary)
@@ -204,8 +220,21 @@ class Trainer(trainer.GenericTrainer):
             if self.cuda:
                 inputs = inputs.cuda()
                 groups = sen_attrs.cuda()
+                targets = targets.cuda()
             if model != None:
-                outputs = model(inputs) 
+                if self.nlp_flag:
+                    input_ids = inputs[:, :, 0]
+                    input_masks = inputs[:, :, 1]
+                    segment_ids = inputs[:, :, 2]
+                    outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=targets,
+                    )[1] 
+                else:
+                    outputs = model(inputs)
+#                 outputs = model(inputs) 
                 # Y_pred_set.append(torch.argmax(outputs, dim=1) if n_classes >2 else (torch.sigmoid(outputs) >= 0.5).float())
                 Y_pred_set.append(torch.argmax(outputs, dim=1))
             total+= inputs.shape[0]

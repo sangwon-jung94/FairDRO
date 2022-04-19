@@ -65,7 +65,6 @@ class JigsawDataset(GenericDataset):
         self.n_classes = len(np.unique(self.y_array))
         print('confounder : ' , self.confounder_names)
 
-        
         # Map to groups
         attr = (self.metadata_df.loc[self.metadata_df["split"]==self.split,self.confounder_names]).values
         max_val = attr.max(axis=1)
@@ -85,7 +84,6 @@ class JigsawDataset(GenericDataset):
         self.n_groups = len(self.confounder_names)
         
         self.y_array = self.y_array[mask]
-        
         
         """
         # Confounders are all binary
