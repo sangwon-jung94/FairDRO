@@ -239,14 +239,15 @@ class Trainer(trainer.GenericTrainer):
                 return outputs, robust_loss
             
             outputs, robust_loss = closure()
-            robust_loss.backward()                
             
             if not self.sam:
+                self.optimizer.zero_grad()
+                robust_loss.backward()                
                 if self.nlp_flag:
                     torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
                 self.optimizer.step()
-                self.optimizer.zero_grad()
             else:
+                robust_loss.backward()                
                 self.optimizer.first_step(zero_grad=True)
                 outputs, robust_loss = closure()
                 loss.backward()
@@ -403,7 +404,7 @@ class Trainer(trainer.GenericTrainer):
         mean = losses.mean()
         denom = (losses - mean).norm(2)
         
-        q = 1/n_groups + np.sqrt(self.rho / n_groups)* (1/denom) * (losses - mean)
+        q = 1/n_groups + np.sqrt(2 * self.rho / n_groups)* (1/denom) * (losses - mean)
         return q
         
     

@@ -27,6 +27,10 @@ class TrainerFactory:
             import trainer.labelwise_groupdro as trainer
         elif method == 'gdro':
             import trainer.groupdro as trainer
+        elif method == 'gdro_epoch':
+            import trainer.groupdro_epoch as trainer
+        elif method == 'gdro_chi':
+            import trainer.groupdro_chi as trainer
         elif method == 'lgdro_chi':
             import trainer.labelwise_groupdro_chi as trainer
         elif method == 'fairbatch':
