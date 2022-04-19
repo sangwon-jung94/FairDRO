@@ -1,24 +1,70 @@
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 1.0 --seed 0  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 2.0 --seed 0  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 3.0 --seed 0  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 1.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 1.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 1.0 --seed 3  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 4.0 --seed 0  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 5.0 --seed 0  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 6.0 --seed 0  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 2.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 2.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 2.0 --seed 3  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 7.0 --seed 0  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 10.0 --seed 0  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13.0 --seed 0  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 3.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 3.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 3.0 --seed 3  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15.0 --seed 0  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 17.0 --seed 0  &
-CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 20.0 --seed 0  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 4.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 4.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 4.0 --seed 3  &
 wait
 
-CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 25.0 --seed 0  &
-CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 50.0 --seed 0  &
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 5.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 5.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 5.0 --seed 3  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 6.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 6.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 6.0 --seed 3  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 7.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 7.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 7.0 --seed 3  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 10.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 10.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 10.0 --seed 3  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 13.0 --seed 3  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 15.0 --seed 3  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 17.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 17.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 17.0 --seed 3  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 20.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 20.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 20.0 --seed 3  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 25.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 25.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 25.0 --seed 3  &
+wait
+
+CUDA_VISIBLE_DEVICES=0 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 50.0 --seed 1  &
+CUDA_VISIBLE_DEVICES=1 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 50.0 --seed 2  &
+CUDA_VISIBLE_DEVICES=2 python main.py --date 0419_mist_adult_seed0 --method disp_mist --lr 0.001 --epochs 70 --img-size 224 --evalset test --optim AdamW --record  --dataset adult --model lr --batch-size 128 --weight-decay 0.0001 --lamb 50.0 --seed 3  &
 wait
 python ../../slack_sender.py --name "date : 0419_mist_adult_seed0 / method : disp_mist / dataset : ['adult']"
