@@ -33,7 +33,7 @@ class Trainer(trainer.GenericTrainer):
 
         multipliers_set = {}
         extended_multipliers = torch.zeros((n_groups, n_classes))     
-        # Full batch 가져오기 #통계
+        # get statistics
         _, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
                                                   n_workers=self.n_workers)  
 
@@ -86,11 +86,11 @@ class Trainer(trainer.GenericTrainer):
             print('Training Time : {} hours {} minutes / iter : {}/{}'.format(int(train_t / 60), (train_t % 60),
                                                                               (iter_ + 1), n_iters))
 
-            # 모델결과 통계
+            # get statistics
             Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
                                                                  n_workers=self.n_workers, model=model)  
 
-            # violation 계산 (for each class y)
+            # calculate violation
             if self.reweighting_target_criterion == 'dp':
                 acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, n_groups, n_classes)
             elif self.reweighting_target_criterion == 'eo':
