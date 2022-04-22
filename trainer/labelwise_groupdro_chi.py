@@ -115,13 +115,30 @@ class Trainer(trainer.GenericTrainer):
             self.q_update_term = 0
             self.total_q_update = (epochs * len(train_loader)) / 100
             self.n_q_update = 0 
-
+        
+        def zero_one_loss(outputs, labels):
+            pred = torch.argmax(outputs, 1)
+            loss = (pred==labels).float()
+            return loss
+        def pred_loss(outputs, labels):
+            pred = torch.max(outputs, 1)[0].float()
+            #loss = (pred==labels).float()
+            return pred
+        def ce_loss(outputs, labels):
+            pred = outputs[np.arange(len(labels)),labels].float()
+            loss = torch.log(pred)
+            return loss
+    
+        
+        
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model, criterion)            
             
             
+            
+            
             if not self.nlp_flag or self.record:
-                _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
+                _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, ce_loss, 
                                                                    epoch,
                                                                    train=True,
                                                                    record=self.record,
@@ -291,13 +308,14 @@ class Trainer(trainer.GenericTrainer):
                 
 
     def _q_update_ibr(self, losses, n_classes, n_groups):
+        losses = torch.flatten(losses)
         assert len(losses) == (n_classes * n_groups)
         
         idxs = np.array([i * n_classes for i in range(n_groups)])
         
         for l in range(n_classes):
             label_group_loss = losses[idxs+l]
-            self.adv_probs_dict[l] = self._update_mw(label_group_loss, self.group_dist[l])
+            self.adv_probs_dict[l] = self._update_mw_margin(label_group_loss)#, self.group_dist[l])
             print(f'{l} label loss : {losses[idxs+l]}')
             print(f'{l} label q values : {self.adv_probs_dict[l]}')
     

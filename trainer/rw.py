@@ -91,13 +91,15 @@ class Trainer(trainer.GenericTrainer):
             batch_start_time = time.time()
             # Get the inputs
             inputs, _, groups, targets, indexes = data
-#             print(indexes[0], groups)
             labels = targets
             # labels = labels.float() if n_classes == 2 else labels.long()
             labels = labels.long()
 
-            weights = weight_set[indexes[0]]
-
+            weights = weight_set[indexes]
+            # print('groups',groups)
+            # print('targets',targets)
+            # print('indexes',indexes)
+            # print('weights',weights)
             if self.cuda:
                 inputs = inputs.cuda()
                 labels = labels.cuda()
@@ -206,6 +208,9 @@ class Trainer(trainer.GenericTrainer):
                 w_matrix[g,c] = (len(group_idxs) * len(class_idxs))/(n_data * len(group_class_idxs))
         weights = w_matrix[sen_attrs, label]
         print('w_matrix(g,c)', w_matrix)
+        print('weights', weights)
+        print('label', label)
+        print('sen_attrs', sen_attrs)
         return weights
 
 
