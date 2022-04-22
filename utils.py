@@ -167,5 +167,8 @@ def make_log_name(args):
             log_name += f'_T{args.target}'
         if args.add_attr is not None:
             log_name += f'_A{args.add_attr}'
+
+    if 'disp_mist' == args.method:
+        log_name += f'_lamb{args.lamb}'
         
     return log_name
