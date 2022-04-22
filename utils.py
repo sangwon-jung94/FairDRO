@@ -167,10 +167,5 @@ def make_log_name(args):
     
     if 'disp_mist' == args.method:
         log_name += f'_lamb{args.lamb}'
-        # log_name += f'_epsilon{args.epsilon}'
-        # log_name += f'_tau{args.tau}'
-        # log_name += f'_mu{args.mu}'
-        # log_name += f'_max_iters{args.max_iters}'
-        # log_name += f'_max_iter_dccp{args.max_iter_dccp}'
-
+    
     return log_name
