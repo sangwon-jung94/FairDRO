@@ -140,39 +140,3 @@ class Trainer(trainer.GenericTrainer):
                 running_loss = 0.0
                 running_acc = 0.0
                 batch_start_time = time.time()
-
-
-                
-#     def get_statistics(self, dataset, batch_size=128, n_workers=2, model=None):
-
-#         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
-#                                 num_workers=n_workers, pin_memory=True, drop_last=False)
-#         n_classes = dataloader.dataset.n_classes
-
-#         if model != None:
-#             model.eval()
-
-#         Y_pred_set = []
-#         X_set = []
-#         Y_set = []
-#         S_set = []
-#         total = 0
-#         for i, data in enumerate(dataloader):
-#             inputs, _, sen_attrs, targets, indexes = data
-#             X_set.append(inputs)
-#             Y_set.append(targets)
-#             S_set.append(sen_attrs)
-
-#             if self.cuda:
-#                 inputs = inputs.cuda()
-#             if model != None:
-#                 outputs = model(inputs)
-#                 Y_pred_set.append(torch.argmax(outputs, dim=1))
-#             total+= inputs.shape[0]
-
-#         X_set = torch.cat(X_set)
-#         Y_set = torch.cat(Y_set)
-#         S_set = torch.cat(S_set)
-#         Y_pred_set = torch.cat(Y_pred_set) if len(Y_pred_set) != 0 else torch.zeros(0)
-#         return Y_pred_set.long(), Y_set.long().cuda(), S_set.long().cuda(), X_set.float().cuda()
-        

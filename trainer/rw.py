@@ -28,7 +28,7 @@ class Trainer(trainer.GenericTrainer):
         n_classes = train_loader.dataset.n_classes
         
         
-        # Full batch 가져오기 #통계
+        # get statistics
         _, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
                                                   n_workers=self.n_workers)  
 
@@ -96,10 +96,6 @@ class Trainer(trainer.GenericTrainer):
             labels = labels.long()
 
             weights = weight_set[indexes]
-            # print('groups',groups)
-            # print('targets',targets)
-            # print('indexes',indexes)
-            # print('weights',weights)
             if self.cuda:
                 inputs = inputs.cuda()
                 labels = labels.cuda()
