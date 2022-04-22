@@ -45,13 +45,14 @@ class Trainer(trainer.GenericTrainer):
         violations = 0
         for iter_ in range(n_iters):
             start_t = time.time()
-            weight_set = self.debias_weights(Y_train, S_train, extended_multipliers, n_groups, n_classes)  
+            #weight_set = self.debias_weights(Y_train, S_train, extended_multipliers, n_groups, n_classes)
+            weight_matrix = self.get_weight_matrix(extended_multipliers)
             if self.model == 'lr':
                 # initialize the models
                 self.initialize_all()
 
             for epoch in range(epochs):
-                lb_idx = self._train_epoch(epoch, train_loader, model, weight_set)
+                lb_idx = self._train_epoch(epoch, train_loader, model, weight_matrix)
                 
                 eval_start_time = time.time()                
                 eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -97,7 +98,7 @@ class Trainer(trainer.GenericTrainer):
                 acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, n_groups, n_classes)
             extended_multipliers -= eta_learning_rate * violations                    
 
-    def _train_epoch(self, epoch, train_loader, model, weight_set):
+    def _train_epoch(self, epoch, train_loader, model, weight_matrix):
         model.train()
 
         running_acc = 0.0
@@ -110,13 +111,15 @@ class Trainer(trainer.GenericTrainer):
         for i, data in enumerate(train_loader):
             batch_start_time = time.time()
             # Get the inputs
-            inputs, _, groups, targets, indexes = data
-#             print(indexes[0], groups)
+            inputs, _, groups, targets, _ = data
             labels = targets
             # labels = labels.float() if n_classes == 2 else labels.long()
+            groups = groups.long()
             labels = labels.long()
-
-            weights = weight_set[indexes]
+            
+            
+            weights = weight_matrix[groups, labels]
+            
             if self.cuda:
                 inputs = inputs.cuda()
                 labels = labels.cuda()
@@ -193,7 +196,7 @@ class Trainer(trainer.GenericTrainer):
         total = 0
         with torch.no_grad():
             for i, data in enumerate(dataloader):
-                inputs, _, sen_attrs, targets, indexes = data
+                inputs, _, sen_attrs, targets, _ = data
     #             Y_set.append(targets[sen_attrs != -1]) # sen_attrs = -1 means no supervision for sensitive group
                 Y_set.append(targets) # sen_attrs = -1 means no supervision for sensitive group
                 S_set.append(sen_attrs)
@@ -243,12 +246,9 @@ class Trainer(trainer.GenericTrainer):
         return acc, violations
 
     # update weight
-    def debias_weights(self, label, sen_attrs, extended_multipliers, n_groups, n_classes):  
-#         weights = np.zeros(len(label))
-        weights = torch.zeros(len(label))
+    def get_weight_matrix(self, extended_multipliers):  
         w_matrix = torch.sigmoid(extended_multipliers) # g by c
-        weights = w_matrix[sen_attrs, label]
-        return weights
+        return w_matrix
 
 
     def criterion(self, model, outputs, labels):

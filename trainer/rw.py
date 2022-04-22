@@ -33,13 +33,13 @@ class Trainer(trainer.GenericTrainer):
                                                   n_workers=self.n_workers)  
 
         start_t = time.time()
-        weight_set = self.reweight(Y_train, S_train, n_groups, n_classes)  
+        weight_matrix = self.get_reweight_matrix(Y_train, S_train, n_groups, n_classes)  
         if self.model == 'lr':
             # initialize the models
             self.initialize_all()
 
         for epoch in range(epochs):
-            lb_idx = self._train_epoch(epoch, train_loader, model, weight_set)
+            lb_idx = self._train_epoch(epoch, train_loader, model, weight_matrix)
 
             eval_start_time = time.time()                
             eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -77,7 +77,7 @@ class Trainer(trainer.GenericTrainer):
             
 
             
-    def _train_epoch(self, epoch, train_loader, model, weight_set):
+    def _train_epoch(self, epoch, train_loader, model, weight_matrix):
         model.train()
 
         running_acc = 0.0
@@ -93,9 +93,11 @@ class Trainer(trainer.GenericTrainer):
             inputs, _, groups, targets, indexes = data
             labels = targets
             # labels = labels.float() if n_classes == 2 else labels.long()
+            groups = groups.long()
             labels = labels.long()
 
-            weights = weight_set[indexes]
+            weights = weight_matrix[groups, labels]
+            
             if self.cuda:
                 inputs = inputs.cuda()
                 labels = labels.cuda()
@@ -170,20 +172,21 @@ class Trainer(trainer.GenericTrainer):
         Y_set = []
         S_set = []
         total = 0
-        for i, data in enumerate(dataloader):
-            inputs, _, sen_attrs, targets, indexes = data
-#             Y_set.append(targets[sen_attrs != -1]) # sen_attrs = -1 means no supervision for sensitive group
-            Y_set.append(targets) # sen_attrs = -1 means no supervision for sensitive group
-            S_set.append(sen_attrs)
+        with torch.no_grad():
+            for i, data in enumerate(dataloader):
+                inputs, _, sen_attrs, targets, indexes = data
+    #             Y_set.append(targets[sen_attrs != -1]) # sen_attrs = -1 means no supervision for sensitive group
+                Y_set.append(targets) # sen_attrs = -1 means no supervision for sensitive group
+                S_set.append(sen_attrs)
 
-            if self.cuda:
-                inputs = inputs.cuda()
-                groups = sen_attrs.cuda()
-            if model != None:
-                outputs = model(inputs) 
-                # Y_pred_set.append(torch.argmax(outputs, dim=1) if n_classes >2 else (torch.sigmoid(outputs) >= 0.5).float())
-                Y_pred_set.append(torch.argmax(outputs, dim=1))
-            total+= inputs.shape[0]
+                if self.cuda:
+                    inputs = inputs.cuda()
+                    groups = sen_attrs.cuda()
+                if model != None:
+                    outputs = model(inputs) 
+                    # Y_pred_set.append(torch.argmax(outputs, dim=1) if n_classes >2 else (torch.sigmoid(outputs) >= 0.5).float())
+                    Y_pred_set.append(torch.argmax(outputs, dim=1))
+                total+= inputs.shape[0]
 
         Y_set = torch.cat(Y_set)
         S_set = torch.cat(S_set)
@@ -192,9 +195,8 @@ class Trainer(trainer.GenericTrainer):
 
 
     # update weight
-    def reweight(self, label, sen_attrs, n_groups, n_classes):  
+    def get_reweight_matrix(self, label, sen_attrs, n_groups, n_classes):  
         n_data = len(label)
-        weights = torch.zeros(n_data)
         w_matrix = torch.zeros((n_groups, n_classes))
         for g in range(n_groups):
             for c in range(n_classes):
@@ -202,12 +204,7 @@ class Trainer(trainer.GenericTrainer):
                 class_idxs = torch.where(label==c)[0]
                 group_class_idxs = torch.where(torch.logical_and(sen_attrs == g, label == c))[0]
                 w_matrix[g,c] = (len(group_idxs) * len(class_idxs))/(n_data * len(group_class_idxs))
-        weights = w_matrix[sen_attrs, label]
-        print('w_matrix(g,c)', w_matrix)
-        print('weights', weights)
-        print('label', label)
-        print('sen_attrs', sen_attrs)
-        return weights
+        return w_matrix
 
 
     def criterion(self, model, outputs, labels):
