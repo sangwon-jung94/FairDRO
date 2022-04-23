@@ -27,11 +27,11 @@ class Trainer(trainer.GenericTrainer):
         log_set = defaultdict(list)
         model = self.model
         model.train()
-        n_groups = train_loader.dataset.n_groups
-        n_classes = train_loader.dataset.n_classes
+        self.n_groups = train_loader.dataset.n_groups
+        self.n_classes = train_loader.dataset.n_classes
 
         multipliers_set = {}
-        self.extended_multipliers = torch.zeros((n_groups, n_classes))
+        self.extended_multipliers = torch.zeros((self.n_groups, self.n_classes))
         self.weight_matrix = self.get_weight_matrix(self.extended_multipliers)
         
         print('eta_learning_rate : ', self.eta)
@@ -92,9 +92,9 @@ class Trainer(trainer.GenericTrainer):
 
                 # calculate violation
                 if self.reweighting_target_criterion == 'dp':
-                    acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, n_groups, n_classes)
+                    acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
                 elif self.reweighting_target_criterion == 'eo':
-                    acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, n_groups, n_classes)
+                    acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
                 self.extended_multipliers -= self.eta * violations 
                 self.weight_matrix = self.get_weight_matrix(self.extended_multipliers) 
 
@@ -106,13 +106,11 @@ class Trainer(trainer.GenericTrainer):
         avg_batch_time = 0.0
 
         n_batches = len(train_loader)
-        n_classes = train_loader.dataset.n_classes
-        n_groups = train_loader.dataset.n_groups
 
         for i, data in enumerate(train_loader):
             batch_start_time = time.time()
             # Get the inputs
-            inputs, _, groups, targets, indexes = data
+            inputs, _, groups, targets, _ = data
             labels = targets
             # labels = labels.float() if n_classes == 2 else labels.long()
             groups = groups.long()
@@ -162,15 +160,15 @@ class Trainer(trainer.GenericTrainer):
             if self.nlp_flag:
                 self.weight_update_count += 1
                 if self.weight_update_count % self.weight_update_term == 0:
-                    # 모델결과 통계
+                    # get statistics
                     Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
                                                                          n_workers=self.n_workers, model=model)
 
-                    # violation 계산 (for each class y)
+                    # calculate violation
                     if self.reweighting_target_criterion == 'dp':
-                        acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, n_groups, n_classes)
+                        acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
                     elif self.reweighting_target_criterion == 'eo':
-                        acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, n_groups, n_classes)
+                        acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
                     self.extended_multipliers -= self.eta * violations 
                     #self.weight_set = self.debias_weights(Y_train, S_train, self.extended_multipliers, n_groups, n_classes)
                     self.weight_matrix = self.get_weight_matrix(self.extended_multipliers) 
@@ -200,7 +198,6 @@ class Trainer(trainer.GenericTrainer):
 
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
                                 num_workers=n_workers, pin_memory=True, drop_last=False)
-        n_classes = dataloader.dataset.n_classes
 
         if model != None:
             model.eval()
@@ -211,7 +208,7 @@ class Trainer(trainer.GenericTrainer):
         total = 0
         with torch.no_grad():
             for i, data in enumerate(dataloader):
-                inputs, _, sen_attrs, targets, indexes = data
+                inputs, _, sen_attrs, targets, _ = data
     #             Y_set.append(targets[sen_attrs != -1]) # sen_attrs = -1 means no supervision for sensitive group
                 Y_set.append(targets) # sen_attrs = -1 means no supervision for sensitive group
                 S_set.append(sen_attrs)
