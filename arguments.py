@@ -30,17 +30,13 @@ def get_args():
     parser.add_argument('--seed', default=0, type=int, help='seed for randomness')
     parser.add_argument('--date', default='20200101', type=str, help='experiment date')
     parser.add_argument('--method', default='scratch', type=str, required=True,
-                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro','gdro_epoch', 'fairbatch','gdro_chi','lgdro_chi'])
+                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro','gdro_epoch', 'fairbatch','gdro_chi','lgdro_chi','disp_mist','rw'])
 
     parser.add_argument('--optim', default='Adam', type=str, required=False,
                         choices=['AdamP', 'AdamW','SGD', 'SGD_momentum_decay', 'Adam'],
                         help='(default=%(default)s)')
     parser.add_argument('--sam', default=False, action='store_true', help='sam')
     parser.add_argument('--lamb', default=1, type=float, help='fairness strength')
-    parser.add_argument('--gamma', default=0.1, type=float, help='learning rate for q')
-    parser.add_argument('--optim-q', default='pd', type=str, help='the type of optimization for q')
-    parser.add_argument('--margin', default=False, action='store_true', help='whether use a margin scheme or not')
-    
     parser.add_argument('--model', default='', required=True, choices=['resnet12', 'resnet50','cifar_net', 'resnet34', 'resnet18', 'resnet101','mlp', 'resnet18_dropout', 'bert','lr'])
     parser.add_argument('--teamodel', default='', choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp'])    
     
@@ -67,10 +63,15 @@ def get_args():
     parser.add_argument('--reweighting-target-criterion', default='eo', type=str, help='fairness criterion')
     parser.add_argument('--iteration', default=10, type=int, help='iteration for reweighting')
     
-    # For ldro chi,
+    # For lgdro chi,
     parser.add_argument('--kd', default=False, action='store_true', help='kd')
     parser.add_argument('--rho', default=0.5, type=float, help='uncertainty box length')
     parser.add_argument('--ibr', default=False, action='store_true', help='iterated best response')
+    parser.add_argument('--trueloss', default=False, action='store_true', help='using 0-1 loss when updating q')
+    parser.add_argument('--gamma', default=0.1, type=float, help='learning rate for q')
+    parser.add_argument('--optim-q', default='pd', type=str, help='the type of optimization for q')
+    parser.add_argument('--margin', default=False, action='store_true', help='whether use a margin scheme or not')
+    
     args = parser.parse_args()
     args.cuda=True
     if args.mode == 'train' and args.method == 'mfd':

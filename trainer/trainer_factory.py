@@ -35,6 +35,10 @@ class TrainerFactory:
             import trainer.labelwise_groupdro_chi as trainer
         elif method == 'fairbatch':
             import trainer.fairbatch as trainer
+        elif method == 'disp_mist':
+            import trainer.disparate_mistreatment as trainer
+        elif method == 'rw':
+            import trainer.rw as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)
