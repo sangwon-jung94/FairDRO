@@ -41,9 +41,9 @@ class Trainer(trainer.GenericTrainer):
         else:
             q_ibr = self._update_mw_margin(train_subgroup_loss)#, self.group_dist[l])
         self.adv_probs = q_start + cur_step_size*(q_ibr - q_start)
-        print(f'{l} label loss : {train_subgroup_loss}')
-        print(f'{l} label q_ibr values : {q_ibr}')
-        print(f'{l} label q values : {self.adv_probs}')
+        print(f'loss : {train_subgroup_loss}')
+        print(f'q_ibr values : {q_ibr}')
+        print(f'q values : {self.adv_probs}')
                          
         
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
