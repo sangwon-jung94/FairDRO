@@ -13,6 +13,7 @@ class Trainer(trainer.GenericTrainer):
         super().__init__(args=args, **kwargs)
         self.gamma = args.gamma # learning rate of adv_probs
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
+        self.trueloss = args.trueloss
 
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         global loss_set
@@ -32,24 +33,35 @@ class Trainer(trainer.GenericTrainer):
         for l in range(n_classes):
             self.adv_probs_dict[l] = torch.ones(n_groups).cuda() / n_groups
             
+        if self.nlp_flag:
+            self.t_total = len(train_loader) * epochs
+            self.q_update_term = 0
+            self.total_q_update = (epochs * len(train_loader)) / 100
+            self.n_q_update = 0 
+
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model,criterion)
             eval_start_time = time.time()
-            _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
-                                                               epoch,
-                                                               train=True,
-                                                               record=self.record,
-                                                               writer=writer
-                                                              )
-            # q update
-            train_subgroup_loss = torch.flatten(train_subgroup_loss)
-        
-            idxs = np.array([i * n_classes for i in range(n_groups)])  
-            
-            for l in range(n_classes):
-                label_group_loss = train_subgroup_loss[idxs+l]
-                self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma*label_group_loss.data)
-                self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum()) # proj
+
+            if not self.nlp_flag:
+                _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
+                                                                   epoch,
+                                                                   train=True,
+                                                                   record=self.record,
+                                                                   writer=writer
+                                                                  )
+                if self.trueloss:
+                    train_subgroup_loss = 1- train_subgroup_acc 
+                    
+                # q update
+                train_subgroup_loss = torch.flatten(train_subgroup_loss)
+
+                idxs = np.array([i * n_classes for i in range(n_groups)])  
+
+                for l in range(n_classes):
+                    label_group_loss = train_subgroup_loss[idxs+l]
+                    self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma*label_group_loss.data)
+                    self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum()) # proj
 
 
             eval_start_time = time.time()
@@ -153,4 +165,31 @@ class Trainer(trainer.GenericTrainer):
                 running_loss = 0.0
                 running_acc = 0.0
                 batch_start_time = time.time()
+                
+            if self.nlp_flag:
+                self.q_update_term += 1
+                if self.q_update_term % 100 == 0:
+                    print('lets start')
+                    start = time.time()
+                    _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
+                                                                       epoch,
+                                                                       train=True,
+                                                                       record=False,
+                                                                       writer=None
+                                                                      )
+                    end = time.time()
+
+                    if self.trueloss:
+                        train_subgroup_loss = 1-train_subgroup_acc
+                        
+                    idxs = np.array([i * n_classes for i in range(n_groups)])  
+
+                    for l in range(n_classes):
+                        label_group_loss = train_subgroup_loss[idxs+l]
+                        self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma*label_group_loss.data)
+                        self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum()) # proj
+
+                    self.n_q_update+=1
+                    self.q_update_term = 0
+                
 

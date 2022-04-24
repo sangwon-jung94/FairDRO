@@ -68,6 +68,7 @@ class Trainer(trainer.GenericTrainer):
         self.lamb = 1
         self.temp = 1
         self.margin = args.margin
+        self.trueloss = args.trueloss
         
         self.kd = args.kd
         
@@ -118,15 +119,15 @@ class Trainer(trainer.GenericTrainer):
 
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model, criterion)            
-            
-            
             if not self.nlp_flag or self.record:
-                _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
+                _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
                                                                    epoch,
                                                                    train=True,
                                                                    record=self.record,
                                                                    writer=writer
                                                                   )
+                if self.trueloss:
+                    train_subgroup_loss = 1-train_subgroup_acc
                 # q update
                 if self.optim_q == 'pd':
                     self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
@@ -273,13 +274,16 @@ class Trainer(trainer.GenericTrainer):
                 if self.q_update_term % 100 == 0:
                     print('lets start')
                     start = time.time()
-                    _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
+                    _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
                                                                        epoch,
                                                                        train=True,
                                                                        record=False,
                                                                        writer=None
                                                                       )
                     end = time.time()
+
+                    if self.trueloss:
+                        train_subgroup_loss = 1-train_subgroup_acc
                     # q update
                     if self.optim_q == 'pd':
                         self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
@@ -328,8 +332,8 @@ class Trainer(trainer.GenericTrainer):
         q_start = copy.deepcopy(self.adv_probs_dict)
         q_ibr = copy.deepcopy(self.adv_probs_dict)
         
-        #cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
-        cur_step_size = 1 - epoch/epochs
+        cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
+#         cur_step_size = 1 - epoch/epochs
         for l in range(n_classes):
             label_group_loss = train_subgroup_loss[idxs+l]
             if not self.margin:

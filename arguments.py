@@ -37,10 +37,6 @@ def get_args():
                         help='(default=%(default)s)')
     parser.add_argument('--sam', default=False, action='store_true', help='sam')
     parser.add_argument('--lamb', default=1, type=float, help='fairness strength')
-    parser.add_argument('--gamma', default=0.1, type=float, help='learning rate for q')
-    parser.add_argument('--optim-q', default='pd', type=str, help='the type of optimization for q')
-    parser.add_argument('--margin', default=False, action='store_true', help='whether use a margin scheme or not')
-    
     parser.add_argument('--model', default='', required=True, choices=['resnet12', 'resnet50','cifar_net', 'resnet34', 'resnet18', 'resnet101','mlp', 'resnet18_dropout', 'bert','lr'])
     parser.add_argument('--teamodel', default='', choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp'])    
     
@@ -67,10 +63,15 @@ def get_args():
     parser.add_argument('--reweighting-target-criterion', default='eo', type=str, help='fairness criterion')
     parser.add_argument('--iteration', default=10, type=int, help='iteration for reweighting')
     
-    # For ldro chi,
+    # For lgdro chi,
     parser.add_argument('--kd', default=False, action='store_true', help='kd')
     parser.add_argument('--rho', default=0.5, type=float, help='uncertainty box length')
     parser.add_argument('--ibr', default=False, action='store_true', help='iterated best response')
+    parser.add_argument('--trueloss', default=False, action='store_true', help='using 0-1 loss when updating q')
+    parser.add_argument('--gamma', default=0.1, type=float, help='learning rate for q')
+    parser.add_argument('--optim-q', default='pd', type=str, help='the type of optimization for q')
+    parser.add_argument('--margin', default=False, action='store_true', help='whether use a margin scheme or not')
+    
     args = parser.parse_args()
     args.cuda=True
     if args.mode == 'train' and args.method == 'mfd':

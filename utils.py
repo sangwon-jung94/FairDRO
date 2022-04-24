@@ -153,6 +153,8 @@ def make_log_name(args):
                 log_name += f'_{args.optim_q}'
             if args.margin:
                 log_name += f'_margin'
+        if args.trueloss:
+            log_name +='_trueloss'
 
     if args.labelwise:
         log_name += '_labelwise'
