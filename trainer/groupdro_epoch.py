@@ -16,12 +16,12 @@ class Trainer(trainer.GenericTrainer):
         self.trueloss = args.trueloss        
         self.otpim_q = agrs.optim_q
         
-    def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups)
+    def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups):
         train_subgroup_loss = torch.flatten(train_subgroup_loss)
         self.adv_probs = self.adv_probs * torch.exp(self.gamma*train_subgroup_loss.data)
         self.adv_probs = self.adv_probs/(self.adv_probs.sum()) 
 
-    def _q_update_ibr_linear_interpolation(self, train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+    def _q_update_ibr_linear_interpolation(self, train_subgroup_loss, n_classes, n_groups, epoch, epochs):
         train_subgroup_loss = torch.flatten(train_subgroup_loss)
         assert len(train_subgroup_loss) == (n_classes * n_groups)
 
