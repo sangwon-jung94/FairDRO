@@ -27,32 +27,31 @@ class Trainer(trainer.GenericTrainer):
         log_set = defaultdict(list)
         model = self.model
         model.train()
-        n_groups = train_loader.dataset.n_groups
-        n_classes = train_loader.dataset.n_classes
-        
+        self.n_groups = train_loader.dataset.n_groups
+        self.n_classes = train_loader.dataset.n_classes
 
         multipliers_set = {}
-        extended_multipliers = torch.zeros((n_groups, n_classes))     
-        # get statistics
-        _, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
-                                                  n_workers=self.n_workers)  
-
-        eta_learning_rate = self.eta
-        print('eta_learning_rate : ', eta_learning_rate)
+        self.extended_multipliers = torch.zeros((self.n_groups, self.n_classes))
+        self.weight_matrix = self.get_weight_matrix(self.extended_multipliers)
+        
+        print('eta_learning_rate : ', self.eta)
         n_iters = self.iteration
         print('n_iters : ', n_iters)
         
         violations = 0
         for iter_ in range(n_iters):
             start_t = time.time()
-            #weight_set = self.debias_weights(Y_train, S_train, extended_multipliers, n_groups, n_classes)
-            weight_matrix = self.get_weight_matrix(extended_multipliers)
+            
             if self.model == 'lr':
                 # initialize the models
                 self.initialize_all()
+            if self.nlp_flag:
+                assert n_iters == 1
+                self.weight_update_term = 100
+                self.weight_update_count = 0
 
             for epoch in range(epochs):
-                lb_idx = self._train_epoch(epoch, train_loader, model, weight_matrix)
+                lb_idx = self._train_epoch(epoch, train_loader, model)
                 
                 eval_start_time = time.time()                
                 eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -86,19 +85,20 @@ class Trainer(trainer.GenericTrainer):
             train_t = int((end_t - start_t) / 60)
             print('Training Time : {} hours {} minutes / iter : {}/{}'.format(int(train_t / 60), (train_t % 60),
                                                                               (iter_ + 1), n_iters))
+            if not self.nlp_flag:
+                # get statistics
+                Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
+                                                                     n_workers=self.n_workers, model=model)
 
-            # get statistics
-            Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
-                                                                 n_workers=self.n_workers, model=model)  
+                # calculate violation
+                if self.reweighting_target_criterion == 'dp':
+                    acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
+                elif self.reweighting_target_criterion == 'eo':
+                    acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
+                self.extended_multipliers -= self.eta * violations 
+                self.weight_matrix = self.get_weight_matrix(self.extended_multipliers) 
 
-            # calculate violation
-            if self.reweighting_target_criterion == 'dp':
-                acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, n_groups, n_classes)
-            elif self.reweighting_target_criterion == 'eo':
-                acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, n_groups, n_classes)
-            extended_multipliers -= eta_learning_rate * violations                    
-
-    def _train_epoch(self, epoch, train_loader, model, weight_matrix):
+    def _train_epoch(self, epoch, train_loader, model):
         model.train()
 
         running_acc = 0.0
@@ -106,7 +106,6 @@ class Trainer(trainer.GenericTrainer):
         avg_batch_time = 0.0
 
         n_batches = len(train_loader)
-        n_classes = train_loader.dataset.n_classes
 
         for i, data in enumerate(train_loader):
             batch_start_time = time.time()
@@ -116,10 +115,9 @@ class Trainer(trainer.GenericTrainer):
             # labels = labels.float() if n_classes == 2 else labels.long()
             groups = groups.long()
             labels = labels.long()
-            
-            
-            weights = weight_matrix[groups, labels]
-            
+
+            weights = self.weight_matrix[groups, labels]
+
             if self.cuda:
                 inputs = inputs.cuda()
                 labels = labels.cuda()
@@ -158,8 +156,23 @@ class Trainer(trainer.GenericTrainer):
                 if self.nlp_flag:
                     torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
                 self.optimizer.second_step(zero_grad=True)
-                            
             
+            if self.nlp_flag:
+                self.weight_update_count += 1
+                if self.weight_update_count % self.weight_update_term == 0:
+                    # get statistics
+                    Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
+                                                                         n_workers=self.n_workers, model=model)
+
+                    # calculate violation
+                    if self.reweighting_target_criterion == 'dp':
+                        acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
+                    elif self.reweighting_target_criterion == 'eo':
+                        acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
+                    self.extended_multipliers -= self.eta * violations 
+                    #self.weight_set = self.debias_weights(Y_train, S_train, self.extended_multipliers, n_groups, n_classes)
+                    self.weight_matrix = self.get_weight_matrix(self.extended_multipliers) 
+
             running_loss += loss.item()
             # binary = True if n_classes == 2 else False
             # running_acc += get_accuracy(outputs, labels, binary=binary)
@@ -185,7 +198,6 @@ class Trainer(trainer.GenericTrainer):
 
         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
                                 num_workers=n_workers, pin_memory=True, drop_last=False)
-        n_classes = dataloader.dataset.n_classes
 
         if model != None:
             model.eval()
@@ -204,8 +216,21 @@ class Trainer(trainer.GenericTrainer):
                 if self.cuda:
                     inputs = inputs.cuda()
                     groups = sen_attrs.cuda()
+                    targets = targets.cuda()
                 if model != None:
-                    outputs = model(inputs) 
+                    if self.nlp_flag:
+                        input_ids = inputs[:, :, 0]
+                        input_masks = inputs[:, :, 1]
+                        segment_ids = inputs[:, :, 2]
+                        outputs = model(
+                            input_ids=input_ids,
+                            attention_mask=input_masks,
+                            token_type_ids=segment_ids,
+                            labels=targets,
+                        )[1] 
+                    else:
+                        outputs = model(inputs)
+    #                 outputs = model(inputs) 
                     # Y_pred_set.append(torch.argmax(outputs, dim=1) if n_classes >2 else (torch.sigmoid(outputs) >= 0.5).float())
                     Y_pred_set.append(torch.argmax(outputs, dim=1))
                 total+= inputs.shape[0]
@@ -244,8 +269,49 @@ class Trainer(trainer.GenericTrainer):
                 violations[g, c] = len(group_pred_class_idxs)/len(group_class_idxs) - pivot
         print('violations',violations)
         return acc, violations
+#     # Binarized version fod DP
+#     def get_error_and_violations_DP(self, binarized_y_pred, binarized_y, sen_attrs, n_groups):
+#         binarized_acc = np.mean(binarized_y_pred == binarized_y)
+#         violations = []
+#         for g in range(n_groups):
+#             protected_idxs = np.where(sen_attrs == g)
+#             violations.append(np.mean(binarized_y_pred[protected_idxs])-np.mean(binarized_y_pred)) ### 순서
+#         return binarized_acc, violations
+    
+    #     # Binarized version for Eopp
+#     def get_error_and_violations_Eopp(self, binarized_y_pred, binarized_y, sen_attrs, n_groups):
+#         binarized_acc = np.mean(binarized_y_pred == binarized_y)
+#         violations = []
+#         for g in range(n_groups):
+#             protected_idxs = np.where(np.logical_and(sen_attrs == g, binarized_y > 0))
+#             positive_idxs = np.where(binarized_y > 0)
+#             #print(binarized_y_pred)
+#             # print(protected_idxs)
+#             # print(positive_idxs)
+#             violations.append(np.mean(binarized_y_pred[protected_idxs]) - np.mean(binarized_y_pred[positive_idxs])) ### 순서
+#         return binarized_acc, violations
+    
+#     # Binarized version for EO
+#     def get_error_and_violations_EO(self, binarized_y_pred, binarized_y, sen_attrs, n_groups): ###############################
+#         binarized_acc = np.mean(binarized_y_pred == binarized_y)
+#         violations = []
+#         for g in range(n_groups):
+#             protected_positive_idxs = np.where(np.logical_and(sen_attrs == g, binarized_y > 0))
+#             positive_idxs = np.where(binarized_y > 0)
+#             violations.append(np.mean(binarized_y_pred[protected_positive_idxs]) - np.mean(binarized_y_pred[positive_idxs]))   ### 순서
+#             protected_negative_idxs = np.where(np.logical_and(sen_attrs == g, binarized_y < 1))
+#             negative_idxs = np.where(binarized_y < 1)
+#             violations.append(np.mean(binarized_y_pred[protected_negative_idxs]) - np.mean(binarized_y_pred[negative_idxs]))
+            
+#         return binarized_acc, violations
 
     # update weight
+    # def debias_weights(self, label, sen_attrs, extended_multipliers, n_groups, n_classes):  ####################################################
+    #     weights = torch.zeros(len(label))
+    #     w_matrix = torch.sigmoid(extended_multipliers) # g by c
+    #     weights = w_matrix[sen_attrs, label]
+    #     return weights
+
     def get_weight_matrix(self, extended_multipliers):  
         w_matrix = torch.sigmoid(extended_multipliers) # g by c
         return w_matrix
