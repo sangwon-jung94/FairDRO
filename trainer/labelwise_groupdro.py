@@ -1,6 +1,7 @@
 from __future__ import print_function
 from collections import defaultdict
 
+import copy
 import time
 from utils import get_accuracy
 import trainer
@@ -16,7 +17,7 @@ class Trainer(trainer.GenericTrainer):
         self.trueloss = args.trueloss
         self.optim_q = args.optim_q
         
-    def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups)
+    def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups):
         train_subgroup_loss = torch.flatten(train_subgroup_loss)
         
         idxs = np.array([i * n_classes for i in range(n_groups)])  
@@ -38,13 +39,13 @@ class Trainer(trainer.GenericTrainer):
 #             print(f'{l} label q_ibr values : {q_ibr[l]}')
 #             print(f'{l} label q values : {self.adv_probs_dict[l]}')        
 
-    def _q_update_ibr_linear_interpolation(self, train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+    def _q_update_ibr_linear_interpolation(self, train_subgroup_loss, n_classes, n_groups, epoch, epochs):
         train_subgroup_loss = torch.flatten(train_subgroup_loss)
         assert len(train_subgroup_loss) == (n_classes * n_groups)
 
         idxs = np.array([i * n_classes for i in range(n_groups)]) 
-        q_start = copy.deepcopy(self.adv_probs)
-        q_ibr = copy.deepcopy(self.adv_probs)        
+        q_start = copy.deepcopy(self.adv_probs_dict)
+        q_ibr = copy.deepcopy(self.adv_probs_dict)        
         cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))            
         for l in range(n_classes):
             label_group_loss = train_subgroup_loss[idxs+l]                
@@ -52,7 +53,7 @@ class Trainer(trainer.GenericTrainer):
             pos = label_group_loss.argmax().item()
             q_ibr[l][pos] = 1
             self.adv_probs_dict[l] = q_start[l] + cur_step_size*(q_ibr[l] - q_start[l])
-            print(f'{l} label loss : {label_group_losss}')
+            print(f'{l} label loss : {label_group_loss}')
             print(f'{l} label q_ibr values : {q_ibr[l]}')
             print(f'{l} label q values : {self.adv_probs_dict[l]}')
 
