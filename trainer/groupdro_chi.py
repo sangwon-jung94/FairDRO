@@ -1,6 +1,7 @@
 from __future__ import print_function
 from collections import defaultdict
 
+import copy
 import time
 from utils import get_accuracy
 import trainer
@@ -221,69 +222,69 @@ class Trainer(trainer.GenericTrainer):
                     self.n_q_update+=1
                     self.q_update_term = 0
 
-        def _update_mw_bisection(self, losses, p_train=None):
+    def _update_mw_bisection(self, losses, p_train=None):
 
-            if losses.min() < 0:
-                raise ValueError
+        if losses.min() < 0:
+            raise ValueError
 
-            rho = self.rho
+        rho = self.rho
 
-            p_train = torch.ones(losses.shape) / losses.shape[0]
-            p_train = p_train.float().cuda(device=self.device)
-    #        p_train = torch.from_numpy(p_train).float().cuda(device=self.device)
-            if hasattr(self, 'min_prob'):
-                min_prob = self.min_prob
-            else:
-                min_prob = 0.2
-            def p(eta):
-                pp = p_train * torch.relu(losses - eta)
-                q = pp / pp.sum()
-                cq = q / p_train
-    #             cq = torch.clamp(q / p_train, min=0.01)
-                return cq * p_train / (cq * p_train).sum()
+        p_train = torch.ones(losses.shape) / losses.shape[0]
+        p_train = p_train.float().cuda(device=self.device)
+#        p_train = torch.from_numpy(p_train).float().cuda(device=self.device)
+        if hasattr(self, 'min_prob'):
+            min_prob = self.min_prob
+        else:
+            min_prob = 0.2
+        def p(eta):
+            pp = p_train * torch.relu(losses - eta)
+            q = pp / pp.sum()
+            cq = q / p_train
+#             cq = torch.clamp(q / p_train, min=0.01)
+            return cq * p_train / (cq * p_train).sum()
 
-            def bisection_target(eta):
-                pp = p(eta)
-                return 0.5 * ((pp / p_train - 1) ** 2 * p_train).sum() - rho
+        def bisection_target(eta):
+            pp = p(eta)
+            return 0.5 * ((pp / p_train - 1) ** 2 * p_train).sum() - rho
 
-            eta_min = -(1.0 / (np.sqrt(2 * rho + 1) - 1)) * losses.max()
-            eta_max = losses.max()
-            eta_star = bisection(
-                eta_min, eta_max, bisection_target,
-                tol=self.tol, max_iter=1000)
+        eta_min = -(1.0 / (np.sqrt(2 * rho + 1) - 1)) * losses.max()
+        eta_max = losses.max()
+        eta_star = bisection(
+            eta_min, eta_max, bisection_target,
+            tol=self.tol, max_iter=1000)
 
-            q = p(eta_star)
-            if hasattr(self, 'clamp_q_to_min') and self.clamp_q_to_min:
-                q = torch.clamp(q, min=torch.min(self.p_train).item())
-                q = q / q.sum()
+        q = p(eta_star)
+        if hasattr(self, 'clamp_q_to_min') and self.clamp_q_to_min:
+            q = torch.clamp(q, min=torch.min(self.p_train).item())
+            q = q / q.sum()
 
-    #         if self.logging:
-    #             logger.info("EMA before-baseline losses: {}".format(
-    #                 " ".join(["{:.6f}".format(xx.item()) for xx in self.sum_losses[0:self.n_groups]])))
-    #             logger.info("EMA after-baseline losses: {}".format(" ".join(["{:.6f}".format(xx.item()) for xx in past_losses[0:self.n_groups]])))
-    #             logger.info("EMA group fractions: {}".format(" ".join(["{:.6f}".format(xx.item()) for xx in self.p_train[0:self.n_groups]])))
-    #             sum_weights = q[0:self.n_groups].sum().item()
-    #             logger.info("Group loss weights: {}".format(" ".join(["{:.6f}".format(xx.item() / sum_weights) for xx in q[0:self.n_groups]])))
+#         if self.logging:
+#             logger.info("EMA before-baseline losses: {}".format(
+#                 " ".join(["{:.6f}".format(xx.item()) for xx in self.sum_losses[0:self.n_groups]])))
+#             logger.info("EMA after-baseline losses: {}".format(" ".join(["{:.6f}".format(xx.item()) for xx in past_losses[0:self.n_groups]])))
+#             logger.info("EMA group fractions: {}".format(" ".join(["{:.6f}".format(xx.item()) for xx in self.p_train[0:self.n_groups]])))
+#             sum_weights = q[0:self.n_groups].sum().item()
+#             logger.info("Group loss weights: {}".format(" ".join(["{:.6f}".format(xx.item() / sum_weights) for xx in q[0:self.n_groups]])))
 
-    #         if self.args.clear_history:
-    #             self.sum_losses.zero_()
-            # self.count_cat.fill_(1.)
+#         if self.args.clear_history:
+#             self.sum_losses.zero_()
+        # self.count_cat.fill_(1.)
 
-            return q        
+        return q        
 
 
-        def _update_mw_margin(self, losses, p_train=None):
+    def _update_mw_margin(self, losses, p_train=None):
 
-            if losses.min() < 0:
-                raise ValueError
+        if losses.min() < 0:
+            raise ValueError
 
-            rho = self.rho
+        rho = self.rho
 
-            n_groups = len(losses)
-            mean = losses.mean()
-            denom = (losses - mean).norm(2)
+        n_groups = len(losses)
+        mean = losses.mean()
+        denom = (losses - mean).norm(2)
 
-            q = 1/n_groups + np.sqrt(2 * self.rho / n_groups)* (1/denom) * (losses - mean)
-            return q
+        q = 1/n_groups + np.sqrt(2 * self.rho / n_groups)* (1/denom) * (losses - mean)
+        return q
 
-    
+
