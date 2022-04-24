@@ -14,6 +14,47 @@ class Trainer(trainer.GenericTrainer):
         self.gamma = args.gamma # learning rate of adv_probs
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
         self.trueloss = args.trueloss
+        self.otpim_q = agrs.optim_q
+        
+    def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups)
+        train_subgroup_loss = torch.flatten(train_subgroup_loss)
+        
+        idxs = np.array([i * n_classes for i in range(n_groups)])  
+            
+        for l in range(n_classes):
+            label_group_loss = train_subgroup_loss[idxs+l]        
+            self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma*label_group_loss.data)
+            self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum()) 
+
+        
+#         for l in range(n_classes):
+#             label_group_loss = train_subgroup_loss[idxs+l]
+#             if not self.margin:
+#                 q_ibr[l] = self._update_mw_bisection(label_group_loss)#, self.group_dist[l])
+#             else:
+#                 q_ibr[l] = self._update_mw_margin(label_group_loss)#, self.group_dist[l])
+#             self.adv_probs_dict[l] = q_start[l] + cur_step_size*(q_ibr[l] - q_start[l])
+#             print(f'{l} label loss : {train_subgroup_loss[idxs+l]}')
+#             print(f'{l} label q_ibr values : {q_ibr[l]}')
+#             print(f'{l} label q values : {self.adv_probs_dict[l]}')        
+
+    def _q_update_ibr_linear_interpolation(self, train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+        train_subgroup_loss = torch.flatten(train_subgroup_loss)
+        assert len(train_subgroup_loss) == (n_classes * n_groups)
+
+        idxs = np.array([i * n_classes for i in range(n_groups)]) 
+        q_start = copy.deepcopy(self.adv_probs)
+        q_ibr = copy.deepcopy(self.adv_probs)        
+        cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))            
+        for l in range(n_classes):
+            label_group_loss = train_subgroup_loss[idxs+l]                
+            q_ibr[l] = torch.zeros_like(label_group_loss)
+            pos = label_group_loss.argmax().item()
+            q_ibr[l][pos] = 1
+            self.adv_probs_dict[l] = q_start[l] + cur_step_size*(q_ibr[l] - q_start[l])
+            print(f'{l} label loss : {label_group_losss}')
+            print(f'{l} label q_ibr values : {q_ibr[l]}')
+            print(f'{l} label q values : {self.adv_probs_dict[l]}')
 
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         global loss_set
@@ -53,16 +94,12 @@ class Trainer(trainer.GenericTrainer):
                 if self.trueloss:
                     train_subgroup_loss = 1- train_subgroup_acc 
                     
-                # q update
-                train_subgroup_loss = torch.flatten(train_subgroup_loss)
-
-                idxs = np.array([i * n_classes for i in range(n_groups)])  
-
-                for l in range(n_classes):
-                    label_group_loss = train_subgroup_loss[idxs+l]
-                    self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma*label_group_loss.data)
-                    self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum()) # proj
-
+                if self.trueloss:
+                    train_subgroup_loss = 1-train_subgroup_acc
+                if self.optim_q == 'pd':
+                    self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
+                elif self.optim_q == 'ibr_ip':
+                    self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs)
 
             eval_start_time = time.time()
             eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -178,16 +215,12 @@ class Trainer(trainer.GenericTrainer):
                                                                        writer=None
                                                                       )
                     end = time.time()
-
                     if self.trueloss:
                         train_subgroup_loss = 1-train_subgroup_acc
-                        
-                    idxs = np.array([i * n_classes for i in range(n_groups)])  
-
-                    for l in range(n_classes):
-                        label_group_loss = train_subgroup_loss[idxs+l]
-                        self.adv_probs_dict[l] = self.adv_probs_dict[l] * torch.exp(self.gamma*label_group_loss.data)
-                        self.adv_probs_dict[l] = self.adv_probs_dict[l]/(self.adv_probs_dict[l].sum()) # proj
+                    if self.optim_q == 'pd':
+                        self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
+                    elif self.optim_q == 'ibr_ip':
+                        self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs)
 
                     self.n_q_update+=1
                     self.q_update_term = 0
