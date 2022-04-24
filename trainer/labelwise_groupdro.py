@@ -114,7 +114,19 @@ class Trainer(trainer.GenericTrainer):
                 groups = groups.cuda(device=self.device)
                 
             subgroups = groups * n_classes + labels
-            outputs = model(inputs)
+            if self.nlp_flag:
+                input_ids = inputs[:,:,0]
+                input_masks = inputs[:,:,1]
+                segment_ids = inputs[:,:,2]
+                outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=labels,
+                )[1]
+            else:
+                outputs = model(inputs)
+
             if criterion is not None:
                 loss = criterion(outputs, labels)
             else:
