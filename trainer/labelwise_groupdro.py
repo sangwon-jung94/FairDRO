@@ -14,7 +14,7 @@ class Trainer(trainer.GenericTrainer):
         self.gamma = args.gamma # learning rate of adv_probs
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
         self.trueloss = args.trueloss
-        self.otpim_q = agrs.optim_q
+        self.optim_q = args.optim_q
         
     def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups)
         train_subgroup_loss = torch.flatten(train_subgroup_loss)
