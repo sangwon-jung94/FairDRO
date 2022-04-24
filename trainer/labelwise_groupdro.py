@@ -233,7 +233,7 @@ class Trainer(trainer.GenericTrainer):
                     if self.optim_q == 'pd':
                         self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
                     elif self.optim_q == 'ibr_ip':
-                        self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+                        self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, self.n_q_update, self.total_q_update)
 
                     self.n_q_update+=1
                     self.q_update_term = 0
