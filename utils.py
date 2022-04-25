@@ -153,7 +153,7 @@ def make_log_name(args):
                 log_name += f'_{args.optim_q}'
             if args.margin:
                 log_name += f'_margin'
-                log_name += f'_{args.q-decay}' 
+                log_name += f'_{args.q_decay}' 
         if args.trueloss:
             log_name +='_trueloss'
 
