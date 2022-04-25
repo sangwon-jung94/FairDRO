@@ -311,7 +311,6 @@ class Trainer(trainer.GenericTrainer):
         
         idxs = np.array([i * n_classes for i in range(n_groups)])  
             
-#       if epoch>3:
         for l in range(n_classes):
             label_group_loss = train_subgroup_loss[idxs+l]
             print(label_group_loss)
@@ -407,8 +406,10 @@ class Trainer(trainer.GenericTrainer):
         n_groups = len(losses)
         mean = losses.mean()
         denom = (losses - mean).norm(2)
-        
-        q = 1/n_groups + np.sqrt(2 * self.rho / n_groups)* (1/denom) * (losses - mean)
+        if denom == 0:
+            q = torch.zeros_like(losses) + 1/n_groups
+        else:
+            q = 1/n_groups + np.sqrt(2 * self.rho / n_groups)* (1/denom) * (losses - mean)
         return q
         
     
