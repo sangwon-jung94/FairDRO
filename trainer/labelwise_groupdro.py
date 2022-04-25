@@ -1,6 +1,7 @@
 from __future__ import print_function
 from collections import defaultdict
 
+import copy
 import time
 from utils import get_accuracy
 import trainer
@@ -16,7 +17,7 @@ class Trainer(trainer.GenericTrainer):
         self.trueloss = args.trueloss
         self.optim_q = args.optim_q
         
-    def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups)
+    def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups):
         train_subgroup_loss = torch.flatten(train_subgroup_loss)
         
         idxs = np.array([i * n_classes for i in range(n_groups)])  
@@ -38,13 +39,13 @@ class Trainer(trainer.GenericTrainer):
 #             print(f'{l} label q_ibr values : {q_ibr[l]}')
 #             print(f'{l} label q values : {self.adv_probs_dict[l]}')        
 
-    def _q_update_ibr_linear_interpolation(self, train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+    def _q_update_ibr_linear_interpolation(self, train_subgroup_loss, n_classes, n_groups, epoch, epochs):
         train_subgroup_loss = torch.flatten(train_subgroup_loss)
         assert len(train_subgroup_loss) == (n_classes * n_groups)
 
         idxs = np.array([i * n_classes for i in range(n_groups)]) 
-        q_start = copy.deepcopy(self.adv_probs)
-        q_ibr = copy.deepcopy(self.adv_probs)        
+        q_start = copy.deepcopy(self.adv_probs_dict)
+        q_ibr = copy.deepcopy(self.adv_probs_dict)        
         cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))            
         for l in range(n_classes):
             label_group_loss = train_subgroup_loss[idxs+l]                
@@ -52,7 +53,7 @@ class Trainer(trainer.GenericTrainer):
             pos = label_group_loss.argmax().item()
             q_ibr[l][pos] = 1
             self.adv_probs_dict[l] = q_start[l] + cur_step_size*(q_ibr[l] - q_start[l])
-            print(f'{l} label loss : {label_group_losss}')
+            print(f'{l} label loss : {label_group_loss}')
             print(f'{l} label q_ibr values : {q_ibr[l]}')
             print(f'{l} label q values : {self.adv_probs_dict[l]}')
 
@@ -163,7 +164,19 @@ class Trainer(trainer.GenericTrainer):
                 groups = groups.cuda(device=self.device)
                 
             subgroups = groups * n_classes + labels
-            outputs = model(inputs)
+            if self.nlp_flag:
+                input_ids = inputs[:,:,0]
+                input_masks = inputs[:,:,1]
+                segment_ids = inputs[:,:,2]
+                outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=labels,
+                )[1]
+            else:
+                outputs = model(inputs)
+
             if criterion is not None:
                 loss = criterion(outputs, labels)
             else:
@@ -220,7 +233,7 @@ class Trainer(trainer.GenericTrainer):
                     if self.optim_q == 'pd':
                         self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
                     elif self.optim_q == 'ibr_ip':
-                        self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+                        self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, self.n_q_update, self.total_q_update)
 
                     self.n_q_update+=1
                     self.q_update_term = 0

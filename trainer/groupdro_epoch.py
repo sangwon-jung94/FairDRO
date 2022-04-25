@@ -1,6 +1,7 @@
 from __future__ import print_function
 from collections import defaultdict
 
+import copy
 import time
 from utils import get_accuracy
 import trainer
@@ -83,7 +84,7 @@ class Trainer(trainer.GenericTrainer):
                 if self.optim_q == 'pd':
                     self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
                 elif self.optim_q == 'ibr_ip':
-                    self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+                    self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, self.n_q_update, self.total_q_update)
                 
 #                 train_subgroup_loss = torch.flatten(train_subgroup_loss)
 #                 self.adv_probs = self.adv_probs * torch.exp(self.gamma*train_subgroup_loss.data)
