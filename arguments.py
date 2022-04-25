@@ -70,6 +70,7 @@ def get_args():
     parser.add_argument('--trueloss', default=False, action='store_true', help='using 0-1 loss when updating q')
     parser.add_argument('--gamma', default=0.1, type=float, help='learning rate for q')
     parser.add_argument('--optim-q', default='pd', type=str, help='the type of optimization for q')
+    parser.add_argument('--q-decay', default='linear', type=str, help='the type of optimization for q')
     parser.add_argument('--margin', default=False, action='store_true', help='whether use a margin scheme or not')
     
     args = parser.parse_args()

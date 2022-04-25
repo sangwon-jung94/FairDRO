@@ -69,7 +69,7 @@ class Trainer(trainer.GenericTrainer):
         self.temp = 1
         self.margin = args.margin
         self.trueloss = args.trueloss
-        
+        self.q_decay = args.q_decay    
         self.kd = args.kd
         
     def cal_baseline(self, data, seed, bs, wd):
@@ -330,9 +330,10 @@ class Trainer(trainer.GenericTrainer):
         idxs = np.array([i * n_classes for i in range(n_groups)]) 
         q_start = copy.deepcopy(self.adv_probs_dict)
         q_ibr = copy.deepcopy(self.adv_probs_dict)
-        
-        cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
-#         cur_step_size = 1 - epoch/epochs
+        if self.q_decay == 'cos': 
+            cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
+        elif self.q_decay == 'linear':
+            cur_step_size = 1 - epoch/epochs
         for l in range(n_classes):
             label_group_loss = train_subgroup_loss[idxs+l]
             if not self.margin:
