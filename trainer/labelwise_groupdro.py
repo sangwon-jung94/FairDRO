@@ -50,7 +50,7 @@ class Trainer(trainer.GenericTrainer):
 
         if self.q_decay == 'cos':
             cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
-        elif sef.q_decay == 'linear':
+        elif self.q_decay == 'linear':
             cur_step_size = 1 - epoch/epochs
         else:
             raise ValueError
