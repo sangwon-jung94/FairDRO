@@ -18,6 +18,7 @@ class Trainer(trainer.GenericTrainer):
         self.rho = args.rho
         self.trueloss = args.trueloss
         self.optim_q = args.optim_q
+        self.q_decay = args.q_decay
         self.margin = args.margin
 
     def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups):
@@ -35,11 +36,18 @@ class Trainer(trainer.GenericTrainer):
         q_start = copy.deepcopy(self.adv_probs)
         q_ibr = copy.deepcopy(self.adv_probs)
         
-        cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
+        if self.q_decay == 'cos':
+            cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
+        elif sef.q_decay == 'linear':
+            cur_step_size = 1 - epoch/epochs
+        else:
+            raise ValueError
+            
         if not self.margin:
             q_ibr = self._update_mw_bisection(train_subgroup_loss)#, self.group_dist[l])
         else:
             q_ibr = self._update_mw_margin(train_subgroup_loss)#, self.group_dist[l])
+            
         self.adv_probs = q_start + cur_step_size*(q_ibr - q_start)
         print(f'loss : {train_subgroup_loss}')
         print(f'q_ibr values : {q_ibr}')

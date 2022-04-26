@@ -16,6 +16,7 @@ class Trainer(trainer.GenericTrainer):
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
         self.trueloss = args.trueloss
         self.optim_q = args.optim_q
+        self.q_decay = args.q_decay
         
     def _q_update_pd(self, train_subgroup_loss, n_classes, n_groups):
         train_subgroup_loss = torch.flatten(train_subgroup_loss)
@@ -46,7 +47,14 @@ class Trainer(trainer.GenericTrainer):
         idxs = np.array([i * n_classes for i in range(n_groups)]) 
         q_start = copy.deepcopy(self.adv_probs_dict)
         q_ibr = copy.deepcopy(self.adv_probs_dict)        
-        cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))            
+
+        if self.q_decay == 'cos':
+            cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
+        elif sef.q_decay == 'linear':
+            cur_step_size = 1 - epoch/epochs
+        else:
+            raise ValueError
+
         for l in range(n_classes):
             label_group_loss = train_subgroup_loss[idxs+l]                
             q_ibr[l] = torch.zeros_like(label_group_loss)
