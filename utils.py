@@ -148,12 +148,12 @@ def make_log_name(args):
         log_name += f'_gamma{args.gamma}'
         if args.optim_q != 'pd':
             log_name += f'_{args.optim_q}'
-  
+            log_name += f'_{args.q_decay}'
+
         if 'chi' in args.method:
             log_name += f'_rho{args.rho}'
             if args.margin:
                 log_name += f'_margin'
-                log_name += f'_{args.q_decay}' 
                 
         if args.trueloss:
             log_name +='_trueloss'
