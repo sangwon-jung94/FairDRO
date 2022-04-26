@@ -53,7 +53,6 @@ class Trainer(trainer.GenericTrainer):
         super().__init__(args=args, **kwargs)
         self.gamma = args.gamma # learning rate of adv_probs
         self.rho = args.rho
-        self.ibr = args.ibr
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
         self.tol = 1e-4
         
