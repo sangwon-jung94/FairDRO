@@ -144,16 +144,17 @@ def make_log_name(args):
         log_name += f'_gamma{args.gamma}'
 
     elif 'gdro' in args.method:
-        if not args.ibr:
-            log_name += f'_gamma{args.gamma}'
-
+#         if not args.ibr:
+        log_name += f'_gamma{args.gamma}'
+        if args.optim_q != 'pd':
+            log_name += f'_{args.optim_q}'
+  
         if 'chi' in args.method:
             log_name += f'_rho{args.rho}'
-            if args.optim_q != 'pd':
-                log_name += f'_{args.optim_q}'
             if args.margin:
                 log_name += f'_margin'
                 log_name += f'_{args.q_decay}' 
+                
         if args.trueloss:
             log_name +='_trueloss'
 

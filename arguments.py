@@ -66,7 +66,6 @@ def get_args():
     # For lgdro chi,
     parser.add_argument('--kd', default=False, action='store_true', help='kd')
     parser.add_argument('--rho', default=0.5, type=float, help='uncertainty box length')
-    parser.add_argument('--ibr', default=False, action='store_true', help='iterated best response')
     parser.add_argument('--trueloss', default=False, action='store_true', help='using 0-1 loss when updating q')
     parser.add_argument('--gamma', default=0.1, type=float, help='learning rate for q')
     parser.add_argument('--optim-q', default='pd', type=str, help='the type of optimization for q')
