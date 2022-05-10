@@ -84,10 +84,10 @@ class Trainer(trainer.GenericTrainer):
                         labels=labels,
                         output_hidden_states=True
                     )
+                    logits = outputs[1]
                 else:
                     outputs = model(inputs, get_inter=True)
-
-                logits = outputs[1]
+                    logits = outputs[-1]
                 # stu_logits = outputs_transformed[-1]
 
                 loss = self.criterion(logits, labels).mean()
