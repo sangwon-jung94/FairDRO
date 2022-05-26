@@ -116,7 +116,7 @@ class GenericDataset(data.Dataset):
         return new_features
 
     def make_weights(self, method):
-#         if method == 'lgdro_chi' and self.uc:
+#         if method == 'cgdro_chi' and self.uc:
 #             group_weights = np.zeros((self.n_groups, self.n_classes))
 #             print(self.gprob_array.shape)
 #             for l in range(self.n_classes):
@@ -144,7 +144,7 @@ class GenericDataset(data.Dataset):
 
 
             
-#         elif method == 'lgdro_chi':
+#         elif method == 'cgdro_chi':
 #             group_weights = np.zeros_like(self.n_data, dtype=np.float)            
 #             for l in range(self.n_classes):
 #                 group_probs = 1 / self.n_data[:, l]
