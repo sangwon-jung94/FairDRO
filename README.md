@@ -3,8 +3,8 @@
 This repository is the official implementation of the paper **Constrained Distributionally Robust Classifiers: From Variance Regularization to Group Fairness**. 
 
 ## Requirements
-- Python 3
-- GPU RTX A5000 / Pytorch 1.8 / CUDA 11.2
+- GPU RTX A5000
+- Python 3 / Pytorch 1.8 / CUDA 11.2
 
 To install requirements:
 
