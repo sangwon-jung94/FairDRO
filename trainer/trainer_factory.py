@@ -23,7 +23,7 @@ class TrainerFactory:
             import trainer.adv_debiasing as trainer
         elif method == 'lbc':
             import trainer.lbc as trainer
-        elif method == 'lgdro':
+        elif method == 'cgdro':
             import trainer.labelwise_groupdro as trainer
         elif method == 'gdro':
             import trainer.groupdro as trainer
@@ -31,7 +31,7 @@ class TrainerFactory:
             import trainer.groupdro_epoch as trainer
         elif method == 'gdro_chi':
             import trainer.groupdro_chi as trainer
-        elif method == 'lgdro_chi':
+        elif method == 'cgdro_chi':
             import trainer.labelwise_groupdro_chi as trainer
         elif method == 'fairbatch':
             import trainer.fairbatch as trainer

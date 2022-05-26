@@ -30,7 +30,7 @@ def get_args():
     parser.add_argument('--seed', default=0, type=int, help='seed for randomness')
     parser.add_argument('--date', default='20200101', type=str, help='experiment date')
     parser.add_argument('--method', default='scratch', type=str, required=True,
-                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro','gdro_epoch', 'fairbatch','gdro_chi','lgdro_chi','disp_mist','rw'])
+                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'cgdro','gdro','gdro_epoch', 'fairbatch','gdro_chi','cgdro_chi','disp_mist','rw'])
 
     parser.add_argument('--optim', default='Adam', type=str, required=False,
                         choices=['AdamP', 'AdamW','SGD', 'SGD_momentum_decay', 'Adam'],
@@ -63,7 +63,7 @@ def get_args():
     parser.add_argument('--reweighting-target-criterion', default='eo', type=str, help='fairness criterion')
     parser.add_argument('--iteration', default=10, type=int, help='iteration for reweighting')
     
-    # For lgdro chi,
+    # For cgdro chi,
     parser.add_argument('--kd', default=False, action='store_true', help='kd')
     parser.add_argument('--rho', default=0.5, type=float, help='uncertainty box length')
     parser.add_argument('--trueloss', default=False, action='store_true', help='using 0-1 loss when updating q')
