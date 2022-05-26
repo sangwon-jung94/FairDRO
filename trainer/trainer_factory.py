@@ -32,7 +32,7 @@ class TrainerFactory:
         elif method == 'gdro_chi':
             import trainer.groupdro_chi as trainer
         elif method == 'cgdro_chi':
-            import trainer.classlwise_groupdro_chi as trainer
+            import trainer.classwise_groupdro_chi as trainer
         elif method == 'fairbatch':
             import trainer.fairbatch as trainer
         elif method == 'disp_mist':
