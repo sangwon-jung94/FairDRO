@@ -158,8 +158,8 @@ def make_log_name(args):
         if args.trueloss:
             log_name +='_trueloss'
 
-    if args.labelwise:
-        log_name += '_labelwise'
+    if args.classwise:
+        log_name += '_classwise'
 
     if args.method in ['fairhsic', 'mfd']:
         log_name += f'_lamb{args.lamb}'

@@ -45,7 +45,7 @@ def main():
                                                         target_attr=args.target,
                                                         add_attr = args.add_attr,
 #                                                         skew_ratio=args.skew_ratio,
-                                                        labelwise=args.labelwise,
+                                                        classwise=args.classwise,
                                                         args=args
                                                         )
     n_classes, n_groups, train_loader, test_loader = tmp
@@ -81,13 +81,13 @@ def main():
     teacher = None
 #     if ((args.method == 'mfd' or args.teacher_path is not None) and args.mode != 'eval'):
     if ((args.method == 'mfd' and args.teacher_path is not None) and args.mode != 'eval'):
-#     (args.method=='lgdro_chi' and args.kd):
+#     (args.method=='cgdro_chi' and args.kd):
         teacher = networks.ModelFactory.get_model(args.teacher_type, train_loader.dataset.n_classes, args.img_size)
         teacher.load_state_dict(torch.load(args.teacher_path, map_location=torch.device('cuda:{}'.format(args.t_device))))
         teacher.cuda('cuda:{}'.format(args.t_device))
 
-    if ((args.method == 'lgdro_chi' and args.teacher_path is not None) and args.mode != 'eval'):
-#     (args.method=='lgdro_chi' and args.kd):
+    if ((args.method == 'cgdro_chi' and args.teacher_path is not None) and args.mode != 'eval'):
+#     (args.method=='cgdro_chi' and args.kd):
         teacher = networks.ModelFactory.get_model(args.teacher_type, train_loader.dataset.n_classes, args.img_size)
         teacher.load_state_dict(torch.load(args.teacher_path, map_location=torch.device('cuda:{}'.format(args.t_device))))
         teacher.cuda('cuda:{}'.format(args.t_device))

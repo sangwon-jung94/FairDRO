@@ -190,7 +190,7 @@ class Trainer(trainer.GenericTrainer):
             else:
                 loss = self.train_criterion(outputs, labels)
             
-            # calculate the labelwise losses
+            # calculate the classwise losses
             group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
             group_count = group_map.sum(1)
             group_denom = group_count + (group_count==0).float() # avoid nans

@@ -20,7 +20,7 @@ class DatasetFactory:
 
     @staticmethod
    # def get_dataset(name, split='Train', seed=0, sv_ratio=1, version=1, target='Attractive', add_attr=None):
-    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, labelwise=False, bs=256, uc=False, method=None):
+    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, classwise=False, bs=256, uc=False, method=None):
         root = f'./data/{name}' if name != 'utkface_fairface' else './data/utkface'
         kwargs = {'root':root,
                   'split':split,
@@ -46,7 +46,7 @@ class DatasetFactory:
         module = importlib.import_module(dataset_dict[name][0])
         class_ = getattr(module, dataset_dict[name][1])
         
-#         if split == 'train' and labelwise:
+#         if split == 'train' and classwise:
 #             class_.sampel_weight = class_._make_weights(method)
         return class_(**kwargs)
 
@@ -116,7 +116,7 @@ class GenericDataset(data.Dataset):
         return new_features
 
     def make_weights(self, method):
-#         if method == 'lgdro_chi' and self.uc:
+#         if method == 'cgdro_chi' and self.uc:
 #             group_weights = np.zeros((self.n_groups, self.n_classes))
 #             print(self.gprob_array.shape)
 #             for l in range(self.n_classes):
@@ -144,7 +144,7 @@ class GenericDataset(data.Dataset):
 
 
             
-#         elif method == 'lgdro_chi':
+#         elif method == 'cgdro_chi':
 #             group_weights = np.zeros_like(self.n_data, dtype=np.float)            
 #             for l in range(self.n_classes):
 #                 group_probs = 1 / self.n_data[:, l]

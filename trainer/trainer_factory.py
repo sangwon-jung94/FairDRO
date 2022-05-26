@@ -23,16 +23,16 @@ class TrainerFactory:
             import trainer.adv_debiasing as trainer
         elif method == 'lbc':
             import trainer.lbc as trainer
-        elif method == 'lgdro':
-            import trainer.labelwise_groupdro as trainer
+        elif method == 'cgdro':
+            import trainer.classwise_groupdro as trainer
         elif method == 'gdro':
             import trainer.groupdro as trainer
         elif method == 'gdro_epoch':
             import trainer.groupdro_epoch as trainer
         elif method == 'gdro_chi':
             import trainer.groupdro_chi as trainer
-        elif method == 'lgdro_chi':
-            import trainer.labelwise_groupdro_chi as trainer
+        elif method == 'cgdro_chi':
+            import trainer.classlwise_groupdro_chi as trainer
         elif method == 'fairbatch':
             import trainer.fairbatch as trainer
         elif method == 'disp_mist':
@@ -150,7 +150,7 @@ class GenericTrainer:
                 preds = torch.argmax(outputs, 1)
                 acc = (preds == labels).float().squeeze()
                 
-                # calculate the labelwise losses
+                # calculate the classwise losses
 #                 if not self.uc:
                 subgroups = groups * n_classes + labels                
                 group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
@@ -175,9 +175,9 @@ class GenericTrainer:
 
             group_loss = group_loss.reshape((n_groups, n_classes))            
             group_acc = group_acc.reshape((n_groups, n_classes))
-            labelwise_acc_gap = torch.max(group_acc, dim=0)[0] - torch.min(group_acc, dim=0)[0]
-            deoa = torch.mean(labelwise_acc_gap).item()
-            deom = torch.max(labelwise_acc_gap).item()
+            classwise_acc_gap = torch.max(group_acc, dim=0)[0] - torch.min(group_acc, dim=0)[0]
+            deoa = torch.mean(classwise_acc_gap).item()
+            deom = torch.max(classwise_acc_gap).item()
             
         if record:
             self.write_record(writer, epoch, loss, acc, deom, deoa, group_loss, group_acc, train)
