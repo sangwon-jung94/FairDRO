@@ -6,12 +6,6 @@ This repository is the official implementation of the paper **Constrained Distri
 - GPU RTX A5000
 - Python 3 / Pytorch 1.8 / CUDA 11.2
 
-To install requirements:
-
-```setup
-pip install -r requirements.txt
-```
-
 ## Dataset
 - Adult
 - COMPAS
@@ -37,7 +31,3 @@ $ python ./main.py --date 220101 --model bert --method lgdro_chi --lr 2e-05 --ep
 # CelebA
 $ python ./main.py --date 220101 --model resnet18 --method lgdro_chi --lr 0.001 --epochs 70 --optim AdamW --img-size 224 --batch-size 128 --labelwise --record --margin --optim-q ibr_ip --trueloss --dataset celeba --rho 1.5 --seed 0 --weight-decay 0.0001 --target Blond_Hair
 ```
-
-## Contributing
-
->📋  Pick a licence and describe how to contribute to your code repository. 
