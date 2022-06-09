@@ -13,8 +13,6 @@ import numpy as np
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
         super().__init__(args=args, **kwargs)
-        if args.model != 'lr':
-            raise NameError('args.model is not lr !')
         self.batch_size = args.batch_size
         self.n_workers = args.n_workers
         self.lamb = args.lamb
@@ -23,8 +21,7 @@ class Trainer(trainer.GenericTrainer):
         global loss_set
         model = self.model
         model.train()
-        
-
+            
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model, criterion)
             
@@ -59,7 +56,8 @@ class Trainer(trainer.GenericTrainer):
     def _train_epoch(self, epoch, train_loader, model, criterion=None):
         model.train()
         
-        
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
         
         running_acc = 0.0
         running_loss = 0.0
@@ -94,20 +92,49 @@ class Trainer(trainer.GenericTrainer):
                     loss = self.criterion(outputs, labels).mean()
                 return outputs, loss
             def closure_FPR(inputs, groups, labels, model):
-                outputs = model(inputs) # n by 2
-                d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0
-                d_theta_new = -(labels-1)*(2*labels-1)*d_theta
-                g_theta = torch.minimum(d_theta_new, torch.tensor(0))
-                z_bar = torch.mean(groups)
-                loss = torch.abs(torch.mean((groups - z_bar)*g_theta))
+                groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
+                groups_onehot = groups_onehot.float() # n by g
+                if self.nlp_flag:
+                    input_ids = inputs[:, :, 0]
+                    input_masks = inputs[:, :, 1]
+                    segment_ids = inputs[:, :, 2]
+                    outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=labels,
+                    )[1]
+                else:
+                    outputs = model(inputs) # n by 2
+                
+                d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0  # n by 1
+                d_theta_new = -(labels.view(-1,1)-1)*(2*labels.view(-1,1)-1)*d_theta
+                g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
+                z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
+                loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
+                loss = torch.sum(loss_groupwise)
                 return loss
             def closure_FNR(inputs, groups, labels, model):
-                outputs = model(inputs) # n by 2
-                d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0
-                d_theta_new = (labels)*(2*labels-1)*d_theta
-                g_theta = torch.minimum(d_theta_new, torch.tensor(0))
-                z_bar = torch.mean(groups)
-                loss = torch.abs(torch.mean((groups - z_bar)*g_theta))
+                groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
+                groups_onehot = groups_onehot.float() # n by g
+                if self.nlp_flag:
+                    input_ids = inputs[:, :, 0]
+                    input_masks = inputs[:, :, 1]
+                    segment_ids = inputs[:, :, 2]
+                    outputs = model(
+                        input_ids=input_ids,
+                        attention_mask=input_masks,
+                        token_type_ids=segment_ids,
+                        labels=labels,
+                    )[1]
+                else:
+                    outputs = model(inputs) # n by 2
+                d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0  # n by 1
+                d_theta_new = (labels.view(-1,1))*(2*labels.view(-1,1)-1)*d_theta
+                g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
+                z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
+                loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
+                loss = torch.sum(loss_groupwise)
                 return loss
             
             outputs, loss = closure()
@@ -140,3 +167,5 @@ class Trainer(trainer.GenericTrainer):
                 running_loss = 0.0
                 running_acc = 0.0
                 batch_start_time = time.time()
+    
+    
