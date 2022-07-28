@@ -295,13 +295,14 @@ class Trainer(trainer.GenericTrainer):
                 
 
     def _q_update_ibr(self, losses, n_classes, n_groups):
+        losses = torch.flatten(losses)
         assert len(losses) == (n_classes * n_groups)
         
         idxs = np.array([i * n_classes for i in range(n_groups)])
         
         for l in range(n_classes):
             label_group_loss = losses[idxs+l]
-            self.adv_probs_dict[l] = self._update_mw(label_group_loss, self.group_dist[l])
+            self.adv_probs_dict[l] = self._update_mw_bisection(label_group_loss)
             print(f'{l} label loss : {losses[idxs+l]}')
             print(f'{l} label q values : {self.adv_probs_dict[l]}')
     

@@ -227,7 +227,24 @@ class ResNet(nn.Module):
 
     def forward(self, x, get_inter=False, reid=False):
         return self._forward_impl(x, get_inter, reid)
+    
+    def forward_feature(self, x):
+        h = self.conv1(x)
+        h = self.bn1(h)
+        h = self.relu(h)
+        if self.img_size != 32:
+            h = self.maxpool(h)
 
+        b1 = self.layer1(h)
+        b2 = self.layer2(b1)
+        b3 = self.layer3(b2)
+        b4 = self.layer4(b3)
+
+        h = self.avgpool(b4)
+        h1 = torch.flatten(h, 1)
+        
+        return h1
+    
     def adapt_classifier(self, x):
         h = self.avgpool(x)
         h1 = torch.flatten(h, 1)

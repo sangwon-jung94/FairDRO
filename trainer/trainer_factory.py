@@ -39,6 +39,8 @@ class TrainerFactory:
             import trainer.disparate_mistreatment as trainer
         elif method == 'rw':
             import trainer.rw as trainer
+        elif method == 'fscl':
+            import trainer.fscl as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)
@@ -56,6 +58,7 @@ class GenericTrainer:
         self.device = args.device
         self.t_device = args.t_device
         self.term = args.term
+        self.seed = args.seed
         self.lr = args.lr
         self.max_grad_norm = args.max_grad_norm
         self.epochs = args.epochs
@@ -89,11 +92,11 @@ class GenericTrainer:
                     self.scheduler = CosineAnnealingLR(self.optimizer.base_optimizer, self.epochs)
                 else:
                     self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
-            else: 
+            else:  # if the optimizaer is SGD
                 if self.epochs == 70:
                     interval = [30, 60]
-                else:
-                    interval = [10, 20]
+                elif self.epochs == 100:
+                    interval = [60, 75, 90]
                 if self.sam:
         #             self.scheduler = MultiStepLR(self.optimizer, [60, 120, 180], gamma=0.1)
                     self.scheduler = MultiStepLR(self.optimizer.base_optimizer, interval, gamma=0.1)

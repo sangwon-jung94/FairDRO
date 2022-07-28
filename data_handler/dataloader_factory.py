@@ -23,8 +23,7 @@ class DataloaderFactory:
                                                   target_attr=target_attr, seed=seed, add_attr=add_attr, bs=batch_size,uc=args.uc,method=args.method)
         train_dataset = DatasetFactory.get_dataset(name, split='train',
                                                    target_attr=target_attr, seed=seed,add_attr=add_attr, bs=batch_size,uc=args.uc,method=args.method)
-
-            
+        
         n_classes = test_dataset.n_classes
         n_groups = test_dataset.n_groups
         
@@ -62,5 +61,4 @@ class DataloaderFactory:
         print('# of classes, # of groups : {}, {}'.format(n_classes, n_groups))
 
         return n_classes, n_groups, train_dataloader, test_dataloader
-
 

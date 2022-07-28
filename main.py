@@ -158,7 +158,7 @@ def main():
         if args.sam:
             optimizer = SAM(model.parameters(), optim.SGD, lr=args.lr, momentum=0.9)    
         else:
-            optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
+            optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.weight_decay)
     trainer_ = trainer.TrainerFactory.get_trainer(args.method, model=model, args=args,
                                                   optimizer=optimizer, teacher=teacher, scheduler=scheduler)
 
