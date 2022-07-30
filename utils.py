@@ -174,5 +174,7 @@ def make_log_name(args):
 
     if 'disp_mist' == args.method:
         log_name += f'_lamb{args.lamb}'
+    if 'renyi' == args.method:
+        log_name += f'_lamb{args.lamb}'
         
     return log_name

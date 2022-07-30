@@ -41,6 +41,8 @@ class TrainerFactory:
             import trainer.rw as trainer
         elif method == 'fscl':
             import trainer.fscl as trainer
+        elif method == 'renyi':
+            import trainer.renyi as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)
