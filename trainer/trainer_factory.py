@@ -43,6 +43,10 @@ class TrainerFactory:
             import trainer.fscl as trainer
         elif method == 'renyi':
             import trainer.renyi as trainer
+        elif method == 'variance':
+            import trainer.labelwise_variance as trainer
+        elif method == 'cgdro_new':
+            import trainer.cgdro_new as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)

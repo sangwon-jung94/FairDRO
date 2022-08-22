@@ -97,7 +97,7 @@ class GenericDataset(data.Dataset):
         train_data = features
         test_data = tmp
         return train_data, test_data
-
+    
 #         for s, l, _ in self.features:
         
     def _balance_test_data(self, n_data, n_groups, n_classes):
@@ -129,6 +129,9 @@ class GenericDataset(data.Dataset):
             if method == 'fairhsic':
                 group_weights = len(self) / self.n_data.sum(axis=0)
                 weights = [group_weights[int(feature[1])] for feature in self.features]
+#             elif method == 'cgdro_new':
+#                 weights = self.n_data.sum(axis=0) / self.n_data
+#                 weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features]                
             else:
                 group_weights = len(self) / self.n_data
                 weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features]
@@ -136,13 +139,14 @@ class GenericDataset(data.Dataset):
             if method == 'fairhsic':
                 group_weights = len(self) / self.n_data.sum(axis=0)
                 weights = [group_weights[l] for g,l in zip(self.g_array,self.y_array)]
+#             elif method == 'cgdro_new':
+#                 weights = self.n_data.sum(axis=0) / self.n_data
+#                 weights = [group_weights[g,l] for g,l in zip(self.g_array,self.y_array)]
             else:
                 group_weights = len(self) / self.n_data
                 weights = [group_weights[g,l] for g,l in zip(self.g_array,self.y_array)]
         return weights 
     
-
-
             
 #         elif method == 'lgdro_chi':
 #             group_weights = np.zeros_like(self.n_data, dtype=np.float)            

@@ -150,13 +150,21 @@ def make_log_name(args):
             log_name += f'_{args.optim_q}'
             log_name += f'_{args.q_decay}'
 
-        if 'chi' in args.method:
+        if 'chi' or 'new'  in args.method:
             log_name += f'_rho{args.rho}'
             if args.margin:
                 log_name += f'_margin'
                 
         if args.trueloss:
             log_name +='_trueloss'
+    elif 'variance' in args.method:
+        log_name += f'_rho{args.rho}'        
+
+    if 'disp_mist' == args.method:
+        log_name += f'_lamb{args.lamb}'
+    if 'renyi' == args.method:
+        log_name += f'_lamb{args.lamb}'
+
 
     if args.labelwise:
         log_name += '_labelwise'
@@ -172,9 +180,4 @@ def make_log_name(args):
         if args.add_attr is not None:
             log_name += f'_A{args.add_attr}'
 
-    if 'disp_mist' == args.method:
-        log_name += f'_lamb{args.lamb}'
-    if 'renyi' == args.method:
-        log_name += f'_lamb{args.lamb}'
-        
     return log_name
