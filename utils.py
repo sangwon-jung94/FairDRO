@@ -150,7 +150,7 @@ def make_log_name(args):
             log_name += f'_{args.optim_q}'
             log_name += f'_{args.q_decay}'
 
-        if 'chi' or 'new'  in args.method:
+        if 'chi' or 'new' or 'no_sampling' in args.method:
             log_name += f'_rho{args.rho}'
             if args.margin:
                 log_name += f'_margin'

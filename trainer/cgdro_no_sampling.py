@@ -80,7 +80,14 @@ class Trainer(trainer.GenericTrainer):
         n_groups = train_loader.dataset.n_groups
         
         self.label_weights = train_loader.dataset.n_data.sum(axis=0)
-        self.label_weights = self.label_weights / self.label_weights.sum()
+        self.label_weights = torch.tensor(self.label_weights / self.label_weights.sum())
+
+        n_data_reverse = 1 / train_loader.dataset.n_data
+
+        self.group_weights = n_data_reverse / n_data_reverse.sum(axis=0)
+        self.group_weights = torch.tensor(self.group_weights).cuda(device=self.device).type(torch.float)
+        self.group_weights *= n_groups
+        
         self.normal_loader = DataLoader(train_loader.dataset, 
                                         batch_size=128, 
                                         shuffle=False, 
@@ -91,7 +98,6 @@ class Trainer(trainer.GenericTrainer):
         self.adv_probs_dict = {}
         for l in range(n_classes):
             n_data = train_loader.dataset.n_data[:,l]
-#             self.group_dist[l] = n_data / n_data.sum()
             self.adv_probs_dict[l] = torch.ones(n_groups).cuda(device=self.device) / n_groups
         
         if self.nlp_flag:
@@ -208,10 +214,10 @@ class Trainer(trainer.GenericTrainer):
                 idxs = np.array([i * n_classes for i in range(n_groups)])            
                 for l in range(n_classes):
                     label_group_loss = group_loss[idxs+l]
-                   # tmp = label_group_loss @ self.adv_probs_dict[l]                    
+                    robust_loss += label_group_loss @ (torch.mul(self.adv_probs_dict[l], self.group_weights[:,l]))
 #                     robust_loss += (tmp @ self.label_weights[:,l]) * self.label_weights[l]
-                    robust_loss += (label_group_loss @ self.adv_probs_dict[l]) * self.label_weights[l]
-#                robust_loss /= n_classes        
+#                     robust_loss += (label_group_loss @ self.adv_probs_dict[l]) * self.label_weights[l]
+                robust_loss /= n_classes        
 #                 robust_loss.backward()                
                 return outputs, robust_loss
             
@@ -281,7 +287,7 @@ class Trainer(trainer.GenericTrainer):
             if not self.margin:
                 self.adv_probs_dict[l] = self._update_mw_bisection(label_group_loss)#, self.group_dist[l])
             else:
-                self.adv_probs_dict[l] = self._update_mw_margin(label_group_loss, np.power(1/(n_classes*self.label_weights[l]),2) * self.rho)#, 
+                self.adv_probs_dict[l] = self._update_mw_margin(label_group_loss, np.sqrt(1/self.label_weights[l]) * self.rho)#, 
             print(f'{l} label loss : {losses[idxs+l]}')
             print(f'{l} label q values : {self.adv_probs_dict[l]}')
     
@@ -318,7 +324,7 @@ class Trainer(trainer.GenericTrainer):
             if not self.margin:
                 q_ibr[l] = self._update_mw_bisection(label_group_loss)#, self.group_dist[l])
             else:
-                q_ibr[l] = self._update_mw_margin(label_group_loss, np.power(1/(n_classes*self.label_weights[l]),2) * self.rho)#, 
+                q_ibr[l] = self._update_mw_margin(label_group_loss, np.sqrt(1/self.label_weights[l]) * self.rho)#, self.group_dist[l])
             self.adv_probs_dict[l] = q_start[l] + cur_step_size*(q_ibr[l] - q_start[l])
             print(f'{l} label loss : {train_subgroup_loss[idxs+l]}')
             print(f'{l} label q_ibr values : {q_ibr[l]}')

@@ -131,7 +131,7 @@ class GenericDataset(data.Dataset):
                 weights = [group_weights[int(feature[1])] for feature in self.features]
 #             elif method == 'cgdro_new':
 #                 weights = self.n_data.sum(axis=0) / self.n_data
-#                 weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features]                
+#                 weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features] 
             else:
                 group_weights = len(self) / self.n_data
                 weights = [group_weights[int(feature[0]),int(feature[1])] for feature in self.features]

@@ -47,6 +47,8 @@ class TrainerFactory:
             import trainer.labelwise_variance as trainer
         elif method == 'cgdro_new':
             import trainer.cgdro_new as trainer
+        elif method == 'cgdro_no_sampling':
+            import trainer.cgdro_no_sampling as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)
