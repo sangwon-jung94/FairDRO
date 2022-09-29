@@ -1,6 +1,6 @@
-# Constrained Distributionally Robust Classifiers: From Variance Regularization to Group Fairness (Neurips 2022)
+# Exact Group Fairness Regularization via Classwise Robust Optimization (ICLR 2023)
 
-This repository is the official implementation of the paper **Constrained Distributionally Robust Classifiers: From Variance Regularization to Group Fairness**. 
+This repository is the official implementation of the paper **Exact Group Fairness Regularization via Classwise Robust Optimization**. 
 
 ## Requirements
 - GPU RTX A5000
