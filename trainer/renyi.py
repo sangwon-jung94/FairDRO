@@ -74,6 +74,11 @@ class Trainer(trainer.GenericTrainer):
         running_loss = 0.0
         total = 0
         batch_start_time = time.time()
+
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
+        n_subgroups = n_classes * n_groups
+
         for i, data in enumerate(train_loader):
             # Get the inputs
         
@@ -102,11 +107,20 @@ class Trainer(trainer.GenericTrainer):
                     )[1] 
                 else:
                     outputs = model(inputs)
-                
-                if criterion is not None:
-                    loss = criterion(outputs, labels).mean()
+
+                if self.balanced:
+                    subgroups = groups * n_classes + labels
+                    group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                    group_count = group_map.sum(1)
+                    group_denom = group_count + (group_count==0).float() # avoid nans
+                    loss = nn.CrossEntropyLoss(reduction='none')(outputs, labels)
+                    group_loss = (group_map @ loss.view(-1))/group_denom
+                    loss = torch.mean(group_loss)
                 else:
-                    loss = self.criterion(outputs, labels).mean()
+                    if criterion is not None:
+                        loss = criterion(outputs, labels).mean()
+                    else:
+                        loss = self.criterion(outputs, labels).mean()
                 return outputs, loss
             
             if self.reweighting_target_criterion == 'dp':

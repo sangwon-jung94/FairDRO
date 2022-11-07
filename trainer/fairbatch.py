@@ -69,6 +69,9 @@ class Trainer(trainer.GenericTrainer):
         running_loss = 0.0
 
         n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
+        n_subgroups = n_classes * n_groups
+        
         batch_start_time = time.time()
         if not self.nlp_flag:
             self.adjust_lambda(model, train_loader, dummy_loader)
@@ -103,7 +106,18 @@ class Trainer(trainer.GenericTrainer):
             else:
                 outputs = model(inputs)
 
-            loss = self.criterion(outputs, labels).mean()
+            if self.balanced:
+                subgroups = groups * n_classes + labels
+                group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                group_count = group_map.sum(1)
+                group_denom = group_count + (group_count==0).float() # avoid nans
+                loss = nn.CrossEntropyLoss(reduction='none')(outputs, labels)
+                group_loss = (group_map @ loss.view(-1))/group_denom
+#                 weights = self.weight_matrix.flatten().cuda()
+                loss = torch.mean(group_loss)
+            else:
+                loss = self.criterion(outputs, labels).mean()
+
             running_loss += loss.item()
             # binary = True if num_classes ==2 else False
             running_acc += get_accuracy(outputs, labels)

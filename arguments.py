@@ -72,6 +72,9 @@ def get_args():
     parser.add_argument('--q-decay', default='linear', type=str, help='the type of optimization for q')
     parser.add_argument('--margin', default=False, action='store_true', help='whether use a margin scheme or not')
     
+    # balanced cross entropy
+    parser.add_argument('--balanced', default=False, action='store_true', help='whether use a balanced acc')
+    
     args = parser.parse_args()
     args.cuda=True
     if args.mode == 'train' and args.method == 'mfd':

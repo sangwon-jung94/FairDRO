@@ -84,6 +84,7 @@ class GenericTrainer:
         self.dataset = args.dataset
         self.uc = args.uc
         self.batch_size = args.batch_size
+        self.balanced = args.balanced
 
         self.log_name = make_log_name(args)
         self.log_dir = os.path.join(args.log_dir, args.date, args.dataset, args.method)

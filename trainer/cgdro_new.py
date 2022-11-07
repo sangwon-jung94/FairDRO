@@ -318,7 +318,7 @@ class Trainer(trainer.GenericTrainer):
             if not self.margin:
                 q_ibr[l] = self._update_mw_bisection(label_group_loss)#, self.group_dist[l])
             else:
-                q_ibr[l] = self._update_mw_margin(label_group_loss, np.power(1/(n_classes*self.label_weights[l]),2) * self.rho)#, 
+                q_ibr[l] = self._update_mw_margin(label_group_loss, np.power(1/(n_classes*self.label_weights[l]),2) * self.rho)
             self.adv_probs_dict[l] = q_start[l] + cur_step_size*(q_ibr[l] - q_start[l])
             print(f'{l} label loss : {train_subgroup_loss[idxs+l]}')
             print(f'{l} label q_ibr values : {q_ibr[l]}')

@@ -4,10 +4,11 @@ import time
 from utils import get_accuracy
 import trainer
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 import cvxpy as cvx
-import dccp
-from dccp.problem import is_dccp
+# import dccp
+# from dccp.problem import is_dccp
 import numpy as np
 
 class Trainer(trainer.GenericTrainer):
@@ -58,6 +59,7 @@ class Trainer(trainer.GenericTrainer):
         
         n_classes = train_loader.dataset.n_classes
         n_groups = train_loader.dataset.n_groups
+        n_subgroups = n_classes * n_groups
         
         running_acc = 0.0
         running_loss = 0.0
@@ -72,6 +74,7 @@ class Trainer(trainer.GenericTrainer):
                 inputs = inputs.cuda(device=self.device)
                 labels = labels.cuda(device=self.device)
                 groups = groups.cuda(device=self.device)
+                
             def closure():
                 if self.nlp_flag:
                     input_ids = inputs[:, :, 0]
@@ -85,12 +88,22 @@ class Trainer(trainer.GenericTrainer):
                     )[1] 
                 else:
                     outputs = model(inputs)
-                
-                if criterion is not None:
-                    loss = criterion(outputs, labels).mean()
+                    
+                if self.balanced:
+                    subgroups = groups * n_classes + labels
+                    group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                    group_count = group_map.sum(1)
+                    group_denom = group_count + (group_count==0).float() # avoid nans
+                    loss = nn.CrossEntropyLoss(reduction='none')(outputs, labels)
+                    group_loss = (group_map @ loss.view(-1))/group_denom
+                    loss = torch.mean(group_loss)
                 else:
-                    loss = self.criterion(outputs, labels).mean()
+                    if criterion is not None:
+                        loss = criterion(outputs, labels).mean()
+                    else:
+                        loss = self.criterion(outputs, labels).mean()
                 return outputs, loss
+            
             def closure_FPR(inputs, groups, labels, model):
                 groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
                 groups_onehot = groups_onehot.float() # n by g
@@ -114,6 +127,7 @@ class Trainer(trainer.GenericTrainer):
                 loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
                 loss = torch.sum(loss_groupwise)
                 return loss
+            
             def closure_FNR(inputs, groups, labels, model):
                 groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
                 groups_onehot = groups_onehot.float() # n by g

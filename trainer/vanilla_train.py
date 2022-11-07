@@ -5,6 +5,7 @@ import time
 from utils import get_accuracy
 import trainer
 import torch
+import torch.nn as nn
 
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
@@ -14,7 +15,6 @@ class Trainer(trainer.GenericTrainer):
         global loss_set
         model = self.model
         model.train()
-
 
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model,criterion)
@@ -54,14 +54,21 @@ class Trainer(trainer.GenericTrainer):
         running_loss = 0.0
         total = 0
         batch_start_time = time.time()
+        
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
+        n_subgroups = n_classes * n_groups
+
+
         for i, data in enumerate(train_loader):
             # Get the inputs
         
             inputs, _, groups, targets, idx = data
             labels = targets
             if self.cuda:
-                inputs = inputs.cuda(device=self.device)
-                labels = labels.cuda(device=self.device)
+                inputs = inputs.cuda()
+                labels = labels.cuda()
+                groups = labels.cuda()
                 
             def closure():
                 if self.nlp_flag:
@@ -76,11 +83,22 @@ class Trainer(trainer.GenericTrainer):
                     )[1] 
                 else:
                     outputs = model(inputs)
-                
-                if criterion is not None:
-                    loss = criterion(outputs, labels).mean()
+
+                if self.balanced:
+                    subgroups = groups * n_classes + labels
+                    group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                    group_count = group_map.sum(1)
+                    group_denom = group_count + (group_count==0).float() # avoid nans
+                    loss = nn.CrossEntropyLoss(reduction='none')(outputs, labels)
+                    group_loss = (group_map @ loss.view(-1))/group_denom
+                    loss = torch.mean(group_loss)
                 else:
-                    loss = self.criterion(outputs, labels).mean()
+                    if criterion is not None:
+                        loss = criterion(outputs, labels).mean()
+                    else:
+                        loss = self.criterion(outputs, labels).mean()
+                    
+                    
                 return outputs, loss
             
             outputs, loss = closure()            

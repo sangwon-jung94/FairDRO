@@ -64,9 +64,11 @@ class Trainer(trainer.GenericTrainer):
         running_loss = 0.0
         total = 0
         batch_start_time = time.time()
+        
         n_classes = train_loader.dataset.n_classes
         n_groups = train_loader.dataset.n_groups
         n_subgroups = n_classes * n_groups
+        
         for i, data in enumerate(train_loader):
             # Get the inputs
             inputs, _, groups, targets, _ = data
