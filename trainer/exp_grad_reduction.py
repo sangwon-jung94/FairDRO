@@ -5,34 +5,53 @@ import torch
 import torch.nn as nn
 import time
 import torch.optim as optim
-from torch.optim.lr_scheduler import MultiStepLR, ReduceLROnPlateau
+from torch.optim.lr_scheduler import MultiStepLR, ReduceLROnPlateau, CosineAnnealingLR
 from utils import get_accuracy
 from collections import defaultdict
 import trainer
 import pickle
 from torch.utils.data import DataLoader
-
+import copy
 
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
         super().__init__(args=args, **kwargs)
 
-        self.eta = args.eta
-        self.iteration = args.iteration
+        self.eta = args.eta #learning rate for theta
+        self.bound_B = args.bound_B # bound for L1 norm
+        self.iteration = args.iteration #iteration for lambda
         self.batch_size = args.batch_size
         self.n_workers = args.n_workers
         self.reweighting_target_criterion = args.reweighting_target_criterion
-
+        assert self.reweighting_target_criterion == 'eo' #only for eo
+        self.constraint_c = args.constraint_c # vector
+        
     def train(self, train_loader, test_loader, epochs, dummy_loader=None, writer=None):
         log_set = defaultdict(list)
         model = self.model
         model.train()
         self.n_groups = train_loader.dataset.n_groups
         self.n_classes = train_loader.dataset.n_classes
+        assert self.n_classes == 2 #only for binary classification
+        self.M_matrix = self.get_M_matrix(self.reweighting_target_criterion)
+        
 
-        multipliers_set = {}
-        self.extended_multipliers = torch.zeros((self.n_groups, self.n_classes))
-        self.weight_matrix = self.get_weight_matrix(self.extended_multipliers)
+        self.multipliers_set = []
+        self.models_set = []
+        
+        self.theta = torch.zeros(self.n_groups * self.n_classes * 2)
+        self.multiplier = torch.zeros(self.n_groups * self.n_classes * 2)
+        
+        if self.cuda:
+            self.theta = self.theta.cuda()
+            self.M_matrix = self.M_matrix.cuda()
+            self.multiplier = self.multiplier.cuda()
+        
+    
+
+#         Y_S_set, Y_set, S_set, self.P_Y_S = self.get_statistics(train_loader.dataset, batch_size=self.batch_size, n_workers=self.n_workers)
+        
+        
         
         print('eta_learning_rate : ', self.eta)
         n_iters = self.iteration
@@ -40,12 +59,15 @@ class Trainer(trainer.GenericTrainer):
         
         violations = 0
         for iter_ in range(n_iters):
+            
+            self.multipliers = self.bound_B * torch.exp(self.theta)/(1+torch.sum(torch.exp(self.theta)))
+            self.multipliers_set.append(self.multipliers)
+            
             start_t = time.time()
             
-#             if self.model == 'lr':
-#                 # initialize the models
-#                 self.initialize_all()
-
+            if self.model_name == 'lr':
+                # initialize the models
+                self.initialize_all()
             if self.nlp_flag:
                 assert n_iters == 1
                 self.weight_update_term = 100
@@ -86,18 +108,38 @@ class Trainer(trainer.GenericTrainer):
             train_t = int((end_t - start_t) / 60)
             print('Training Time : {} hours {} minutes / iter : {}/{}'.format(int(train_t / 60), (train_t % 60),
                                                                               (iter_ + 1), n_iters))
+            model=copy.deepcopy(self.model)
+            self.models_set.append(model)
+            
             if not self.nlp_flag:
-                # get statistics
-                Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
-                                                                     n_workers=self.n_workers, model=model)
-
-                # calculate violation
-                if self.reweighting_target_criterion == 'dp':
-                    acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
-                elif self.reweighting_target_criterion == 'eo':
-                    acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
-                self.extended_multipliers -= self.eta * violations 
-                self.weight_matrix = self.get_weight_matrix(self.extended_multipliers) 
+                # get statistics & calculate violation
+                self.mu, _ = self.get_mu(train_loader.dataset, batch_size=self.batch_size, n_workers=self.n_workers, model=model)
+                self.theta += self.eta * (self.M_matrix @ self.mu - self.constraint_c)
+                
+        # Get multiplier_avg
+        multipliers_set_matrix = torch.stack(self.multipliers_set)
+        multiplier_avg = torch.mean(multipliers_set_matrix, dim=0)
+        
+        # Calculate lagrangian with multiplier_avg
+        best_value = float("inf")
+        print('inf_value', best_value)
+        print('len(self.models_set)', len(self.models_set))
+        for i in range(len(self.models_set)):
+            print('i', i)
+            value = self.Lagrangian_01(train_loader.dataset, batch_size=128, n_workers=2, model=self.models_set[i], multiplier=multiplier_avg)
+            print('current_value', value)
+            if value < best_value:
+                best_value = value
+                best_index = i
+                print('true')
+                print('current_best_value', best_value)
+        
+        print('final value', best_value)
+        print('final index', best_index)
+        
+        # Get best deterministic model
+        self.model = self.models_set[best_index]
+                
 
     def _train_epoch(self, epoch, train_loader, model):
         model.train()
@@ -112,7 +154,6 @@ class Trainer(trainer.GenericTrainer):
         n_groups = train_loader.dataset.n_groups
         n_subgroups = n_classes * n_groups
 
-
         for i, data in enumerate(train_loader):
             batch_start_time = time.time()
             # Get the inputs
@@ -122,15 +163,13 @@ class Trainer(trainer.GenericTrainer):
             groups = groups.long()
             labels = labels.long()
 
-            weights = self.weight_matrix[groups, labels]
-
             if self.cuda:
                 inputs = inputs.cuda()
                 labels = labels.cuda()
-                weights = weights.cuda()
                 groups = groups.cuda()
                 
-            def closure(weights):
+                
+            def closure():
                 if self.nlp_flag:
                     input_ids = inputs[:, :, 0]
                     input_masks = inputs[:, :, 1]
@@ -154,11 +193,24 @@ class Trainer(trainer.GenericTrainer):
                     weights = self.weight_matrix.flatten().cuda()
                     loss = torch.mean(group_loss*weights)
                 else:
-                    loss = torch.mean(weights * nn.CrossEntropyLoss(reduction='none')(outputs, labels))
+                    loss = torch.mean(nn.CrossEntropyLoss(reduction='none')(outputs, labels))
                 
-                return outputs, loss
+                return outputs, loss    
 
-            outputs, loss = closure(weights)           
+            outputs, loss = closure()
+            preds = torch.argmax(outputs, dim=1)
+            
+            def closure_mu():
+                subgroups = groups * n_classes + labels
+                group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                group_map_ext = torch.cat((group_map, torch.ones(group_map.size(1)).view(1,-1).cuda()))
+                group_count = group_map_ext.sum(1)
+                group_denom = group_count + (group_count==0).float() # avoid nans, mini-batch
+                group_output = (group_map_ext @ (preds.view(-1).float()))/group_denom
+                return group_output
+            
+            mu = closure_mu()
+            loss += self.multipliers @ (self.M_matrix @ mu - self.constraint_c)
             loss.backward()
             if not self.sam:
                 if self.nlp_flag:
@@ -180,14 +232,7 @@ class Trainer(trainer.GenericTrainer):
                     Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
                                                                          n_workers=self.n_workers, model=model)
 
-                    # calculate violation
-                    if self.reweighting_target_criterion == 'dp':
-                        acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
-                    elif self.reweighting_target_criterion == 'eo':
-                        acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
-                    self.extended_multipliers -= self.eta * violations 
-                    #self.weight_set = self.debias_weights(Y_train, S_train, self.extended_multipliers, n_groups, n_classes)
-                    self.weight_matrix = self.get_weight_matrix(self.extended_multipliers) 
+
 
             running_loss += loss.item()
             # binary = True if n_classes == 2 else False
@@ -210,29 +255,44 @@ class Trainer(trainer.GenericTrainer):
         last_batch_idx = i
         return last_batch_idx
 
-    def get_statistics(self, dataset, batch_size=128, n_workers=2, model=None):
+    def get_M_matrix(self, target_criterion): # for eo
+        assert target_criterion == 'eo'
+        plus_matrix = torch.eye(self.n_groups * self.n_classes)
+        minus_matrix = -torch.eye(self.n_groups * self.n_classes)
+        minus_vector = -torch.ones(self.n_groups * self.n_classes)
+        plus_vector = torch.ones(self.n_groups * self.n_classes)
+        matrix_cat = torch.cat((plus_matrix, minus_matrix))
+        vector_cat = torch.cat((minus_vector, plus_vector))
+        M_matrix = torch.cat((matrix_cat, vector_cat.reshape(-1,1)), dim=1)
+        return M_matrix
 
-        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
-                                num_workers=n_workers, pin_memory=True, drop_last=False)
-
+    def get_mu(self, dataset, batch_size=128, n_workers=2, model=None):
         if model != None:
             model.eval()
 
+        mu = torch.zeros(self.n_groups * self.n_classes + 1)
+        
+        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
+                                num_workers=n_workers, pin_memory=True, drop_last=False)
+
         Y_pred_set = []
         Y_set = []
-        S_set = []
+#         S_set = []
+        Y_S_set = [] # subgroups = groups * n_classes + labels
         total = 0
         with torch.no_grad():
             for i, data in enumerate(dataloader):
                 inputs, _, sen_attrs, targets, _ = data
-    #             Y_set.append(targets[sen_attrs != -1]) # sen_attrs = -1 means no supervision for sensitive group
-                Y_set.append(targets) # sen_attrs = -1 means no supervision for sensitive group
-                S_set.append(sen_attrs)
+                Y_set.append(targets)
+#                 S_set.append(sen_attrs)
+                Y_S_set.append(sen_attrs * self.n_classes + targets)
 
                 if self.cuda:
                     inputs = inputs.cuda()
                     groups = sen_attrs.cuda()
                     targets = targets.cuda()
+                    
+                    
                 if model != None:
                     if self.nlp_flag:
                         input_ids = inputs[:, :, 0]
@@ -246,103 +306,84 @@ class Trainer(trainer.GenericTrainer):
                         )[1] 
                     else:
                         outputs = model(inputs)
-    #                 outputs = model(inputs) 
                     # Y_pred_set.append(torch.argmax(outputs, dim=1) if n_classes >2 else (torch.sigmoid(outputs) >= 0.5).float())
                     Y_pred_set.append(torch.argmax(outputs, dim=1))
                 total+= inputs.shape[0]
 
-        Y_set = torch.cat(Y_set)
-        S_set = torch.cat(S_set)
+        Y_set = torch.cat(Y_set).cuda()
+#         S_set = torch.cat(S_set)
+        Y_S_set = torch.cat(Y_S_set).cuda()
         Y_pred_set = torch.cat(Y_pred_set) if len(Y_pred_set) != 0 else torch.zeros(0)
-        return Y_pred_set.long(), Y_set.long().cuda(), S_set.long().cuda()
+        
+        acc = torch.sum(Y_pred_set==Y_set)/len(Y_set)
+        
+        mu[-1] = torch.mean(Y_pred_set.float())
+        for i in range(len(mu)-1):
+            index_set = torch.where(Y_S_set==i)[0]
+            mu[i] = torch.mean(Y_pred_set.float()[index_set])
+        if self.cuda:
+            mu = mu.cuda()
+            acc = acc.cuda()
+        return mu, acc
     
-    # Vectorized version for DP & multi-class
-    def get_error_and_violations_DP(self, y_pred, label, sen_attrs, n_groups, n_classes):
-        acc = torch.mean(y_pred == label)
-        total_num = len(y_pred)
-        violations = torch.zeros((n_groups, n_classes))
-
-        for g in range(n_groups):
-            for c in range(n_classes):
-                pivot = len(torch.where(y_pred==c)[0])/total_num
-                group_idxs=torch.where(sen_attrs == g)[0]
-                group_pred_idxs = torch.where(torch.logical_and(sen_attrs == g, y_pred == c))[0]
-                violations[g, c] = len(group_pred_idxs)/len(group_idxs) - pivot
-        return acc, violations
-
-    # Vectorized version for EO & multi-class
-    def get_error_and_violations_EO(self, y_pred, label, sen_attrs, n_groups, n_classes):
-        acc = torch.mean((y_pred == label).float())
-        total_num = len(y_pred)
-        violations = torch.zeros((n_groups, n_classes)) 
-        for g in range(n_groups):
-            for c in range(n_classes):
-                class_idxs = torch.where(label==c)[0]
-                pred_class_idxs = torch.where(torch.logical_and(y_pred == c, label == c))[0]
-                pivot = len(pred_class_idxs)/len(class_idxs)
-                group_class_idxs=torch.where(torch.logical_and(sen_attrs == g, label == c))[0]
-                group_pred_class_idxs = torch.where(torch.logical_and(torch.logical_and(sen_attrs == g, y_pred == c), label == c))[0]
-                violations[g, c] = len(group_pred_class_idxs)/len(group_class_idxs) - pivot
-        print('violations',violations)
-        return acc, violations
-#     # Binarized version fod DP
-#     def get_error_and_violations_DP(self, binarized_y_pred, binarized_y, sen_attrs, n_groups):
-#         binarized_acc = np.mean(binarized_y_pred == binarized_y)
-#         violations = []
-#         for g in range(n_groups):
-#             protected_idxs = np.where(sen_attrs == g)
-#             violations.append(np.mean(binarized_y_pred[protected_idxs])-np.mean(binarized_y_pred)) ### 순서
-#         return binarized_acc, violations
-    
-    #     # Binarized version for Eopp
-#     def get_error_and_violations_Eopp(self, binarized_y_pred, binarized_y, sen_attrs, n_groups):
-#         binarized_acc = np.mean(binarized_y_pred == binarized_y)
-#         violations = []
-#         for g in range(n_groups):
-#             protected_idxs = np.where(np.logical_and(sen_attrs == g, binarized_y > 0))
-#             positive_idxs = np.where(binarized_y > 0)
-#             #print(binarized_y_pred)
-#             # print(protected_idxs)
-#             # print(positive_idxs)
-#             violations.append(np.mean(binarized_y_pred[protected_idxs]) - np.mean(binarized_y_pred[positive_idxs])) ### 순서
-#         return binarized_acc, violations
-    
-#     # Binarized version for EO
-#     def get_error_and_violations_EO(self, binarized_y_pred, binarized_y, sen_attrs, n_groups): ###############################
-#         binarized_acc = np.mean(binarized_y_pred == binarized_y)
-#         violations = []
-#         for g in range(n_groups):
-#             protected_positive_idxs = np.where(np.logical_and(sen_attrs == g, binarized_y > 0))
-#             positive_idxs = np.where(binarized_y > 0)
-#             violations.append(np.mean(binarized_y_pred[protected_positive_idxs]) - np.mean(binarized_y_pred[positive_idxs]))   ### 순서
-#             protected_negative_idxs = np.where(np.logical_and(sen_attrs == g, binarized_y < 1))
-#             negative_idxs = np.where(binarized_y < 1)
-#             violations.append(np.mean(binarized_y_pred[protected_negative_idxs]) - np.mean(binarized_y_pred[negative_idxs]))
-            
-#         return binarized_acc, violations
-
-    # update weight
-    # def debias_weights(self, label, sen_attrs, extended_multipliers, n_groups, n_classes):  ####################################################
-    #     weights = torch.zeros(len(label))
-    #     w_matrix = torch.sigmoid(extended_multipliers) # g by c
-    #     weights = w_matrix[sen_attrs, label]
-    #     return weights
-
-    def get_weight_matrix(self, extended_multipliers):  
-        w_matrix = torch.sigmoid(extended_multipliers) # g by c
-        return w_matrix
-
 
     def criterion(self, model, outputs, labels):
-        # if n_classes == 2:
-        #     return nn.BCEWithLogitsLoss()(outputs, labels)
-        # else:
         return nn.CrossEntropyLoss()(outputs, labels)
     
     
-#     def initialize_all(self):
-#         from networks import ModelFactory
-#         self.model = ModelFactory.get_model('lr', hidden_dim=64, n_classes=2, n_layer = 1)
-#         self.optimizer =optim.SGD(self.model.parameters(), lr=self.lr, momentum=0.9)
-#         self.scheduler = MultiStepLR(self.optimizer, [10,20], gamma=0.1)
+    def initialize_all(self):
+        for name, param in self.model.state_dict().items():
+            self.model.state_dict()[name][:] = torch.nn.init.normal_(param, mean=0.0, std=1.0)
+
+        self.optimizer = optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+        self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
+        print('initialized')
+
+    
+    def Lagrangian_01(self, dataset, batch_size=128, n_workers=2, model=None, multiplier=None):
+        if model != None:
+            model.eval()
         
+        mu, acc = self.get_mu(dataset, batch_size=self.batch_size, n_workers=self.n_workers, model=model)
+        error_rate = 1 - acc
+        Lagrangian = error_rate + multiplier @ (self.M_matrix @ mu - self.constraint_c)
+        
+        return Lagrangian.item()
+
+    
+    
+    ##############################################################################################################
+    
+    
+#     def get_statistics(self, dataset, batch_size=128, n_workers=2):
+
+#         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
+#                                 num_workers=n_workers, pin_memory=True, drop_last=False)
+
+#         Y_set = []
+#         S_set = []
+#         Y_S_set = []
+#         total = 0
+#         with torch.no_grad():
+#             for i, data in enumerate(dataloader):
+#                 inputs, _, sen_attrs, targets, _ = data
+#                 Y_set.append(targets)
+#                 S_set.append(sen_attrs)
+#                 Y_S_set.append(sen_attrs * self.n_classes + targets)
+
+#                 if self.cuda:
+#                     inputs = inputs.cuda()
+#                     groups = sen_attrs.cuda()
+#                     targets = targets.cuda()
+#                 total+= inputs.shape[0]
+
+#         Y_set = torch.cat(Y_set).long()
+#         S_set = torch.cat(S_set).long()
+#         Y_S_set = torch.cat(Y_S_set).long()
+#         P_Y_S = torch.zeros(self.n_classes * self.n_groups + 1)
+#         for i in range(len(P_Y_S)-1):
+#             index_set = torch.where(Y_S_set==i)[0]
+#             P_Y_S[i] = len(index_set) / len(Y_S_set)
+#         P_Y_S[-1] = 1.0
+#         return Y_S_set, Y_set, S_set, P_Y_S
+    

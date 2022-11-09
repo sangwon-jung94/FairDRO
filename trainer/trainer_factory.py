@@ -49,6 +49,8 @@ class TrainerFactory:
             import trainer.cgdro_new as trainer
         elif method == 'cgdro_no_sampling':
             import trainer.cgdro_no_sampling as trainer
+        elif method == 'exp_grad_reduction':
+            import trainer.exp_grad_reduction as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)
@@ -85,6 +87,7 @@ class GenericTrainer:
         self.uc = args.uc
         self.batch_size = args.batch_size
         self.balanced = args.balanced
+        self.weight_decay = args.weight_decay #
 
         self.log_name = make_log_name(args)
         self.log_dir = os.path.join(args.log_dir, args.date, args.dataset, args.method)

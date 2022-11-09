@@ -30,7 +30,7 @@ def get_args():
     parser.add_argument('--seed', default=0, type=int, help='seed for randomness')
     parser.add_argument('--date', default='20200101', type=str, help='experiment date')
     parser.add_argument('--method', default='scratch', type=str, required=True,
-                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro','gdro_epoch', 'fairbatch','gdro_chi','lgdro_chi','disp_mist','rw', 'fscl','renyi', 'variance','cgdro_new','cgdro_no_sampling'])
+                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro','gdro_epoch', 'fairbatch','gdro_chi','lgdro_chi','disp_mist','rw', 'fscl','renyi', 'variance','cgdro_new','cgdro_no_sampling', 'exp_grad_reduction'])
 
     parser.add_argument('--optim', default='Adam', type=str, required=False,
                         choices=['AdamP', 'AdamW','SGD', 'SGD_momentum_decay', 'Adam'],
@@ -71,6 +71,10 @@ def get_args():
     parser.add_argument('--optim-q', default='pd', type=str, help='the type of optimization for q')
     parser.add_argument('--q-decay', default='linear', type=str, help='the type of optimization for q')
     parser.add_argument('--margin', default=False, action='store_true', help='whether use a margin scheme or not')
+    
+    # For exp_grad_reduction,
+    parser.add_argument('--bound_B', default=0.01, type=float, help='bound for L1 norm')
+    parser.add_argument('--constraint_c', default=0.0, type=float, help='bound for constraint c')
     
     # balanced cross entropy
     parser.add_argument('--balanced', default=False, action='store_true', help='whether use a balanced acc')

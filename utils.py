@@ -140,6 +140,9 @@ def make_log_name(args):
     elif args.method == 'lbc':
         log_name += f'_eta{args.eta}_iter{args.iteration}'
     
+    elif args.method == 'exp_grad_reduction':
+        log_name += f'_eta{args.eta}_iter{args.iteration}_bound{args.bound_B}_constraint{args.constraint_c}'
+    
     elif args.method == 'fairbatch':
         log_name += f'_gamma{args.gamma}'
 
