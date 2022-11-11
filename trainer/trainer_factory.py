@@ -87,7 +87,6 @@ class GenericTrainer:
         self.uc = args.uc
         self.batch_size = args.batch_size
         self.balanced = args.balanced
-        self.weight_decay = args.weight_decay #
 
         self.log_name = make_log_name(args)
         self.log_dir = os.path.join(args.log_dir, args.date, args.dataset, args.method)
@@ -194,6 +193,12 @@ class GenericTrainer:
             deoa = torch.mean(labelwise_acc_gap).item()
             deom = torch.max(labelwise_acc_gap).item()
             
+#             root_var = 0.0
+#             for c in range(n_classes):
+#                 var_c = torch.var(group_loss[:, c])
+#                 root_var += torch.sqrt(var_c)
+#             root_var = root_var/n_classes
+
         if record:
             self.write_record(writer, epoch, loss, acc, deom, deoa, group_loss, group_acc, train)
             

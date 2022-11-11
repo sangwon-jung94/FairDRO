@@ -25,19 +25,20 @@ class Trainer(trainer.GenericTrainer):
         self.reweighting_target_criterion = args.reweighting_target_criterion
         assert self.reweighting_target_criterion == 'eo' #only for eo
         self.constraint_c = args.constraint_c # vector
+        self.weight_decay = args.weight_decay #
         
     def train(self, train_loader, test_loader, epochs, dummy_loader=None, writer=None):
         log_set = defaultdict(list)
-        model = self.model
-        model.train()
+
+        self.model.train()
         self.n_groups = train_loader.dataset.n_groups
         self.n_classes = train_loader.dataset.n_classes
         assert self.n_classes == 2 #only for binary classification
         self.M_matrix = self.get_M_matrix(self.reweighting_target_criterion)
         
 
-        self.multipliers_set = []
-        self.models_set = []
+        self.multiplier_set = []
+        self.model_set = []
         
         self.theta = torch.zeros(self.n_groups * self.n_classes * 2)
         self.multiplier = torch.zeros(self.n_groups * self.n_classes * 2)
@@ -60,13 +61,15 @@ class Trainer(trainer.GenericTrainer):
         violations = 0
         for iter_ in range(n_iters):
             
-            self.multipliers = self.bound_B * torch.exp(self.theta)/(1+torch.sum(torch.exp(self.theta)))
-            self.multipliers_set.append(self.multipliers)
+#             self.multiplier = self.bound_B * (torch.exp(self.theta)/(1+torch.sum(torch.exp(self.theta))))
+            self.multiplier = self.bound_B * (torch.exp(self.theta-torch.max(self.theta))/(torch.exp(-torch.max(self.theta))+torch.sum(torch.exp(self.theta-torch.max(self.theta))))) # for numerical stability
+            print('self.multiplier', self.multiplier)
+            self.multiplier_set.append(self.multiplier)
             
             start_t = time.time()
             
             if self.model_name == 'lr':
-                # initialize the models
+                # initialize the model
                 self.initialize_all()
             if self.nlp_flag:
                 assert n_iters == 1
@@ -74,7 +77,7 @@ class Trainer(trainer.GenericTrainer):
                 self.weight_update_count = 0
 
             for epoch in range(epochs):
-                lb_idx = self._train_epoch(epoch, train_loader, model)
+                lb_idx = self._train_epoch(epoch, train_loader, self.model)
                 
                 eval_start_time = time.time()                
                 eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -109,24 +112,28 @@ class Trainer(trainer.GenericTrainer):
             print('Training Time : {} hours {} minutes / iter : {}/{}'.format(int(train_t / 60), (train_t % 60),
                                                                               (iter_ + 1), n_iters))
             model=copy.deepcopy(self.model)
-            self.models_set.append(model)
+            self.model_set.append(model)
             
             if not self.nlp_flag:
                 # get statistics & calculate violation
-                self.mu, _ = self.get_mu(train_loader.dataset, batch_size=self.batch_size, n_workers=self.n_workers, model=model)
-                self.theta += self.eta * (self.M_matrix @ self.mu - self.constraint_c)
+                mu_, acc_ = self.get_mu(train_loader.dataset, batch_size=self.batch_size, n_workers=self.n_workers, model=model)
+                self.theta += self.eta * (self.M_matrix @ mu_ - self.constraint_c)
+#                 print('updated theta', self.theta)
+#                 print('updated multiplier', mu_)
+#                 print('train_acc', acc_)
                 
         # Get multiplier_avg
-        multipliers_set_matrix = torch.stack(self.multipliers_set)
-        multiplier_avg = torch.mean(multipliers_set_matrix, dim=0)
+        multiplier_set_matrix = torch.stack(self.multiplier_set)
+        multiplier_avg = torch.mean(multiplier_set_matrix, dim=0)
+#         print('multiplier_avg', multiplier_avg)
         
         # Calculate lagrangian with multiplier_avg
         best_value = float("inf")
         print('inf_value', best_value)
-        print('len(self.models_set)', len(self.models_set))
-        for i in range(len(self.models_set)):
+        print('len(self.model_set)', len(self.model_set))
+        for i in range(len(self.model_set)):
             print('i', i)
-            value = self.Lagrangian_01(train_loader.dataset, batch_size=128, n_workers=2, model=self.models_set[i], multiplier=multiplier_avg)
+            value = self.Lagrangian_01(train_loader.dataset, batch_size=128, n_workers=2, model=self.model_set[i], multiplier=multiplier_avg)
             print('current_value', value)
             if value < best_value:
                 best_value = value
@@ -138,14 +145,19 @@ class Trainer(trainer.GenericTrainer):
         print('final index', best_index)
         
         # Get best deterministic model
-        self.model = self.models_set[best_index]
-                
+        self.model = self.model_set[best_index]
+        
+#         print('last multiplier_set', self.multiplier_set)
+#         print('last theta', self.theta)
+#         print('last multiplier', self.multiplier)
+#         print('last model_set', self.model_set)
+#         print('last train acc', acc_)
 
     def _train_epoch(self, epoch, train_loader, model):
         model.train()
 
-        running_acc = 0.0
         running_loss = 0.0
+        running_acc = 0.0
         avg_batch_time = 0.0
 
         n_batches = len(train_loader)
@@ -190,15 +202,16 @@ class Trainer(trainer.GenericTrainer):
                     group_denom = group_count + (group_count==0).float() # avoid nans
                     loss = nn.CrossEntropyLoss(reduction='none')(outputs, labels)
                     group_loss = (group_map @ loss.view(-1))/group_denom
-                    weights = self.weight_matrix.flatten().cuda()
-                    loss = torch.mean(group_loss*weights)
+                    loss = torch.mean(group_loss)
                 else:
                     loss = torch.mean(nn.CrossEntropyLoss(reduction='none')(outputs, labels))
                 
-                return outputs, loss    
+                return outputs, loss      
 
             outputs, loss = closure()
-            preds = torch.argmax(outputs, dim=1)
+            
+            preds = torch.argmax(outputs, dim=1) # not differentiable
+            output_probs = torch.nn.Softmax(dim=None)(outputs) # n by c
             
             def closure_mu():
                 subgroups = groups * n_classes + labels
@@ -206,11 +219,14 @@ class Trainer(trainer.GenericTrainer):
                 group_map_ext = torch.cat((group_map, torch.ones(group_map.size(1)).view(1,-1).cuda()))
                 group_count = group_map_ext.sum(1)
                 group_denom = group_count + (group_count==0).float() # avoid nans, mini-batch
-                group_output = (group_map_ext @ (preds.view(-1).float()))/group_denom
+                group_output = (group_map_ext @ (output_probs[:,1].view(-1).float()))/group_denom
                 return group_output
-            
+
+    
             mu = closure_mu()
-            loss += self.multipliers @ (self.M_matrix @ mu - self.constraint_c)
+
+            reg = self.multiplier @ (self.M_matrix @ mu - self.constraint_c)
+            loss += reg
             loss.backward()
             if not self.sam:
                 if self.nlp_flag:
@@ -253,6 +269,7 @@ class Trainer(trainer.GenericTrainer):
                 avg_batch_time = 0.0
 
         last_batch_idx = i
+        print('loss', loss)
         return last_batch_idx
 
     def get_M_matrix(self, target_criterion): # for eo
@@ -264,7 +281,7 @@ class Trainer(trainer.GenericTrainer):
         matrix_cat = torch.cat((plus_matrix, minus_matrix))
         vector_cat = torch.cat((minus_vector, plus_vector))
         M_matrix = torch.cat((matrix_cat, vector_cat.reshape(-1,1)), dim=1)
-        return M_matrix
+        return M_matrix.float()
 
     def get_mu(self, dataset, batch_size=128, n_workers=2, model=None):
         if model != None:
@@ -324,7 +341,7 @@ class Trainer(trainer.GenericTrainer):
         if self.cuda:
             mu = mu.cuda()
             acc = acc.cuda()
-        return mu, acc
+        return mu.float(), acc.float()
     
 
     def criterion(self, model, outputs, labels):
@@ -333,8 +350,12 @@ class Trainer(trainer.GenericTrainer):
     
     def initialize_all(self):
         for name, param in self.model.state_dict().items():
-            self.model.state_dict()[name][:] = torch.nn.init.normal_(param, mean=0.0, std=1.0)
-
+#             self.model.state_dict()[name][:] = torch.nn.init.normal_(param, mean=0.0, std=1.0)
+            if 'bias' not in name:
+                self.model.state_dict()[name][:] = torch.nn.init.xavier_uniform_(param)
+            else:
+                self.model.state_dict()[name][:] = torch.nn.init.uniform_(param)
+        
         self.optimizer = optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
         print('initialized')
@@ -345,7 +366,7 @@ class Trainer(trainer.GenericTrainer):
             model.eval()
         
         mu, acc = self.get_mu(dataset, batch_size=self.batch_size, n_workers=self.n_workers, model=model)
-        error_rate = 1 - acc
+        error_rate = 1.0 - acc
         Lagrangian = error_rate + multiplier @ (self.M_matrix @ mu - self.constraint_c)
         
         return Lagrangian.item()
