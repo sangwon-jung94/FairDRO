@@ -53,6 +53,7 @@ class Trainer(trainer.GenericTrainer):
 #         Y_S_set, Y_set, S_set, self.P_Y_S = self.get_statistics(train_loader.dataset, batch_size=self.batch_size, n_workers=self.n_workers)
         
         
+        backup_model = copy.deepcopy(self.model)
         
         print('eta_learning_rate : ', self.eta)
         n_iters = self.iteration
@@ -70,7 +71,9 @@ class Trainer(trainer.GenericTrainer):
             
             if self.model_name == 'lr':
                 # initialize the model
-                self.initialize_all()
+                # self.initialize_all()
+                self.reset_model(backup_model)
+            
             if self.nlp_flag:
                 assert n_iters == 1
                 self.weight_update_term = 100
@@ -348,17 +351,23 @@ class Trainer(trainer.GenericTrainer):
         return nn.CrossEntropyLoss()(outputs, labels)
     
     
-    def initialize_all(self):
-        for name, param in self.model.state_dict().items():
-#             self.model.state_dict()[name][:] = torch.nn.init.normal_(param, mean=0.0, std=1.0)
-            if 'bias' not in name:
-                self.model.state_dict()[name][:] = torch.nn.init.xavier_uniform_(param)
-            else:
-                self.model.state_dict()[name][:] = torch.nn.init.uniform_(param)
+#     def initialize_all(self):
+#         for name, param in self.model.state_dict().items():
+# #             self.model.state_dict()[name][:] = torch.nn.init.normal_(param, mean=0.0, std=1.0)
+#             if 'bias' not in name:
+#                 self.model.state_dict()[name][:] = torch.nn.init.xavier_uniform_(param)
+#             else:
+#                 self.model.state_dict()[name][:] = torch.nn.init.uniform_(param)
         
+#         self.optimizer = optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+#         self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
+#         print('initialized')
+
+    def reset_model(self, backup_model):
+        self.model = copy.deepcopy(backup_model)
         self.optimizer = optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
-        print('initialized')
+        print('reset')
 
     
     def Lagrangian_01(self, dataset, batch_size=128, n_workers=2, model=None, multiplier=None):
