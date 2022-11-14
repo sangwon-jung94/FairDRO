@@ -2,6 +2,7 @@ from __future__ import print_function
 from collections import defaultdict
 
 import copy
+
 import time
 from utils import get_accuracy, chi_proj, chi_proj_nonuni
 from trainer.loss_utils import compute_hinton_loss
@@ -186,7 +187,7 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda(device=self.device)
                 groups = groups.cuda(device=self.device)
             
-            q_vector = self.adv_probs_dict.copy()
+            q_vector = copy.deepcopy(self.adv_probs_dict)
             def closure():
                 subgroups = groups * n_classes + labels
                 if self.nlp_flag:
@@ -212,7 +213,6 @@ class Trainer(trainer.GenericTrainer):
                                 if n_classes == 2:
                                     labels[mask] = 1-labels[mask]
                                 q_vector[l][g] = -q
-
                 if criterion is not None:
                     loss = criterion(outputs, labels)
                 else:
@@ -306,6 +306,7 @@ class Trainer(trainer.GenericTrainer):
         
         idxs = np.array([i * n_classes for i in range(n_groups)])
         
+        q_ibr = copy.deepcopy(self.adv_probs_dict)
         for l in range(n_classes):
             label_group_loss = losses[idxs+l]
             if not self.margin:
