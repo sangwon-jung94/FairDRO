@@ -51,6 +51,10 @@ class TrainerFactory:
             import trainer.cgdro_no_sampling as trainer
         elif method == 'exp_grad_reduction':
             import trainer.exp_grad_reduction as trainer
+        elif method == 'cotter':
+            import trainer.cotter as trainer
+        elif method == 'fairdro':
+            import trainer.fairDRO as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)

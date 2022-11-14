@@ -62,7 +62,11 @@ class Trainer(trainer.GenericTrainer):
         running_acc = 0.0
         running_loss = 0.0
         batch_start_time = time.time()
-        
+
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
+        n_subgroups = n_classes * n_groups
+
         for i, data in enumerate(train_loader):
             # Get the inputs
             inputs, _, groups, targets, idx = data
@@ -88,9 +92,25 @@ class Trainer(trainer.GenericTrainer):
                 else:
                     outputs = model(inputs, get_inter=True)
                     logits = outputs[-1]
+                    
                 # stu_logits = outputs_transformed[-1]
 
-                loss = self.criterion(logits, labels).mean()
+#                 loss = self.criterion(logits, labels).mean()
+
+                if self.balanced:
+                    subgroups = groups * n_classes + labels
+                    group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                    group_count = group_map.sum(1)
+                    group_denom = group_count + (group_count==0).float() # avoid nans
+                    loss = nn.CrossEntropyLoss(reduction='none')(logits, labels)
+                    group_loss = (group_map @ loss.view(-1))/group_denom
+                    loss = torch.mean(group_loss)
+                else:
+                    if criterion is not None:
+                        loss = criterion(outputs, labels).mean()
+                    else:
+                        loss = self.criterion(outputs, labels).mean()
+                        
                 f_s = outputs[-2] if not self.nlp_flag else outputs[2][0][:,0,:]
                 group_onehot = F.one_hot(groups).float()
                 hsic_loss = 0

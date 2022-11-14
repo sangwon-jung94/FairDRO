@@ -145,6 +145,9 @@ def make_log_name(args):
     
     elif args.method == 'fairbatch':
         log_name += f'_gamma{args.gamma}'
+        
+    elif args.method == 'cotter':
+        log_name += f'_lamblr{args.lamblr}_eps{args.epsilon}'
 
     elif 'gdro' in args.method:
 #         if not args.ibr:
@@ -160,14 +163,23 @@ def make_log_name(args):
                 
         if args.trueloss:
             log_name +='_trueloss'
+    
     elif 'variance' in args.method:
         log_name += f'_rho{args.rho}'        
-
+        
+    if args.method == 'fairdro':
+        log_name += f'_rho{args.rho}'
+        if args.margin:
+            log_name += f'_margin'
+        if args.trueloss:
+            log_name +='_trueloss'
+        if args.label_flipped:
+            log_name +='_flipped'
+        
     if 'disp_mist' == args.method:
         log_name += f'_lamb{args.lamb}'
     if 'renyi' == args.method:
         log_name += f'_lamb{args.lamb}'
-
 
     if args.labelwise:
         log_name += '_labelwise'
