@@ -169,7 +169,8 @@ def make_log_name(args):
         
     if args.method == 'fairdro':
         log_name += f'_{args.optim_q}'
-        log_name += f'_{args.q_decay}'
+        if args.optim_q == 'ibr_ip':
+            log_name += f'_{args.q_decay}'
         log_name += f'_rho{args.rho}'
         if args.margin:
             log_name += f'_margin'
