@@ -210,9 +210,9 @@ class Trainer(trainer.GenericTrainer):
                             q = q_vector[l][g]
                             if q < 0:
                                 mask = (groups == g) * (labels == l)
-                                if n_classes == 2:
-                                    labels[mask] = 1-labels[mask]
+                                labels[mask] = (1-labels[mask]) / (n_classes-1)
                                 q_vector[l][g] = -q
+                                
                 if criterion is not None:
                     loss = criterion(outputs, labels)
                 else:
