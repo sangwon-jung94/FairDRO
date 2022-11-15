@@ -14,8 +14,6 @@ class Trainer(trainer.GenericTrainer):
         self.gamma = args.gamma # learning rate of adv_probs
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
     
-    def eo_constraints(self, predictions, labels, groups, n_classes=2, n_groups=2):
-        
 
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         global loss_set

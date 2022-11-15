@@ -12,6 +12,7 @@ import numpy as np
 
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
+
 def bisection(eta_min, eta_max, f, tol=1e-6, max_iter=1000):
     """Expects f an increasing function and return eta in [eta_min, eta_max]
     s.t. |f(eta)| <= tol (or the best solution after max_iter iterations"""

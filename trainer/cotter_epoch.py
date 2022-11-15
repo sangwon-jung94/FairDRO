@@ -2,7 +2,7 @@ from __future__ import print_function
 from collections import defaultdict
 
 import time
-from utils import get_accuracy, get_subgroup_accuracy
+from utils import get_accuracy
 import trainer
 import torch
 import torch.nn as nn
@@ -16,7 +16,7 @@ class Trainer(trainer.GenericTrainer):
         self.lamblr = args.lamblr # learning rate of adv_probs
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
 #         self.train_criterion = torch.nn.MultiMarginLoss(reduction='none')
-        self.hinge_loss = torch.nn.MultiMarginLoss()
+        self.hinge_loss = torch.nn.MultiMarginLoss(reduction='none')
 #         self.hinge_loss = nn.CrossEntropyLoss()
         
     def stationary_distribution(self, M):
@@ -41,7 +41,6 @@ class Trainer(trainer.GenericTrainer):
         tnr_group1_mask = ((1-labels) * groups) == 1
         tpr_group0_mask = (labels * (1-groups)) == 1
         tpr_group1_mask = (labels * groups) == 1
-        
         a = tnr_group0_mask.sum()
         b = tnr_group1_mask.sum()
         c = tpr_group0_mask.sum()
@@ -96,14 +95,15 @@ class Trainer(trainer.GenericTrainer):
         self.M = torch.ones((5,5))/5
         
         for epoch in range(epochs):
-
-            self._train_epoch(epoch, train_loader, model, criterion)
+            station_dist = self.stationary_distribution(self.M)
+            self._train_epoch(epoch, train_loader, model, station_dist, criterion)
             _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
                                                                epoch,
                                                                train=True,
                                                                record=self.record,
                                                                writer=writer
                                                               )
+            self.update_M(station_dist, train_subgroup_acc)
 
             eval_start_time = time.time()                
             eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -134,7 +134,7 @@ class Trainer(trainer.GenericTrainer):
                   
         print('Training Finished!')        
 
-    def _train_epoch(self, epoch, train_loader, model, criterion=None):
+    def _train_epoch(self, epoch, train_loader, model, station_dist, criterion=None):
         model.train()
         
         running_acc = 0.0
@@ -147,7 +147,6 @@ class Trainer(trainer.GenericTrainer):
         n_subgroups = n_classes * n_groups
         
         for i, data in enumerate(train_loader):
-            station_dist = self.stationary_distribution(self.M)            
             # Get the inputs
             inputs, _, groups, targets, _ = data
             labels = targets
@@ -173,7 +172,6 @@ class Trainer(trainer.GenericTrainer):
                     outputs = model(inputs)
 
                 constraints_loss = self.eo_constraints(outputs, labels, groups)
-                
                 tmp = 0
                 for i in range(4):
                     tmp += constraints_loss[i] * station_dist[i+1]
@@ -209,9 +207,6 @@ class Trainer(trainer.GenericTrainer):
                 if self.nlp_flag:
                     torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
                 self.optimizer.second_step(zero_grad=True)
-                
-            train_subgroup_acc = get_subgroup_accuracy(outputs, labels, groups, n_classes, n_groups)
-            self.update_M(station_dist, train_subgroup_acc)
                             
             running_loss += loss.item()
             running_acc += get_accuracy(outputs, labels)

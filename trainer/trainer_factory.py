@@ -53,6 +53,8 @@ class TrainerFactory:
             import trainer.exp_grad_reduction as trainer
         elif method == 'cotter':
             import trainer.cotter as trainer
+        elif method == 'cotter_epoch':
+            import trainer.cotter_epoch as trainer
         elif method == 'fairdro':
             import trainer.fairDRO as trainer
         else:
