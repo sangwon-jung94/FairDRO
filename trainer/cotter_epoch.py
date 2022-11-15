@@ -16,7 +16,7 @@ class Trainer(trainer.GenericTrainer):
         self.lamblr = args.lamblr # learning rate of adv_probs
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
 #         self.train_criterion = torch.nn.MultiMarginLoss(reduction='none')
-        self.hinge_loss = torch.nn.MultiMarginLoss(reduction='none')
+        self.hinge_loss = torch.nn.MultiMarginLoss()
 #         self.hinge_loss = nn.CrossEntropyLoss()
         
     def stationary_distribution(self, M):
