@@ -27,6 +27,8 @@ class Trainer(trainer.GenericTrainer):
         self.constraint_c = args.constraint_c # vector
         self.weight_decay = args.weight_decay #
         
+        assert self.nlp_flag == False # not implemented
+        
     def train(self, train_loader, test_loader, epochs, dummy_loader=None, writer=None):
         log_set = defaultdict(list)
 
@@ -42,16 +44,16 @@ class Trainer(trainer.GenericTrainer):
         
         self.theta = torch.zeros(self.n_groups * self.n_classes * 2)
         self.multiplier = torch.zeros(self.n_groups * self.n_classes * 2)
+    
+
+        S_Y_set, Y_set, S_set, self.P_S_Y_mat, self.P_Y = self.get_statistics(train_loader.dataset, batch_size=self.batch_size, n_workers=self.n_workers)
         
         if self.cuda:
             self.theta = self.theta.cuda()
             self.M_matrix = self.M_matrix.cuda()
             self.multiplier = self.multiplier.cuda()
-        
-    
-
-#         Y_S_set, Y_set, S_set, self.P_Y_S = self.get_statistics(train_loader.dataset, batch_size=self.batch_size, n_workers=self.n_workers)
-        
+            self.P_S_Y_mat = self.P_S_Y_mat.cuda()
+            self.P_Y = self.P_Y.cuda()
         
         backup_model = copy.deepcopy(self.model)
         
@@ -69,10 +71,7 @@ class Trainer(trainer.GenericTrainer):
             
             start_t = time.time()
             
-            if self.model_name == 'lr':
-                # initialize the model
-                # self.initialize_all()
-                self.reset_model(backup_model)
+            self.reset_model(backup_model)
             
             if self.nlp_flag:
                 assert n_iters == 1
@@ -114,10 +113,11 @@ class Trainer(trainer.GenericTrainer):
             train_t = int((end_t - start_t) / 60)
             print('Training Time : {} hours {} minutes / iter : {}/{}'.format(int(train_t / 60), (train_t % 60),
                                                                               (iter_ + 1), n_iters))
-            model=copy.deepcopy(self.model)
-            self.model_set.append(model)
             
             if not self.nlp_flag:
+                model=copy.deepcopy(self.model)
+                self.model_set.append(model)
+                
                 # get statistics & calculate violation
                 mu_, acc_ = self.get_mu(train_loader.dataset, batch_size=self.batch_size, n_workers=self.n_workers, model=model)
                 self.theta += self.eta * (self.M_matrix @ mu_ - self.constraint_c)
@@ -168,7 +168,9 @@ class Trainer(trainer.GenericTrainer):
         n_classes = train_loader.dataset.n_classes
         n_groups = train_loader.dataset.n_groups
         n_subgroups = n_classes * n_groups
-
+        
+        lambda_mat = (self.multiplier[:self.n_groups * self.n_classes] - self.multiplier[self.n_groups * self.n_classes:]).reshape(self.n_groups, self.n_classes)
+        
         for i, data in enumerate(train_loader):
             batch_start_time = time.time()
             # Get the inputs
@@ -182,8 +184,17 @@ class Trainer(trainer.GenericTrainer):
                 inputs = inputs.cuda()
                 labels = labels.cuda()
                 groups = groups.cuda()
-                
-                
+            
+            if not self.balanced:
+                C_0 = (labels!=0).long()
+                C_1 = (labels!=1).long() + lambda_mat[groups, labels] / self.P_S_Y_mat[groups, labels] - torch.sum(lambda_mat[:, labels]) / self.P_Y[labels]
+            else:
+                subgroup_probs = self.P_S_Y_mat[groups, labels]
+                C_0 = (labels!=0).long() / subgroup_probs
+                C_1 = (labels!=1).long() + lambda_mat[groups, labels] / self.P_S_Y_mat[groups, labels] - torch.sum(lambda_mat[:, labels]) / self.P_Y[labels]
+            reweights = torch.abs(C_0 - C_1)
+            relabels = (C_0>C_1).long()
+            
             def closure():
                 if self.nlp_flag:
                     input_ids = inputs[:, :, 0]
@@ -207,8 +218,8 @@ class Trainer(trainer.GenericTrainer):
                     group_loss = (group_map @ loss.view(-1))/group_denom
                     loss = torch.mean(group_loss)
                 else:
-                    loss = torch.mean(nn.CrossEntropyLoss(reduction='none')(outputs, labels))
-                
+                    loss = torch.mean(reweights * nn.CrossEntropyLoss(reduction='none')(outputs, relabels))
+                    
                 return outputs, loss      
 
             outputs, loss = closure()
@@ -298,14 +309,14 @@ class Trainer(trainer.GenericTrainer):
         Y_pred_set = []
         Y_set = []
 #         S_set = []
-        Y_S_set = [] # subgroups = groups * n_classes + labels
+        S_Y_set = [] # subgroups = groups * n_classes + labels
         total = 0
         with torch.no_grad():
             for i, data in enumerate(dataloader):
                 inputs, _, sen_attrs, targets, _ = data
                 Y_set.append(targets)
 #                 S_set.append(sen_attrs)
-                Y_S_set.append(sen_attrs * self.n_classes + targets)
+                S_Y_set.append(sen_attrs * self.n_classes + targets)
 
                 if self.cuda:
                     inputs = inputs.cuda()
@@ -332,14 +343,14 @@ class Trainer(trainer.GenericTrainer):
 
         Y_set = torch.cat(Y_set).cuda()
 #         S_set = torch.cat(S_set)
-        Y_S_set = torch.cat(Y_S_set).cuda()
+        S_Y_set = torch.cat(S_Y_set).cuda()
         Y_pred_set = torch.cat(Y_pred_set) if len(Y_pred_set) != 0 else torch.zeros(0)
         
         acc = torch.sum(Y_pred_set==Y_set)/len(Y_set)
         
         mu[-1] = torch.mean(Y_pred_set.float())
         for i in range(len(mu)-1):
-            index_set = torch.where(Y_S_set==i)[0]
+            index_set = torch.where(S_Y_set==i)[0]
             mu[i] = torch.mean(Y_pred_set.float()[index_set])
         if self.cuda:
             mu = mu.cuda()
@@ -365,8 +376,8 @@ class Trainer(trainer.GenericTrainer):
 
     def reset_model(self, backup_model):
         self.model = copy.deepcopy(backup_model)
-        self.optimizer = optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
-        self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
+        self.optimizer = optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay) # depends on method
+        self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs) # depends on method
         print('reset')
 
     
@@ -385,35 +396,36 @@ class Trainer(trainer.GenericTrainer):
     ##############################################################################################################
     
     
-#     def get_statistics(self, dataset, batch_size=128, n_workers=2):
+    def get_statistics(self, dataset, batch_size=128, n_workers=2):
 
-#         dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
-#                                 num_workers=n_workers, pin_memory=True, drop_last=False)
+        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
+                                num_workers=n_workers, pin_memory=True, drop_last=False)
 
-#         Y_set = []
-#         S_set = []
-#         Y_S_set = []
-#         total = 0
-#         with torch.no_grad():
-#             for i, data in enumerate(dataloader):
-#                 inputs, _, sen_attrs, targets, _ = data
-#                 Y_set.append(targets)
-#                 S_set.append(sen_attrs)
-#                 Y_S_set.append(sen_attrs * self.n_classes + targets)
+        Y_set = []
+        S_set = []
+        S_Y_set = []
+        total = 0
+        with torch.no_grad():
+            for i, data in enumerate(dataloader):
+                inputs, _, sen_attrs, targets, _ = data
+                Y_set.append(targets)
+                S_set.append(sen_attrs)
+                S_Y_set.append(sen_attrs * self.n_classes + targets)
 
-#                 if self.cuda:
-#                     inputs = inputs.cuda()
-#                     groups = sen_attrs.cuda()
-#                     targets = targets.cuda()
-#                 total+= inputs.shape[0]
+                if self.cuda:
+                    inputs = inputs.cuda()
+                    groups = sen_attrs.cuda()
+                    targets = targets.cuda()
+                total+= inputs.shape[0]
 
-#         Y_set = torch.cat(Y_set).long()
-#         S_set = torch.cat(S_set).long()
-#         Y_S_set = torch.cat(Y_S_set).long()
-#         P_Y_S = torch.zeros(self.n_classes * self.n_groups + 1)
-#         for i in range(len(P_Y_S)-1):
-#             index_set = torch.where(Y_S_set==i)[0]
-#             P_Y_S[i] = len(index_set) / len(Y_S_set)
-#         P_Y_S[-1] = 1.0
-#         return Y_S_set, Y_set, S_set, P_Y_S
+        Y_set = torch.cat(Y_set).long()
+        S_set = torch.cat(S_set).long()
+        S_Y_set = torch.cat(S_Y_set).long()
+        P_S_Y = torch.zeros(self.n_groups * self.n_classes)
+        for i in range(len(P_S_Y)):
+            index_set = torch.where(S_Y_set==i)[0]
+            P_S_Y[i] = len(index_set) / len(S_Y_set)
+        P_S_Y_mat = P_S_Y.reshape(self.n_groups, self.n_classes)
+        P_Y = torch.sum(P_S_Y_mat, dim=0)
+        return S_Y_set, Y_set, S_set, P_S_Y_mat, P_Y
     
