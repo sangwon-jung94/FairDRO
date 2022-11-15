@@ -11,7 +11,7 @@ import torch
 import numpy as np
 
 from torch.utils.data import DataLoader
-
+import torch.nn.functional as F
 def bisection(eta_min, eta_max, f, tol=1e-6, max_iter=1000):
     """Expects f an increasing function and return eta in [eta_min, eta_max]
     s.t. |f(eta)| <= tol (or the best solution after max_iter iterations"""
@@ -73,7 +73,10 @@ class Trainer(trainer.GenericTrainer):
         self.q_decay = args.q_decay    
         self.kd = args.kd
         self.label_flipped = args.label_flipped
-        
+    def KLDivLoss(self, input, output):
+        _input = F.log_softmax(input, dim=1)
+        return -(_input*output).sum(dim=1)
+
     def cal_baseline(self, data, seed, bs, wd):
         model_path = f'trained_models/scratch/{data}/scratch/mlp_seed{str(seed)}_epochs70_bs{bs}_lr0.001_AdamW_wd0.0001.pt'
         scratch_state_dict = torch.load(model_path)
@@ -116,9 +119,9 @@ class Trainer(trainer.GenericTrainer):
             self.n_q_update = 0 
 
         for epoch in range(epochs):
-            self._train_epoch(epoch, train_loader, model, criterion)            
+            self._train_epoch(epoch, train_loader, model, self.train_criterion)            
             if not self.nlp_flag or self.record:
-                _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
+                _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.criterion, 
                                                                    epoch,
                                                                    train=True,
                                                                    record=self.record,
@@ -204,19 +207,21 @@ class Trainer(trainer.GenericTrainer):
                     outputs = model(inputs)
                     
                 if self.label_flipped:
+                    labels_mat = F.one_hot(labels).type(torch.FloatTensor).cuda()
                     for g in range(n_groups):
                         for l in range(n_classes):
                             idx = g * n_classes + l
                             q = q_vector[l][g]
                             if q < 0:
                                 mask = (groups == g) * (labels == l)
-                                labels[mask] = (1-labels[mask]) / (n_classes-1)
+                                labels_mat[mask] = (1-labels_mat[mask]) / float(n_classes-1)
                                 q_vector[l][g] = -q
-                                
-                if criterion is not None:
-                    loss = criterion(outputs, labels)
-                else:
-                    loss = self.train_criterion(outputs, labels)
+                    loss = self.KLDivLoss(outputs, labels_mat)
+                else:                
+                    if criterion is not None:
+                        loss = criterion(outputs, labels)
+                    else:
+                        loss = self.train_criterion(outputs, labels)
 
                 kd_loss = 0
                 if self.kd:
