@@ -30,7 +30,7 @@ def get_args():
     parser.add_argument('--seed', default=0, type=int, help='seed for randomness')
     parser.add_argument('--date', default='20200101', type=str, help='experiment date')
     parser.add_argument('--method', default='scratch', type=str, required=True,
-                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro','gdro_epoch', 'fairbatch','gdro_chi','lgdro_chi','disp_mist','rw', 'fscl','renyi', 'variance','cgdro_new','cgdro_no_sampling', 'exp_grad_reduction','cotter','cotter_epoch', 'fairdro'])
+                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro','gdro_epoch', 'fairbatch','gdro_chi','lgdro_chi','disp_mist','rw', 'fscl','renyi', 'variance','cgdro_new','cgdro_no_sampling', 'exp_grad_reduction','cotter','cotter_epoch', 'fairdro','fairdro_cotter'])
 
     parser.add_argument('--optim', default='Adam', type=str, required=False,
                         choices=['AdamP', 'AdamW','SGD', 'SGD_momentum_decay', 'Adam'],
@@ -38,8 +38,7 @@ def get_args():
     parser.add_argument('--sam', default=False, action='store_true', help='sam')
     parser.add_argument('--lamb', default=1, type=float, help='fairness strength')
     parser.add_argument('--model', default='', required=True, choices=['resnet12', 'resnet50','cifar_net', 'resnet34', 'resnet18', 'resnet101','mlp', 'resnet18_dropout', 'bert','lr'])
-    parser.add_argument('--teamodel', default='', choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp'])    
-    
+    parser.add_argument('--teamodel', default='', choices=['resnet12', 'resnet50', 'resnet34', 'resnet18', 'resnet101','mlp'])        
     parser.add_argument('--teacher-type', default=None, choices=['mlp','resnet12','bert','resnet18', 'resnet34', 'resnet50', 'mobilenet', 'shufflenet', 'cifar_net', 'None'])
     parser.add_argument('--teacher-path', default=None, help='teacher model path')
 
@@ -72,7 +71,7 @@ def get_args():
     parser.add_argument('--q-decay', default='linear', type=str, help='the type of optimization for q')
     parser.add_argument('--margin', default=False, action='store_true', help='whether use a margin scheme or not')
     parser.add_argument('--label_flipped', default=False, action='store_true', help='flip a label when the corresponding q has a negative value')
-    
+    parser.add_argument('--rholr', default=0.001, type=float, help='learning rate of lambda')        
     
     # For exp_grad_reduction,
     parser.add_argument('--bound_B', default=0.01, type=float, help='bound for L1 norm')

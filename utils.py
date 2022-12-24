@@ -160,9 +160,21 @@ def make_log_name(args):
     elif args.method == 'fairbatch':
         log_name += f'_gamma{args.gamma}'
         
-    elif args.method == 'cotter':
+    elif args.method == 'fairdro_cotter':
+        log_name += f'_{args.optim_q}'
+        if args.optim_q == 'ibr_ip':
+            log_name += f'_{args.q_decay}'
+        log_name += f'_rholr{args.rholr}_eps{args.epsilon}'
+        if args.margin:
+            log_name += f'_margin'
+        if args.trueloss:
+            log_name +='_trueloss'
+        
+    elif 'cotter' in args.method:
         log_name += f'_lamblr{args.lamblr}_eps{args.epsilon}'
+        
 
+            
     elif 'gdro' in args.method:
 #         if not args.ibr:
         log_name += f'_gamma{args.gamma}'

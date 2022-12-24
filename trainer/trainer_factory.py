@@ -57,6 +57,8 @@ class TrainerFactory:
             import trainer.cotter_epoch as trainer
         elif method == 'fairdro':
             import trainer.fairDRO as trainer
+        elif method == 'fairdro_cotter':
+            import trainer.fairDRO_cotter as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)

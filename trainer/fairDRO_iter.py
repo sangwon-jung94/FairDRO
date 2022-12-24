@@ -74,6 +74,7 @@ class Trainer(trainer.GenericTrainer):
         self.q_decay = args.q_decay    
         self.kd = args.kd
         self.label_flipped = args.label_flipped
+        
     def KLDivLoss(self, input, output):
         _input = F.log_softmax(input, dim=1)
         return -(_input*output).sum(dim=1)
@@ -105,7 +106,6 @@ class Trainer(trainer.GenericTrainer):
                                         pin_memory=True, 
                                         drop_last=False)
         
-
         self.adv_probs_dict = {}
         for l in range(n_classes):
             n_data = train_loader.dataset.n_data[:,l]
@@ -120,21 +120,12 @@ class Trainer(trainer.GenericTrainer):
         for epoch in range(epochs):
             self._train_epoch(epoch, train_loader, model, self.train_criterion)            
             if not self.nlp_flag or self.record:
-                _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.criterion, 
-                                                                   epoch,
-                                                                   train=True,
-                                                                   record=self.record,
-                                                                   writer=writer
-                                                                  )
-                if self.trueloss:
-                    train_subgroup_loss = 1-train_subgroup_acc
-                # q update
-                if self.optim_q == 'pd':
-                    self._q_update_pd(train_subgroup_loss, n_classes, n_groups)
-                elif self.optim_q == 'ibr':
-                    self._q_update_ibr(train_subgroup_loss, n_classes, n_groups)
-                elif self.optim_q == 'ibr_ip':
-                    self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+#                 _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.criterion, 
+#                                                                    epoch,
+#                                                                    train=True,
+#                                                                    record=self.record,
+#                                                                    writer=writer
+#                                                                   )
 
             eval_start_time = time.time()
             eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -190,6 +181,7 @@ class Trainer(trainer.GenericTrainer):
                 groups = groups.cuda(device=self.device)
             
             q_vector = copy.deepcopy(self.adv_probs_dict)
+            
             def closure():
                 subgroups = groups * n_classes + labels
                 if self.nlp_flag:
@@ -228,7 +220,7 @@ class Trainer(trainer.GenericTrainer):
                         t_outputs = self.teacher(inputs)
                     kd_loss = compute_hinton_loss(outputs, t_outputs, kd_temp=self.temp)
                     kd_loss = kd_loss.sum(dim=1)
-            
+                    
                 loss = loss + self.lamb * kd_loss
             
                 # calculate the labelwise losses

@@ -59,21 +59,54 @@ class Trainer(trainer.GenericTrainer):
 
         return (g0,g1,g2,g3)
     
-    def update_M(self, station_dist, train_subgroup_acc):
+    def dca_constraints(self, outputs, labels, groups, n_classes, n_groups):
+        constraints = []
+        for l in range(n_classes):
+            loss_list = []
+            label_mask = (labels == l).float()
+            for g in range(n_groups):
+                mask = (label_mask * (groups == g).float()).bool()
+                if mask.sum() == 0:
+                    loss_list.append(None)
+                else:
+                    loss_list.append(self.hinge_loss(outputs[mask], labels[mask]))
+
+            for g in range(n_groups-1):
+                loss_a = loss_list[g]
+                loss_b = loss_list[g+1]
+                if loss_a == None or loss_b == None:
+                    constraints.extend([0,0])
+                else:
+                    constraints.append(loss_a - loss_b - self.epsilon)
+                    constraints.append(-loss_a + loss_b - self.epsilon)
+            
+        return constraints
+    
+    def update_M(self, station_dist, train_subgroup_acc, n_classes, n_groups):
+        constraints = []
+        for l in range(n_classes):
+            loss_list = []
+            for g in range(n_groups-1):
+                loss_a = 1-train_subgroup_acc[g,l]
+                loss_b = 1-train_subgroup_acc[g+1,l]
+                constraints.append(loss_a - loss_b - self.epsilon)
+                constraints.append(-loss_a + loss_b - self.epsilon)
+        constraints.insert(0,0)
         
-        tnr_group0 = train_subgroup_acc[0,0]
-        tnr_group1 = train_subgroup_acc[1,0]
-        tpr_group0 = train_subgroup_acc[0,1]
-        tpr_group1 = train_subgroup_acc[1,1]
+#         tnr_group0 = 1-train_subgroup_acc[0,0]
+#         tnr_group1 = 1-train_subgroup_acc[1,0]
+#         tpr_group0 = 1-train_subgroup_acc[0,1]
+#         tpr_group1 = 1-train_subgroup_acc[1,1]
         
-        g0 = tnr_group0 - tnr_group1 - self.epsilon
-        g1 = - tnr_group0 + tnr_group1 - self.epsilon       
-        g2 = tpr_group0 - tpr_group1 - self.epsilon
-        g3 = - tpr_group0 + tpr_group1 - self.epsilon        
+#         g0 = tnr_group0 - tnr_group1 - self.epsilon
+#         g1 = - tnr_group0 + tnr_group1 - self.epsilon       
+#         g2 = tpr_group0 - tpr_group1 - self.epsilon
+#         g3 = - tpr_group0 + tpr_group1 - self.epsilon        
         
-        grad = torch.tensor([0,g0,g1,g2,g3]).unsqueeze(1)
+#         grad = torch.tensor([0,g0,g1,g2,g3]).unsqueeze(1)
+        grad = torch.tensor(constraints).unsqueeze(1)
         tmp = grad @ station_dist.cpu().unsqueeze(0)
-        grad = torch.exp(-self.lamblr * tmp)
+        grad = torch.exp(self.lamblr * tmp)
         self.M = self.M * grad
         self.M = self.M / self.M.sum(0)
         
@@ -93,7 +126,8 @@ class Trainer(trainer.GenericTrainer):
         n_groups = train_loader.dataset.n_groups
         
         self.adv_probs = torch.ones(n_groups*n_classes).cuda() / n_groups*n_classes
-        self.M = torch.ones((5,5))/5
+        n_constraints = n_classes * (n_groups-1) *2 + 1 # +1 for erm loss
+        self.M = torch.ones((n_constraints,n_constraints))/n_constraints
         
         for epoch in range(epochs):
 
@@ -172,7 +206,8 @@ class Trainer(trainer.GenericTrainer):
                 else:
                     outputs = model(inputs)
 
-                constraints_loss = self.eo_constraints(outputs, labels, groups)
+#                 constraints_loss = self.eo_constraints(outputs, labels, groups)
+                constraints_loss = self.dca_constraints(outputs, labels, groups, n_classes, n_groups)
                 
                 tmp = 0
                 for i in range(4):
@@ -211,7 +246,7 @@ class Trainer(trainer.GenericTrainer):
                 self.optimizer.second_step(zero_grad=True)
                 
             train_subgroup_acc = get_subgroup_accuracy(outputs, labels, groups, n_classes, n_groups)
-            self.update_M(station_dist, train_subgroup_acc)
+            self.update_M(station_dist, train_subgroup_acc, n_classes, n_groups)
                             
             running_loss += loss.item()
             running_acc += get_accuracy(outputs, labels)

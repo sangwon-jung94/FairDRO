@@ -2,7 +2,6 @@ from __future__ import print_function
 from collections import defaultdict
 
 import copy
-
 import time
 from utils import get_accuracy, chi_proj, chi_proj_nonuni
 from trainer.loss_utils import compute_hinton_loss
@@ -11,7 +10,6 @@ import torch
 import numpy as np
 
 from torch.utils.data import DataLoader
-import torch.nn.functional as F
 
 def bisection(eta_min, eta_max, f, tol=1e-6, max_iter=1000):
     """Expects f an increasing function and return eta in [eta_min, eta_max]
@@ -45,7 +43,6 @@ def bisection(eta_min, eta_max, f, tol=1e-6, max_iter=1000):
             eta_max = eta
         elif v < 0:
             eta_min = eta
-        
     print(eta_min, eta_max)
     # if the minimum is not reached in max_iter, returns the current value
 #     logger.info('Maximum number of iterations exceeded in bisection')
@@ -55,7 +52,6 @@ class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
         super().__init__(args=args, **kwargs)
         self.gamma = args.gamma # learning rate of adv_probs
-        self.rho = args.rho
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
         self.tol = 1e-4
         
@@ -73,22 +69,49 @@ class Trainer(trainer.GenericTrainer):
         self.trueloss = args.trueloss
         self.q_decay = args.q_decay    
         self.kd = args.kd
-        self.label_flipped = args.label_flipped
-    def KLDivLoss(self, input, output):
-        _input = F.log_softmax(input, dim=1)
-        return -(_input*output).sum(dim=1)
-
-    def cal_baseline(self, data, seed, bs, wd):
-        model_path = f'trained_models/scratch/{data}/scratch/mlp_seed{str(seed)}_epochs70_bs{bs}_lr0.001_AdamW_wd0.0001.pt'
-        scratch_state_dict = torch.load(model_path)
-        temp_state_dict = self.model.state_dict()
-        self.model.load_state_dict(scratch_state_dict)
-        _, _, _, _, _, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, train=True)
-        self.model.load_state_dict(temp_state_dict)
-        return train_subgroup_loss
-
-    def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         
+        self.rholr = args.rholr
+        self.epsilon = args.epsilon
+
+    def stationary_distribution(self, M):
+#         transition_matrix_transp = transition_matrix.T
+        mat = np.array(M)
+        eigenvals, eigenvects = np.linalg.eig(M)
+        '''
+        Find the indexes of the eigenvalues that are close to one.
+        Use them to select the target eigen vectors. Flatten the result.
+        '''
+        close_to_1_idx = np.isclose(eigenvals,1)
+        target_eigenvect = eigenvects[:,close_to_1_idx]
+        target_eigenvect = target_eigenvect[:,0]
+        # Turn the eigenvector elements into probabilites
+        stationary_distrib = target_eigenvect / sum(target_eigenvect) 
+        stationary_distrib = stationary_distrib.real
+        
+        return torch.tensor(stationary_distrib).cuda()
+    
+    def update_M(self, station_dist, train_subgroup_acc):
+        var = train_subgroup_acc.var(dim=0).cpu() - self.epsilon
+        print(f'var : {var}')
+        grad = torch.cat((torch.tensor([0]), var)).unsqueeze(1)
+        
+#         tnr_group0 = train_subgroup_acc[0,0]
+#         tnr_group1 = train_subgroup_acc[1,0]
+#         tpr_group0 = train_subgroup_acc[0,1]
+#         tpr_group1 = train_subgroup_acc[1,1]
+        
+#         g0 = tnr_group0 - tnr_group1 - self.epsilon
+#         g1 = - tnr_group0 + tnr_group1 - self.epsilon       
+#         g2 = tpr_group0 - tpr_group1 - self.epsilon
+#         g3 = - tpr_group0 + tpr_group1 - self.epsilon        
+        
+#         grad = torch.tensor([0,g0,g1,g2,g3]).unsqueeze(1)
+        tmp = grad @ station_dist.cpu().unsqueeze(0)
+        grad = torch.exp(self.rholr * tmp)
+        self.M = self.M * grad
+        self.M = self.M / self.M.sum(0)        
+        
+    def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         
         global loss_set
         model = self.model
@@ -105,9 +128,10 @@ class Trainer(trainer.GenericTrainer):
                                         pin_memory=True, 
                                         drop_last=False)
         
-
+        
         self.adv_probs_dict = {}
-        for l in range(n_classes):
+        
+        for l in range(n_classes):            
             n_data = train_loader.dataset.n_data[:,l]
             self.adv_probs_dict[l] = torch.ones(n_groups).cuda(device=self.device) / n_groups
         
@@ -117,10 +141,17 @@ class Trainer(trainer.GenericTrainer):
             self.total_q_update = (epochs * len(train_loader)) / 100
             self.n_q_update = 0 
 
+        ################# cotter #################
+        self.M = torch.ones((n_classes+1,n_classes+1))/(n_classes+1)
+        station_dist = self.stationary_distribution(self.M)
+        print(f'statdion dist : {station_dist}')        
+        ##########################################
+            
         for epoch in range(epochs):
-            self._train_epoch(epoch, train_loader, model, self.train_criterion)            
+            
+            self._train_epoch(epoch, train_loader, model, criterion, station_dist)            
             if not self.nlp_flag or self.record:
-                _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.criterion, 
+                _, _, _, _, train_subgroup_acc, train_subgroup_loss = self.evaluate(self.model, self.normal_loader, self.train_criterion, 
                                                                    epoch,
                                                                    train=True,
                                                                    record=self.record,
@@ -134,7 +165,13 @@ class Trainer(trainer.GenericTrainer):
                 elif self.optim_q == 'ibr':
                     self._q_update_ibr(train_subgroup_loss, n_classes, n_groups)
                 elif self.optim_q == 'ibr_ip':
-                    self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+                    self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs, station_dist)
+                    
+            ################# cotter #################
+            station_dist = self.stationary_distribution(self.M)
+            print(f'statdion dist : {station_dist}')
+            self.update_M(station_dist, train_subgroup_acc)    
+            ##########################################            
 
             eval_start_time = time.time()
             eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -165,7 +202,7 @@ class Trainer(trainer.GenericTrainer):
                   
         print('Training Finished!')        
 
-    def _train_epoch(self, epoch, train_loader, model, criterion=None):
+    def _train_epoch(self, epoch, train_loader, model, criterion=None, station_dist=None):
         model.train()
         
         running_acc = 0.0
@@ -184,12 +221,15 @@ class Trainer(trainer.GenericTrainer):
             inputs, _, groups, targets, idx = data
             labels = targets
             
+#             if self.uc:
+#                 groups_prob = groups
+#                 groups = torch.distributions.categorical.Categorical(groups_prob).sample()
+            
             if self.cuda:
                 inputs = inputs.cuda(device=self.device)
                 labels = labels.cuda(device=self.device)
                 groups = groups.cuda(device=self.device)
-            
-            q_vector = copy.deepcopy(self.adv_probs_dict)
+                
             def closure():
                 subgroups = groups * n_classes + labels
                 if self.nlp_flag:
@@ -204,66 +244,39 @@ class Trainer(trainer.GenericTrainer):
                     )[1] 
                 else:
                     outputs = model(inputs)
-                    
-                if self.label_flipped:
-                    labels_mat = F.one_hot(labels).type(torch.FloatTensor).cuda()
-                    for g in range(n_groups):
-                        for l in range(n_classes):
-                            idx = g * n_classes + l
-                            q = q_vector[l][g]
-                            if q < 0:
-                                mask = (groups == g) * (labels == l)
-                                labels_mat[mask] = (1-labels_mat[mask]) / float(n_classes-1)
-                                q_vector[l][g] = -q
-                    loss = self.KLDivLoss(outputs, labels_mat)
-                else:                
-                    if criterion is not None:
-                        loss = criterion(outputs, labels)
-                    else:
-                        loss = self.train_criterion(outputs, labels)
 
-                kd_loss = 0
-                if self.kd:
-                    with torch.no_grad():
-                        t_outputs = self.teacher(inputs)
-                    kd_loss = compute_hinton_loss(outputs, t_outputs, kd_temp=self.temp)
-                    kd_loss = kd_loss.sum(dim=1)
-            
-                loss = loss + self.lamb * kd_loss
+                if criterion is not None:
+                    loss = criterion(outputs, labels)
+                else:
+                    loss = self.train_criterion(outputs, labels)
             
                 # calculate the labelwise losses
                 group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
                 group_count = group_map.sum(1)
                 group_denom = group_count + (group_count==0).float() # avoid nans
                 group_loss = (group_map @ loss.view(-1))/group_denom
-            
-    #             total_loss += group_loss.detach().clone()
                 
                 robust_loss = 0
                 idxs = np.array([i * n_classes for i in range(n_groups)])            
                 for l in range(n_classes):
                     label_group_loss = group_loss[idxs+l]
-                    robust_loss += label_group_loss @ q_vector[l]
+                    robust_loss += label_group_loss @ self.adv_probs_dict[l]
                 robust_loss /= n_classes        
+                
+                ################# cotter #################
+                #robust_loss *= station_dist[0]
+                ##########################################
+                
 #                 robust_loss.backward()                
                 return outputs, robust_loss
             
             outputs, robust_loss = closure()
             
-            if not self.sam:
-                self.optimizer.zero_grad()
-                robust_loss.backward()                
-                if self.nlp_flag:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
-                self.optimizer.step()
-            else:
-                robust_loss.backward()                
-                self.optimizer.first_step(zero_grad=True)
-                outputs, robust_loss = closure()
-                loss.backward()
-                if self.nlp_flag:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
-                self.optimizer.second_step(zero_grad=True)
+            self.optimizer.zero_grad()
+            robust_loss.backward()                
+            if self.nlp_flag:
+                torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+            self.optimizer.step()
 
             running_loss += robust_loss.item()
             running_acc += get_accuracy(outputs, labels)
@@ -299,7 +312,13 @@ class Trainer(trainer.GenericTrainer):
                     elif self.optim_q == 'ibr':
                         self._q_update_ibr(train_subgroup_loss, n_classes, n_groups)
                     elif self.optim_q == 'ibr_ip':
-                        self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, self.n_q_update, self.total_q_update)
+                        self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, self.n_q_update, self.total_q_update, station_dist)
+
+                    ################# cotter #################
+                    station_dist = self.stationary_distribution(self.M)
+                    self.update_M(station_dist, train_subgroup_acc)    
+                    ##########################################            
+                    
                     self.n_q_update+=1
                     self.q_update_term = 0
                 
@@ -310,14 +329,9 @@ class Trainer(trainer.GenericTrainer):
         
         idxs = np.array([i * n_classes for i in range(n_groups)])
         
-        q_ibr = copy.deepcopy(self.adv_probs_dict)
         for l in range(n_classes):
             label_group_loss = losses[idxs+l]
-            if not self.margin:
-                q_ibr[l] = self._update_mw_bisection(label_group_loss)#, self.group_dist[l])
-            else:
-                q_ibr[l] = self._update_mw_margin(label_group_loss)#, self.group_dist[l])
-            self.adv_probs_dict[l] = q_ibr[l]
+            self.adv_probs_dict[l] = self._update_mw_bisection(label_group_loss)
             print(f'{l} label loss : {losses[idxs+l]}')
             print(f'{l} label q values : {self.adv_probs_dict[l]}')
     
@@ -338,7 +352,7 @@ class Trainer(trainer.GenericTrainer):
 #                self.adv_probs_dict[l] = torch.from_numpy(chi_proj_nonuni(self.adv_probs_dict[l], self.rho, self.group_dist[l])).cuda(device=self.device).float()
 #            self._q_update(train_subgroup_loss, n_classes, n_groups)            
 
-    def _q_update_ibr_linear_interpolation(self, train_subgroup_loss, n_classes, n_groups, epoch, epochs):
+    def _q_update_ibr_linear_interpolation(self, train_subgroup_loss, n_classes, n_groups, epoch, epochs, station_dist):
         train_subgroup_loss = torch.flatten(train_subgroup_loss)
         assert len(train_subgroup_loss) == (n_classes * n_groups)
         
@@ -349,12 +363,19 @@ class Trainer(trainer.GenericTrainer):
             cur_step_size = 0.5 * (1 + np.cos(np.pi * (epoch/epochs)))
         elif self.q_decay == 'linear':
             cur_step_size = 1 - epoch/epochs
+            
         for l in range(n_classes):
+            
+            ################# cotter #################
+            rho = station_dist[l+1] / (station_dist[0] / n_classes)
+            print(f'{l} label rho : {rho}')
+            ##########################################            
+            
             label_group_loss = train_subgroup_loss[idxs+l]
             if not self.margin:
                 q_ibr[l] = self._update_mw_bisection(label_group_loss)#, self.group_dist[l])
             else:
-                q_ibr[l] = self._update_mw_margin(label_group_loss)#, self.group_dist[l])
+                q_ibr[l] = self._update_mw_margin(label_group_loss, rho)#, self.group_dist[l])
             self.adv_probs_dict[l] = q_start[l] + cur_step_size*(q_ibr[l] - q_start[l])
             print(f'{l} label loss : {train_subgroup_loss[idxs+l]}')
             print(f'{l} label q_ibr values : {q_ibr[l]}')
@@ -397,27 +418,16 @@ class Trainer(trainer.GenericTrainer):
             q = torch.clamp(q, min=torch.min(self.p_train).item())
             q = q / q.sum()
 
-#         if self.logging:
-#             logger.info("EMA before-baseline losses: {}".format(
-#                 " ".join(["{:.6f}".format(xx.item()) for xx in self.sum_losses[0:self.n_groups]])))
-#             logger.info("EMA after-baseline losses: {}".format(" ".join(["{:.6f}".format(xx.item()) for xx in past_losses[0:self.n_groups]])))
-#             logger.info("EMA group fractions: {}".format(" ".join(["{:.6f}".format(xx.item()) for xx in self.p_train[0:self.n_groups]])))
-#             sum_weights = q[0:self.n_groups].sum().item()
-#             logger.info("Group loss weights: {}".format(" ".join(["{:.6f}".format(xx.item() / sum_weights) for xx in q[0:self.n_groups]])))
-
-#         if self.args.clear_history:
-#             self.sum_losses.zero_()
-        # self.count_cat.fill_(1.)
-
         return q        
 
 
-    def _update_mw_margin(self, losses, p_train=None):
+    def _update_mw_margin(self, losses, rho, p_train=None):
         
         if losses.min() < 0:
             raise ValueError
 
-        rho = self.rho
+#         rho = self.rho
+        rho = rho.item()
         
         n_groups = len(losses)
         mean = losses.mean()
@@ -425,7 +435,7 @@ class Trainer(trainer.GenericTrainer):
         if denom == 0:
             q = torch.zeros_like(losses) + 1/n_groups
         else:
-            q = 1/n_groups + np.sqrt(2 * self.rho / n_groups)* (1/denom) * (losses - mean)
+            q = 1/n_groups + np.sqrt(2 * rho / n_groups)* (1/denom) * (losses - mean)
         return q
         
     

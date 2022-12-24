@@ -16,7 +16,7 @@ class Trainer(trainer.GenericTrainer):
         self.lamblr = args.lamblr # learning rate of adv_probs
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
 #         self.train_criterion = torch.nn.MultiMarginLoss(reduction='none')
-        self.hinge_loss = torch.nn.MultiMarginLoss(reduction='none')
+        self.hinge_loss = torch.nn.MultiMarginLoss()
 #         self.hinge_loss = nn.CrossEntropyLoss()
         
     def stationary_distribution(self, M):
@@ -41,6 +41,7 @@ class Trainer(trainer.GenericTrainer):
         tnr_group1_mask = ((1-labels) * groups) == 1
         tpr_group0_mask = (labels * (1-groups)) == 1
         tpr_group1_mask = (labels * groups) == 1
+
         a = tnr_group0_mask.sum()
         b = tnr_group1_mask.sum()
         c = tpr_group0_mask.sum()
@@ -60,10 +61,10 @@ class Trainer(trainer.GenericTrainer):
     
     def update_M(self, station_dist, train_subgroup_acc):
         
-        tnr_group0 = train_subgroup_acc[0,0]
-        tnr_group1 = train_subgroup_acc[1,0]
-        tpr_group0 = train_subgroup_acc[0,1]
-        tpr_group1 = train_subgroup_acc[1,1]
+        tnr_group0 = 1-train_subgroup_acc[0,0]
+        tnr_group1 = 1-train_subgroup_acc[1,0]
+        tpr_group0 = 1-train_subgroup_acc[0,1]
+        tpr_group1 = 1-train_subgroup_acc[1,1]
         
         g0 = tnr_group0 - tnr_group1 - self.epsilon
         g1 = - tnr_group0 + tnr_group1 - self.epsilon       
@@ -72,7 +73,7 @@ class Trainer(trainer.GenericTrainer):
         
         grad = torch.tensor([0,g0,g1,g2,g3]).unsqueeze(1)
         tmp = grad @ station_dist.cpu().unsqueeze(0)
-        grad = torch.exp(-self.lamblr * tmp)
+        grad = torch.exp(self.lamblr * tmp)
         self.M = self.M * grad
         self.M = self.M / self.M.sum(0)
         
@@ -91,7 +92,6 @@ class Trainer(trainer.GenericTrainer):
         n_classes = train_loader.dataset.n_classes
         n_groups = train_loader.dataset.n_groups
         
-        self.adv_probs = torch.ones(n_groups*n_classes).cuda() / n_groups*n_classes
         self.M = torch.ones((5,5))/5
         
         for epoch in range(epochs):
