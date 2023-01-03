@@ -18,6 +18,7 @@ class Trainer(trainer.GenericTrainer):
 #         self.train_criterion = torch.nn.MultiMarginLoss(reduction='none')
         self.hinge_loss = torch.nn.MultiMarginLoss()
 #         self.hinge_loss = nn.CrossEntropyLoss()
+        self.target_criterion = args.target_criterion
         
     def stationary_distribution(self, M):
 #         transition_matrix_transp = transition_matrix.T
@@ -82,7 +83,28 @@ class Trainer(trainer.GenericTrainer):
             
         return constraints
     
-    def update_M(self, station_dist, train_subgroup_acc, n_classes, n_groups):
+    def ap_constraints(self, outputs, labels, groups, n_classes, n_groups):
+        constraints = []
+        loss_list = []
+        for g in range(n_groups):
+            mask = groups==g
+            if mask.sum() == 0:
+                loss_list.append(None)
+            else:
+                loss_list.append(self.hinge_loss(outputs[mask], labels[mask]))
+
+        for g in range(n_groups-1):
+            loss_a = loss_list[g]
+            loss_b = loss_list[g+1]
+            if loss_a == None or loss_b == None:
+                constraints.extend([0,0])
+            else:
+                constraints.append(loss_a - loss_b - self.epsilon)
+                constraints.append(-loss_a + loss_b - self.epsilon)
+            
+        return constraints    
+    
+    def update_M_dca(self, station_dist, train_subgroup_acc, n_classes, n_groups):
         constraints = []
         for l in range(n_classes):
             loss_list = []
@@ -93,22 +115,26 @@ class Trainer(trainer.GenericTrainer):
                 constraints.append(-loss_a + loss_b - self.epsilon)
         constraints.insert(0,0)
         
-#         tnr_group0 = 1-train_subgroup_acc[0,0]
-#         tnr_group1 = 1-train_subgroup_acc[1,0]
-#         tpr_group0 = 1-train_subgroup_acc[0,1]
-#         tpr_group1 = 1-train_subgroup_acc[1,1]
-        
-#         g0 = tnr_group0 - tnr_group1 - self.epsilon
-#         g1 = - tnr_group0 + tnr_group1 - self.epsilon       
-#         g2 = tpr_group0 - tpr_group1 - self.epsilon
-#         g3 = - tpr_group0 + tpr_group1 - self.epsilon        
-        
-#         grad = torch.tensor([0,g0,g1,g2,g3]).unsqueeze(1)
         grad = torch.tensor(constraints).unsqueeze(1)
         tmp = grad @ station_dist.cpu().unsqueeze(0)
         grad = torch.exp(self.lamblr * tmp)
         self.M = self.M * grad
         self.M = self.M / self.M.sum(0)
+
+    def update_M_ap(self, station_dist, train_group_acc, n_classes, n_groups):
+        constraints = []
+        for g in range(n_groups-1):
+            loss_a = 1-train_group_acc[g]
+            loss_b = 1-train_group_acc[g+1]
+            constraints.append(loss_a - loss_b - self.epsilon)
+            constraints.append(-loss_a + loss_b - self.epsilon)
+        constraints.insert(0,0)
+        
+        grad = torch.tensor(constraints).unsqueeze(1)
+        tmp = grad @ station_dist.cpu().unsqueeze(0)
+        grad = torch.exp(self.lamblr * tmp)
+        self.M = self.M * grad
+        self.M = self.M / self.M.sum(0)        
         
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         global loss_set
@@ -126,8 +152,12 @@ class Trainer(trainer.GenericTrainer):
         n_groups = train_loader.dataset.n_groups
         
         self.adv_probs = torch.ones(n_groups*n_classes).cuda() / n_groups*n_classes
-        n_constraints = n_classes * (n_groups-1) *2 + 1 # +1 for erm loss
+        if self.target_criterion == 'dca':
+            n_constraints = n_classes * (n_groups-1) *2 + 1 # +1 for erm loss
+        elif self.target_criterion == 'ap':
+            n_constraints = (n_groups-1) * 2 + 1
         self.M = torch.ones((n_constraints,n_constraints))/n_constraints
+        self.n_constraints = n_constraints
         
         for epoch in range(epochs):
 
@@ -207,10 +237,13 @@ class Trainer(trainer.GenericTrainer):
                     outputs = model(inputs)
 
 #                 constraints_loss = self.eo_constraints(outputs, labels, groups)
-                constraints_loss = self.dca_constraints(outputs, labels, groups, n_classes, n_groups)
+                if self.target_criterion == 'dca':
+                    constraints_loss = self.dca_constraints(outputs, labels, groups, n_classes, n_groups)
+                elif self.target_criterion == 'ap':
+                    constraints_loss = self.ap_constraints(outputs, labels, groups, n_classes, n_groups)
                 
                 tmp = 0
-                for i in range(4):
+                for i in range(self.n_constraints-1):
                     tmp += constraints_loss[i] * station_dist[i+1]
                 constraints_loss = tmp
                 
@@ -245,9 +278,11 @@ class Trainer(trainer.GenericTrainer):
                     torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
                 self.optimizer.second_step(zero_grad=True)
                 
-            train_subgroup_acc = get_subgroup_accuracy(outputs, labels, groups, n_classes, n_groups)
-            self.update_M(station_dist, train_subgroup_acc, n_classes, n_groups)
-                            
+            train_subgroup_acc, train_group_acc = get_subgroup_accuracy(outputs, labels, groups, n_classes, n_groups)
+            if self.target_criterion == 'dca':
+                self.update_M_dca(station_dist, train_subgroup_acc, n_classes, n_groups)
+            elif self.target_criterion == 'ap':
+                self.update_M_ap(station_dist, train_group_acc, n_classes, n_groups)                
             running_loss += loss.item()
             running_acc += get_accuracy(outputs, labels)
 
@@ -263,5 +298,92 @@ class Trainer(trainer.GenericTrainer):
                 batch_start_time = time.time()
 
 
+                
+
+#     def evaluate(self, model, loader, criterion, epoch=0, device=None, train=False, record=False, writer=None):
+#         if record:
+#             assert writer is not None
+            
+#         if not train:
+#             model.eval()
+#         else:
+#             model.train()
+#         n_groups = loader.dataset.n_groups
+#         n_classes = loader.dataset.n_classes
+#         n_subgroups = n_groups * n_classes        
+#         device = self.device if device is None else device
+
+#         group_count = torch.zeros(n_subgroups).cuda(device=device)
+#         group_loss = torch.zeros(n_subgroups).cuda(device=device)        
+#         group_acc = torch.zeros(n_subgroups).cuda(device=device) 
+        
+#         with torch.no_grad():
+#             for j, eval_data in enumerate(loader):
+# #                 if j == 100 and args.dataset=='celeba':
+# #                     break
+#                 # Get the inputs
+#                 inputs, _, groups, classes, _ = eval_data
+#                 labels = classes 
+            
+#                 if self.cuda:
+#                     inputs = inputs.cuda(device)
+#                     labels = labels.cuda(device)
+#                     groups = groups.cuda(device)
+                    
+#                 if self.nlp_flag:
+#                     input_ids = inputs[:, :, 0]
+#                     input_masks = inputs[:, :, 1]
+#                     segment_ids = inputs[:, :, 2]
+#                     outputs = model(
+#                         input_ids=input_ids,
+#                         attention_mask=input_masks,
+#                         token_type_ids=segment_ids,
+#                         labels=labels,
+#                     )[1] 
+#                 else:
+#                     outputs = model(inputs)
+
+#                 loss = criterion(outputs, labels)
+#                 preds = torch.argmax(outputs, 1)
+#                 acc = (preds == labels).float().squeeze()
+                
+#                 # calculate the labelwise losses
+# #                 if not self.uc:
+#                 subgroups = groups * n_classes + labels                
+#                 group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+#                 group_count += group_map.sum(1)
+
+#                 group_loss += (group_map @ loss.view(-1))
+#                 group_acc += group_map @ acc
+# #                 else:
+# #                     idxs = np.array([i * n_classes for i in range(n_groups)])
+# #                     for l in range(n_classes):
+# #                         mask = classes == l
+# # #                         print((groups[mask].T @ loss[mask]).float())
+# # #                         print(groups[mask].sum(dim=0).float())
+# #                         group_count[idxs+l] += groups[mask].sum(dim=0).float()
+# #                         group_loss[idxs+l] += (groups[mask].T @ loss[mask]).float()
+# #                         group_acc[idxs+l] += (groups[mask].T @ acc[mask]).float()
+#             loss = group_loss.sum() / group_count.sum() 
+#             acc = group_acc.sum() / group_count.sum() 
+        
+#             group_loss = group_loss.reshape((n_groups, n_classes))            
+#             group_acc = group_acc.reshape((n_groups, n_classes))
+
+#             total_group_loss = group_loss.sum(dim=0) / group_count.sum(dim=0)
+#             total_group_acc = group_acc.sum(dim=0) / group_count.sum(dim=0)
+
+#             group_loss = group_loss / group_count
+#             group_acc = group_acc / group_count
+
+#             labelwise_acc_gap = torch.max(group_acc, dim=0)[0] - torch.min(group_acc, dim=0)[0]
+#             deoa = torch.mean(labelwise_acc_gap).item()
+#             deom = torch.max(labelwise_acc_gap).item()
+            
+#         if record:
+#             self.write_record(writer, epoch, loss, acc, deom, deoa, group_loss, group_acc, train)
+            
+#         model.train()
+#         return loss, acc, deom, deoa, group_acc, group_loss, total_group_acc
 
 

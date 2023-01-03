@@ -91,7 +91,7 @@ class Trainer(trainer.GenericTrainer):
         return torch.tensor(stationary_distrib).cuda()
     
     def update_M(self, station_dist, train_subgroup_acc):
-        var = train_subgroup_acc.var(dim=0).cpu() - self.epsilon
+        var = train_subgroup_acc.var(dim=0).sqrt().cpu() - self.epsilon
         print(f'var : {var}')
         grad = torch.cat((torch.tensor([0]), var)).unsqueeze(1)
         
@@ -166,12 +166,11 @@ class Trainer(trainer.GenericTrainer):
                     self._q_update_ibr(train_subgroup_loss, n_classes, n_groups)
                 elif self.optim_q == 'ibr_ip':
                     self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs, station_dist)
-                    
-            ################# cotter #################
-            station_dist = self.stationary_distribution(self.M)
-            print(f'statdion dist : {station_dist}')
-            self.update_M(station_dist, train_subgroup_acc)    
-            ##########################################            
+                ################# cotter #################
+                station_dist = self.stationary_distribution(self.M)
+                print(f'statdion dist : {station_dist}')
+                self.update_M(station_dist, train_subgroup_acc)    
+                ##########################################            
 
             eval_start_time = time.time()
             eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -184,9 +183,9 @@ class Trainer(trainer.GenericTrainer):
                                                                             )
             eval_end_time = time.time()
             print('[{}/{}] Method: {} '
-                  'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
+                  'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOA {:.2f} [{:.2f} s]'.format
                   (epoch + 1, epochs, self.method,
-                   eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
+                   eval_loss, eval_acc, eval_deoa, (eval_end_time - eval_start_time)))
             
             if self.record:
                 q_values = {}
@@ -264,7 +263,7 @@ class Trainer(trainer.GenericTrainer):
                 robust_loss /= n_classes        
                 
                 ################# cotter #################
-                #robust_loss *= station_dist[0]
+#                 robust_loss *= station_dist[0]
                 ##########################################
                 
 #                 robust_loss.backward()                
@@ -367,7 +366,7 @@ class Trainer(trainer.GenericTrainer):
         for l in range(n_classes):
             
             ################# cotter #################
-            rho = station_dist[l+1] / (station_dist[0] / n_classes)
+            rho = station_dist[l+1] / (station_dist[0] * n_classes)
             print(f'{l} label rho : {rho}')
             ##########################################            
             

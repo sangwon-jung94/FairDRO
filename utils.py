@@ -98,10 +98,13 @@ def get_subgroup_accuracy(outputs, labels, groups, n_classes, n_groups, reductio
 
         predictions = torch.argmax(outputs, 1)
         c = (predictions==labels).float()
-
-        group_acc = (group_map @ c)/group_denom
-        group_acc = group_acc.reshape((n_groups, n_classes))
-    return group_acc
+        
+        num_correct = group_map @ c
+        subgroup_acc = (num_correct/group_denom).reshape((n_groups, n_classes)) 
+        tmp = num_correct.reshape((n_groups, n_classes)).sum(dim=0)
+        tmp2 = group_denom.reshape((n_groups, n_classes)).sum(dim=0)
+        group_acc = tmp / tmp2
+    return subgroup_acc, group_acc
     
 def check_log_dir(log_dir):
     try:
@@ -172,8 +175,8 @@ def make_log_name(args):
         
     elif 'cotter' in args.method:
         log_name += f'_lamblr{args.lamblr}_eps{args.epsilon}'
-        
-
+        if args.target_criterion == 'ap':
+            log_name += '_ap'
             
     elif 'gdro' in args.method:
 #         if not args.ibr:

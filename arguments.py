@@ -58,7 +58,7 @@ def get_args():
     parser.add_argument('--record', default=False, action='store_true', help='record')
     parser.add_argument('--uc', default=False, action='store_true', help='uncertain')
     
-    parser.add_argument('--target-criterion', default='eo', type=str, choices=['eo', 'dp', 'eopp', 'ap'], help='fairness criterion')
+    parser.add_argument('--target-criterion', default='eo', type=str, choices=['eo', 'dp', 'eopp', 'ap','dca'], help='fairness criterion')
     
     # For reweighting,
     parser.add_argument('--iteration', default=10, type=int, help='iteration for reweighting')
