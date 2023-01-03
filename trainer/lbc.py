@@ -21,7 +21,7 @@ class Trainer(trainer.GenericTrainer):
         self.iteration = args.iteration
         self.batch_size = args.batch_size
         self.n_workers = args.n_workers
-        self.reweighting_target_criterion = args.reweighting_target_criterion
+        self.target_criterion = args.target_criterion
 
     def train(self, train_loader, test_loader, epochs, dummy_loader=None, writer=None):
         log_set = defaultdict(list)
@@ -92,9 +92,9 @@ class Trainer(trainer.GenericTrainer):
                                                                      n_workers=self.n_workers, model=model)
 
                 # calculate violation
-                if self.reweighting_target_criterion == 'dp':
+                if self.target_criterion == 'dp':
                     acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
-                elif self.reweighting_target_criterion == 'eo':
+                elif self.target_criterion == 'eo':
                     acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
                 self.extended_multipliers -= self.eta * violations 
                 self.weight_matrix = self.get_weight_matrix(self.extended_multipliers) 
@@ -181,9 +181,9 @@ class Trainer(trainer.GenericTrainer):
                                                                          n_workers=self.n_workers, model=model)
 
                     # calculate violation
-                    if self.reweighting_target_criterion == 'dp':
+                    if self.target_criterion == 'dp':
                         acc, violations = self.get_error_and_violations_DP(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
-                    elif self.reweighting_target_criterion == 'eo':
+                    elif self.target_criterion == 'eo':
                         acc, violations = self.get_error_and_violations_EO(Y_pred_train, Y_train, S_train, self.n_groups, self.n_classes)
                     self.extended_multipliers -= self.eta * violations 
                     #self.weight_set = self.debias_weights(Y_train, S_train, self.extended_multipliers, n_groups, n_classes)

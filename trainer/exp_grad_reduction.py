@@ -22,12 +22,10 @@ class Trainer(trainer.GenericTrainer):
         self.iteration = args.iteration #iteration for lambda
         self.batch_size = args.batch_size
         self.n_workers = args.n_workers
-        self.reweighting_target_criterion = args.reweighting_target_criterion
-        assert self.reweighting_target_criterion == 'eo' #only for eo
+        self.target_criterion = args.target_criterion
+        assert self.target_criterion == 'eo' #only for eo
         self.constraint_c = args.constraint_c # vector
         self.weight_decay = args.weight_decay #
-        
-        assert self.nlp_flag == False # not implemented
         
     def train(self, train_loader, test_loader, epochs, dummy_loader=None, writer=None):
         log_set = defaultdict(list)
@@ -36,7 +34,7 @@ class Trainer(trainer.GenericTrainer):
         self.n_groups = train_loader.dataset.n_groups
         self.n_classes = train_loader.dataset.n_classes
         assert self.n_classes == 2 #only for binary classification
-        self.M_matrix = self.get_M_matrix(self.reweighting_target_criterion)
+        self.M_matrix = self.get_M_matrix(self.target_criterion)
         
 
         self.multiplier_set = []
@@ -44,6 +42,7 @@ class Trainer(trainer.GenericTrainer):
         
         self.theta = torch.zeros(self.n_groups * self.n_classes * 2)
         self.multiplier = torch.zeros(self.n_groups * self.n_classes * 2)
+        self.best_value = float("inf")
     
 
         S_Y_set, Y_set, S_set, self.P_S_Y_mat, self.P_Y = self.get_statistics(train_loader.dataset, batch_size=self.batch_size, n_workers=self.n_workers)
@@ -55,7 +54,8 @@ class Trainer(trainer.GenericTrainer):
             self.P_S_Y_mat = self.P_S_Y_mat.cuda()
             self.P_Y = self.P_Y.cuda()
         
-        backup_model = copy.deepcopy(self.model)
+        if not self.nlp_flag:
+            backup_model = copy.deepcopy(self.model)
         
         print('eta_learning_rate : ', self.eta)
         n_iters = self.iteration
@@ -71,11 +71,12 @@ class Trainer(trainer.GenericTrainer):
             
             start_t = time.time()
             
-            self.reset_model(backup_model)
+            if not self.nlp_flag:
+                self.reset_model(backup_model)
             
             if self.nlp_flag:
                 assert n_iters == 1
-                self.weight_update_term = 100
+                self.weight_update_term = 1000 #For computation #100 
                 self.weight_update_count = 0
 
             for epoch in range(epochs):
@@ -123,32 +124,32 @@ class Trainer(trainer.GenericTrainer):
                 self.theta += self.eta * (self.M_matrix @ mu_ - self.constraint_c)
 #                 print('updated theta', self.theta)
 #                 print('updated multiplier', mu_)
-#                 print('train_acc', acc_)
-                
-        # Get multiplier_avg
-        multiplier_set_matrix = torch.stack(self.multiplier_set)
-        multiplier_avg = torch.mean(multiplier_set_matrix, dim=0)
-#         print('multiplier_avg', multiplier_avg)
+#                 print('train_acc', acc_)                        
         
-        # Calculate lagrangian with multiplier_avg
-        best_value = float("inf")
-        print('inf_value', best_value)
-        print('len(self.model_set)', len(self.model_set))
-        for i in range(len(self.model_set)):
-            print('i', i)
-            value = self.Lagrangian_01(train_loader.dataset, batch_size=128, n_workers=2, model=self.model_set[i], multiplier=multiplier_avg)
-            print('current_value', value)
-            if value < best_value:
-                best_value = value
-                best_index = i
-                print('true')
-                print('current_best_value', best_value)
-        
-        print('final value', best_value)
-        print('final index', best_index)
-        
-        # Get best deterministic model
-        self.model = self.model_set[best_index]
+        if not self.nlp_flag:
+            # Get multiplier_avg
+            multiplier_set_matrix = torch.stack(self.multiplier_set)
+            multiplier_avg = torch.mean(multiplier_set_matrix, dim=0)
+            # print('multiplier_avg', multiplier_avg)
+
+            # Calculate lagrangian with multiplier_avg            
+            print('inf_value', self.best_value)
+            print('len(self.model_set)', len(self.model_set))
+            for i in range(len(self.model_set)):
+                print('i', i)
+                value = self.Lagrangian_01(train_loader.dataset, batch_size=128, n_workers=2, model=self.model_set[i], multiplier=multiplier_avg)
+                print('current_value', value)
+                if value < self.best_value:
+                    self.best_value = value
+                    best_index = i
+                    print('true')
+                    print('current_best_value', self.best_value)
+
+            print('final value', self.best_value)
+            print('final index', best_index)
+
+            # Get best deterministic model
+            self.model = self.model_set[best_index]
         
 #         print('last multiplier_set', self.multiplier_set)
 #         print('last theta', self.theta)
@@ -158,6 +159,8 @@ class Trainer(trainer.GenericTrainer):
 
     def _train_epoch(self, epoch, train_loader, model):
         model.train()
+        if self.nlp_flag:
+            best_model = copy.deepcopy(model)
 
         running_loss = 0.0
         running_acc = 0.0
@@ -172,6 +175,11 @@ class Trainer(trainer.GenericTrainer):
         lambda_mat = (self.multiplier[:self.n_groups * self.n_classes] - self.multiplier[self.n_groups * self.n_classes:]).reshape(self.n_groups, self.n_classes)
         
         for i, data in enumerate(train_loader):
+            
+            #mu updated
+            #theta updated
+            #lambda
+            
             batch_start_time = time.time()
             # Get the inputs
             inputs, _, groups, targets, _ = data
@@ -191,7 +199,7 @@ class Trainer(trainer.GenericTrainer):
             else:
                 subgroup_probs = self.P_S_Y_mat[groups, labels]
                 C_0 = (labels!=0).long() / subgroup_probs
-                C_1 = (labels!=1).long() + lambda_mat[groups, labels] / self.P_S_Y_mat[groups, labels] - torch.sum(lambda_mat[:, labels]) / self.P_Y[labels]
+                C_1 = (labels!=1).long() / subgroup_probs + lambda_mat[groups, labels] / self.P_S_Y_mat[groups, labels] - torch.sum(lambda_mat[:, labels]) / self.P_Y[labels]
             reweights = torch.abs(C_0 - C_1)
             relabels = (C_0>C_1).long()
             
@@ -259,9 +267,35 @@ class Trainer(trainer.GenericTrainer):
                 self.weight_update_count += 1
                 if self.weight_update_count % self.weight_update_term == 0:
                     # get statistics
-                    Y_pred_train, Y_train, S_train = self.get_statistics(train_loader.dataset, batch_size=self.batch_size,
-                                                                         n_workers=self.n_workers, model=model)
-
+                    
+#                     current_model=copy.deepcopy(model)
+#                     self.model_set.append(current_model)
+                    mu_, acc_ = self.get_mu(train_loader.dataset, batch_size=self.batch_size, n_workers=self.n_workers, model=model)
+                    self.theta += self.eta * (self.M_matrix @ mu_ - self.constraint_c)
+                    
+                    # for numerical stability
+                    self.multiplier = self.bound_B * (torch.exp(self.theta-torch.max(self.theta))/(torch.exp(-torch.max(self.theta))+torch.sum(torch.exp(self.theta-torch.max(self.theta))))) 
+                    print('self.multiplier', self.multiplier)
+                    self.multiplier_set.append(self.multiplier) # plus one for nlp
+                    
+                    lambda_mat = (self.multiplier[:self.n_groups * self.n_classes] - self.multiplier[self.n_groups * self.n_classes:]).reshape(self.n_groups, self.n_classes)
+                    
+                    # self.reset_model(backup_model) # no reset for NLP model
+                    
+                    # Get multiplier_avg
+                    multiplier_set_matrix = torch.stack(self.multiplier_set)
+                    multiplier_avg = torch.mean(multiplier_set_matrix, dim=0)
+                    # print('multiplier_avg', multiplier_avg)
+                    
+                    # Calculate lagrangian with multiplier_avg                  
+                    print('iter', self.weight_update_count)
+                    value = self.Lagrangian_01(train_loader.dataset, batch_size=128, n_workers=2, model=model, multiplier=multiplier_avg) #eval mode
+                    model.train() #train mode
+                    print('current_value', value)
+                    if value < self.best_value:
+                        self.best_value = value
+                        print('current_best_value', self.best_value)                        
+                        best_model = copy.deepcopy(model)
 
 
             running_loss += loss.item()
@@ -284,6 +318,10 @@ class Trainer(trainer.GenericTrainer):
 
         last_batch_idx = i
         print('loss', loss)
+        
+        # Get best deterministic model
+        model = best_model
+        
         return last_batch_idx
 
     def get_M_matrix(self, target_criterion): # for eo

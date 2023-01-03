@@ -20,7 +20,7 @@ class Trainer(trainer.GenericTrainer):
         self.lamb = args.lamb
         self.batch_size = args.batch_size
         self.n_workers = args.n_workers
-        self.reweighting_target_criterion = args.reweighting_target_criterion
+        self.target_criterion = args.target_criterion
         
         
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
@@ -29,9 +29,9 @@ class Trainer(trainer.GenericTrainer):
         model.train()
         self.n_groups = train_loader.dataset.n_groups
         self.n_classes = train_loader.dataset.n_classes
-        if self.reweighting_target_criterion == 'eo':
+        if self.target_criterion == 'eo':
             self.weights = torch.zeros((self.n_classes, self.n_classes))
-        if self.reweighting_target_criterion == 'dp':
+        if self.target_criterion == 'dp':
             self.weights = torch.zeros((1, self.n_classes))
         
         
@@ -123,7 +123,7 @@ class Trainer(trainer.GenericTrainer):
                         loss = self.criterion(outputs, labels).mean()
                 return outputs, loss
             
-            if self.reweighting_target_criterion == 'dp':
+            if self.target_criterion == 'dp':
                 def closure_renyi(inputs, groups, labels, model, weights):
                     assert (weights).shape == (1, self.n_classes)
 
@@ -156,7 +156,7 @@ class Trainer(trainer.GenericTrainer):
                     return loss
                 
                 
-            if self.reweighting_target_criterion == 'eo':
+            if self.target_criterion == 'eo':
                 def closure_renyi(inputs, groups, labels, model, weights):
                     assert (weights).shape == (self.n_classes, self.n_classes)
                     loss = 0
