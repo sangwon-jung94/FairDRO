@@ -17,6 +17,8 @@ class Trainer(trainer.GenericTrainer):
         self.batch_size = args.batch_size
         self.n_workers = args.n_workers
         self.lamb = args.lamb
+        self.target_criterion = args.target_criterion
+        assert (self.target_criterion == 'eo' or self.target_criterion == 'ap')
         
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         global loss_set
@@ -104,56 +106,87 @@ class Trainer(trainer.GenericTrainer):
                         loss = self.criterion(outputs, labels).mean()
                 return outputs, loss
             
-            def closure_FPR(inputs, groups, labels, model):
-                groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
-                groups_onehot = groups_onehot.float() # n by g
-                if self.nlp_flag:
-                    input_ids = inputs[:, :, 0]
-                    input_masks = inputs[:, :, 1]
-                    segment_ids = inputs[:, :, 2]
-                    outputs = model(
-                        input_ids=input_ids,
-                        attention_mask=input_masks,
-                        token_type_ids=segment_ids,
-                        labels=labels,
-                    )[1]
-                else:
-                    outputs = model(inputs) # n by 2
+            if self.target_criterion == 'eo':
+                def closure_FPR(inputs, groups, labels, model):
+                    groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
+                    groups_onehot = groups_onehot.float() # n by g
+                    if self.nlp_flag:
+                        input_ids = inputs[:, :, 0]
+                        input_masks = inputs[:, :, 1]
+                        segment_ids = inputs[:, :, 2]
+                        outputs = model(
+                            input_ids=input_ids,
+                            attention_mask=input_masks,
+                            token_type_ids=segment_ids,
+                            labels=labels,
+                        )[1]
+                    else:
+                        outputs = model(inputs) # n by 2
+
+                    d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0  # n by 1
+                    d_theta_new = -(labels.view(-1,1)-1)*(2*labels.view(-1,1)-1)*d_theta
+                    g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
+                    z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
+                    loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
+                    loss = torch.sum(loss_groupwise)
+                    return loss
+
+                def closure_FNR(inputs, groups, labels, model):
+                    groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
+                    groups_onehot = groups_onehot.float() # n by g
+                    if self.nlp_flag:
+                        input_ids = inputs[:, :, 0]
+                        input_masks = inputs[:, :, 1]
+                        segment_ids = inputs[:, :, 2]
+                        outputs = model(
+                            input_ids=input_ids,
+                            attention_mask=input_masks,
+                            token_type_ids=segment_ids,
+                            labels=labels,
+                        )[1]
+                    else:
+                        outputs = model(inputs) # n by 2
+                    d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0  # n by 1
+                    d_theta_new = (labels.view(-1,1))*(2*labels.view(-1,1)-1)*d_theta
+                    g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
+                    z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
+                    loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
+                    loss = torch.sum(loss_groupwise)
+                    return loss
+            
+            elif self.target_criterion == 'ap':
+                def closure_OMR(inputs, groups, labels, model):
+                    groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
+                    groups_onehot = groups_onehot.float() # n by g
+                    if self.nlp_flag:
+                        input_ids = inputs[:, :, 0]
+                        input_masks = inputs[:, :, 1]
+                        segment_ids = inputs[:, :, 2]
+                        outputs = model(
+                            input_ids=input_ids,
+                            attention_mask=input_masks,
+                            token_type_ids=segment_ids,
+                            labels=labels,
+                        )[1]
+                    else:
+                        outputs = model(inputs) # n by 2
+                    d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0  # n by 1
+                    d_theta_new = (2*labels.view(-1,1)-1)*d_theta # y*d_theta
+                    g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
+                    z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
+                    loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
+                    loss = torch.sum(loss_groupwise)
+                    return loss
                 
-                d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0  # n by 1
-                d_theta_new = -(labels.view(-1,1)-1)*(2*labels.view(-1,1)-1)*d_theta
-                g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
-                z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
-                loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
-                loss = torch.sum(loss_groupwise)
-                return loss
-            
-            def closure_FNR(inputs, groups, labels, model):
-                groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
-                groups_onehot = groups_onehot.float() # n by g
-                if self.nlp_flag:
-                    input_ids = inputs[:, :, 0]
-                    input_masks = inputs[:, :, 1]
-                    segment_ids = inputs[:, :, 2]
-                    outputs = model(
-                        input_ids=input_ids,
-                        attention_mask=input_masks,
-                        token_type_ids=segment_ids,
-                        labels=labels,
-                    )[1]
-                else:
-                    outputs = model(inputs) # n by 2
-                d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0  # n by 1
-                d_theta_new = (labels.view(-1,1))*(2*labels.view(-1,1)-1)*d_theta
-                g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
-                z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
-                loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
-                loss = torch.sum(loss_groupwise)
-                return loss
-            
             outputs, loss = closure()
-            loss += self.lamb*closure_FPR(inputs, groups, labels, model)
-            loss += self.lamb*closure_FNR(inputs, groups, labels, model)
+            
+            if self.target_criterion == 'eo':
+                loss += self.lamb*closure_FPR(inputs, groups, labels, model)
+                loss += self.lamb*closure_FNR(inputs, groups, labels, model)
+            
+            elif self.target_criterion == 'ap':
+                loss += self.lamb*closure_OMR(inputs, groups, labels, model)
+            
             loss.backward()
             if not self.sam:
                 if self.nlp_flag:

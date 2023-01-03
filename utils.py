@@ -207,6 +207,7 @@ def make_log_name(args):
         
     if 'disp_mist' == args.method:
         log_name += f'_lamb{args.lamb}'
+        log_name += f'_criterion{args.target_criterion}'
     if 'renyi' == args.method:
         log_name += f'_lamb{args.lamb}'
 

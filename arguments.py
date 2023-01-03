@@ -57,9 +57,10 @@ def get_args():
                         help='get penultimate features for TSNE visualization')
     parser.add_argument('--record', default=False, action='store_true', help='record')
     parser.add_argument('--uc', default=False, action='store_true', help='uncertain')
-
+    
+    parser.add_argument('--target-criterion', default='eo', type=str, choices=['eo', 'dp', 'eopp', 'ap'], help='fairness criterion')
+    
     # For reweighting,
-    parser.add_argument('--target-criterion', default='eo', type=str, help='fairness criterion')
     parser.add_argument('--iteration', default=10, type=int, help='iteration for reweighting')
     
     # For lgdro chi,
