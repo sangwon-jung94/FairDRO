@@ -59,6 +59,8 @@ class TrainerFactory:
             import trainer.fairDRO as trainer
         elif method == 'fairdro_cotter':
             import trainer.fairDRO_cotter as trainer
+        elif method == 'direct_reg':
+            import trainer.direct_reg as trainer
         else:
             raise Exception('Not allowed method')
         return trainer.Trainer(**kwargs)
