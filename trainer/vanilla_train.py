@@ -68,7 +68,7 @@ class Trainer(trainer.GenericTrainer):
             if self.cuda:
                 inputs = inputs.cuda()
                 labels = labels.cuda()
-                groups = labels.cuda()
+                groups = groups.cuda()
                 
             def closure():
                 if self.nlp_flag:

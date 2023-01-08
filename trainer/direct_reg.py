@@ -5,11 +5,6 @@ from utils import get_accuracy
 import trainer
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
-import cvxpy as cvx
-# import dccp
-# from dccp.problem import is_dccp
-import numpy as np
 
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
@@ -59,14 +54,16 @@ class Trainer(trainer.GenericTrainer):
     def _train_epoch(self, epoch, train_loader, model, criterion=None):
         model.train()
         
-        n_classes = train_loader.dataset.n_classes
-        n_groups = train_loader.dataset.n_groups
-        n_subgroups = n_classes * n_groups
-        
         running_acc = 0.0
         running_loss = 0.0
         total = 0
         batch_start_time = time.time()
+        
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
+        n_subgroups = n_classes * n_groups
+
+
         for i, data in enumerate(train_loader):
             # Get the inputs
         
@@ -89,24 +86,28 @@ class Trainer(trainer.GenericTrainer):
                         labels=labels,
                     )[1] 
                 else:
-                    outputs = model(inputs) # 128 by 2
-                    
+                    outputs = model(inputs)
+
                 if self.balanced:
-                    subgroups = groups * n_classes + labels 
-                    group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float() # 4 by 128
+                    subgroups = groups * n_classes + labels
+                    group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
                     group_count = group_map.sum(1)
                     group_denom = group_count + (group_count==0).float() # avoid nans
                     loss = nn.CrossEntropyLoss(reduction='none')(outputs, labels)
-                    group_loss = (group_map @ loss.view(-1))/group_denom # 4
+                    group_loss = (group_map @ loss.view(-1))/group_denom
                     loss = torch.mean(group_loss)
                 else:
                     if criterion is not None:
                         loss = criterion(outputs, labels).mean()
                     else:
                         loss = self.criterion(outputs, labels).mean()
+                    
+                    
                 return outputs, loss
+            
             outputs, loss = closure()
-
+            
+            
             if self.target_criterion == 'dca':
                 def closure_DCA(inputs, groups, labels, model):
                     if self.nlp_flag:
@@ -133,6 +134,7 @@ class Trainer(trainer.GenericTrainer):
                     DCA_reg = torch.mean(abs_group_loss_diff)
                     return DCA_reg
                 loss += self.lamb*closure_DCA(inputs, groups, labels, model)
+            
             
             loss.backward()
             if not self.sam:
@@ -161,5 +163,3 @@ class Trainer(trainer.GenericTrainer):
                 running_loss = 0.0
                 running_acc = 0.0
                 batch_start_time = time.time()
-    
-    
