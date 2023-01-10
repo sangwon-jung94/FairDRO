@@ -95,13 +95,16 @@ def get_subgroup_accuracy(outputs, labels, groups, n_classes, n_groups, reductio
         group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
         group_count = group_map.sum(1)
         group_denom = group_count + (group_count==0).float() # avoid nans
-
+        group_denom = group_denom.reshape((n_groups, n_classes))
+       
         predictions = torch.argmax(outputs, 1)
         c = (predictions==labels).float()
 
-        group_acc = (group_map @ c)/group_denom
-        group_acc = group_acc.reshape((n_groups, n_classes))
-    return group_acc
+        num_correct = (group_map @ c).reshape((n_groups, n_classes))
+        subgroup_acc = num_correct/group_denom
+        group_acc = num_correct.sum(1) / group_denom.sum(1) 
+        
+    return subgroup_acc,group_acc 
     
 def check_log_dir(log_dir):
     try:
