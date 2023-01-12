@@ -226,7 +226,6 @@ def make_log_name(args):
     if args.balanced:
         log_name += '_balanced'
 
-        
     if args.method in ['fairhsic', 'mfd']:
         log_name += f'_lamb{args.lamb}'
         if args.method == 'mfd':
