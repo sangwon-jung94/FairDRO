@@ -146,8 +146,7 @@ class Trainer(trainer.GenericTrainer):
             if self.record:
                 q_values = {}
                 for g in range(n_groups):
-                    for l in range(n_classes):
-                        q_values[f'g{g},l{l}'] = self.adv_probs_dict[l][g]
+                    q_values[f'g{g}'] = self.adv_probs[g]
                 writer.add_scalars('q_values', q_values, epoch)                
                 
             if self.scheduler != None and 'Reduce' in type(self.scheduler).__name__:
@@ -268,7 +267,7 @@ class Trainer(trainer.GenericTrainer):
                     elif self.optim_q == 'ibr':
                         self._q_update_ibr(train_group_loss, n_classes, n_groups)
                     elif self.optim_q == 'ibr_ip':
-                        self._q_update_ibr_linear_interpolation(train_group_loss, n_classes, n_groups, epoch, epochs)
+                        self._q_update_ibr_linear_interpolation(train_group_loss, n_classes, n_groups, self.n_q_update, self.total_q_update)
                     self.n_q_update+=1
                     self.q_update_term = 0
                 
