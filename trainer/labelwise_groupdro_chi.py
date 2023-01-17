@@ -302,7 +302,7 @@ class Trainer(trainer.GenericTrainer):
         
         for l in range(n_classes):
             label_group_loss = losses[idxs+l]
-            self.adv_probs_dict[l] = self._update_mw_bisection(label_group_loss)
+            self.adv_probs_dict[l] = self._update_mw_margin(label_group_loss)
             print(f'{l} label loss : {losses[idxs+l]}')
             print(f'{l} label q values : {self.adv_probs_dict[l]}')
     
