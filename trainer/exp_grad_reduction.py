@@ -23,7 +23,7 @@ class Trainer(trainer.GenericTrainer):
         self.batch_size = args.batch_size
         self.n_workers = args.n_workers
         self.target_criterion = args.target_criterion
-        assert (self.target_criterion == 'eo' or self.target_criterion == 'ap')
+        assert (self.target_criterion == 'eo' or self.target_criterion == 'ap' or self.target_criterion == 'dca')
         self.constraint_c = args.constraint_c # vector
         self.weight_decay = args.weight_decay #
         self.weight_update_term = 600 #For computation #100 
