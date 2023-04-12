@@ -23,7 +23,7 @@ class Trainer(trainer.GenericTrainer):
         self.batch_size = args.batch_size
         self.n_workers = args.n_workers
         self.target_criterion = args.target_criterion
-        assert (self.target_criterion == 'eo' or self.target_criterion == 'ap')
+        assert (self.target_criterion == 'eo' or self.target_criterion == 'ap' or self.target_criterion == 'dca')
         self.constraint_c = args.constraint_c # vector
         self.weight_decay = args.weight_decay #
         self.weight_update_term = 600 #For computation #100 
@@ -45,7 +45,7 @@ class Trainer(trainer.GenericTrainer):
         self.multiplier_set = []
         self.model_set = []
         
-        if self.target_criterion == 'eo':
+        if self.target_criterion == 'eo' or self.target_criterion == 'dca':
             self.theta = torch.zeros(self.n_groups * self.n_classes * 2)
             self.multiplier = torch.zeros(self.n_groups * self.n_classes * 2)
         elif self.target_criterion == 'ap':
@@ -187,7 +187,7 @@ class Trainer(trainer.GenericTrainer):
         n_classes = train_loader.dataset.n_classes
         n_groups = train_loader.dataset.n_groups
         
-        if self.target_criterion == 'eo':
+        if self.target_criterion == 'eo' or self.target_criterion == 'dca':
             n_subgroups = n_classes * n_groups
             lambda_mat = (self.multiplier[:self.n_groups * self.n_classes] - self.multiplier[self.n_groups * self.n_classes:]).reshape(self.n_groups, self.n_classes)
         elif self.target_criterion == 'ap':
@@ -213,7 +213,7 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda()
                 groups = groups.cuda()
             
-            if self.target_criterion == 'eo':
+            if self.target_criterion == 'eo' or self.target_criterion == 'dca':
                 if not self.balanced:
                     C_0 = (labels!=0).long()
                     C_1 = (labels!=1).long() + lambda_mat[groups, labels] / self.P_S_Y_mat[groups, labels] - torch.sum(lambda_mat[:, labels]) / self.P_Y[labels]
@@ -288,7 +288,7 @@ class Trainer(trainer.GenericTrainer):
                     multiplier_avg = torch.mean(multiplier_set_matrix, dim=0)
                     self.multiplier = multiplier_avg
                     
-                    if self.target_criterion == 'eo':
+                    if self.target_criterion == 'eo' or self.target_criterion == 'dca':
                         lambda_mat = (self.multiplier[:self.n_groups * self.n_classes] - self.multiplier[self.n_groups * self.n_classes:]).reshape(self.n_groups, self.n_classes)
                     elif self.target_criterion == 'ap':
                         lambda_mat = (self.multiplier[:self.n_groups] - self.multiplier[self.n_groups:])
@@ -337,7 +337,7 @@ class Trainer(trainer.GenericTrainer):
         return last_batch_idx
 
     def get_M_matrix(self, target_criterion): # for eo
-        if self.target_criterion == 'eo':
+        if self.target_criterion == 'eo' or self.target_criterion == 'dca':
             plus_matrix = torch.eye(self.n_groups * self.n_classes)
             minus_matrix = -torch.eye(self.n_groups * self.n_classes)
             minus_vector = -torch.ones(self.n_groups * self.n_classes)
@@ -355,7 +355,7 @@ class Trainer(trainer.GenericTrainer):
     def get_mu(self, dataset, batch_size=128, n_workers=2, model=None):
         model.eval()
         
-        if self.target_criterion == 'eo':
+        if self.target_criterion == 'eo' or self.target_criterion == 'dca':
             mu = torch.zeros(self.n_groups * self.n_classes + 1)
         elif self.target_criterion == 'ap':
             mu = torch.zeros(self.n_groups+ 1)
@@ -406,7 +406,7 @@ class Trainer(trainer.GenericTrainer):
         acc = torch.sum(Y_pred_set==Y_set)/len(Y_set)
 
         mu[-1] = torch.mean(Y_pred_set.float())
-        if self.target_criterion == 'eo':
+        if self.target_criterion == 'eo' or self.target_criterion == 'dca':
             for i in range(len(mu)-1):
                 index_set = torch.where(S_Y_set==i)[0]
                 mu[i] = torch.mean(Y_pred_set.float()[index_set])
