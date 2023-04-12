@@ -12,7 +12,8 @@ from torch.utils.data import DataLoader
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
         super().__init__(args=args, **kwargs)
-        self.epsilon = args.epsilon 
+#         self.epsilon = args.epsilon
+        self.epsilon = args.epsilon+1
         self.lamblr = args.lamblr # learning rate of adv_probs
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
 #         self.train_criterion = torch.nn.MultiMarginLoss(reduction='none')
@@ -64,22 +65,30 @@ class Trainer(trainer.GenericTrainer):
         constraints = []
         for l in range(n_classes):
             loss_list = []
+            flipped_loss_list = []
             label_mask = (labels == l).float()
             for g in range(n_groups):
                 mask = (label_mask * (groups == g).float()).bool()
                 if mask.sum() == 0:
                     loss_list.append(None)
+                    flipped_loss_list.append(None)
                 else:
                     loss_list.append(self.hinge_loss(outputs[mask], labels[mask]))
+                    flipped_loss_list.append(self.hinge_loss(-1 * outputs[mask], labels[mask]))
 
             for g in range(n_groups-1):
                 loss_a = loss_list[g]
                 loss_b = loss_list[g+1]
+                flipped_loss_a = flipped_loss_list[g]
+                flipped_loss_b = flipped_loss_list[g+1]
+
                 if loss_a == None or loss_b == None:
                     constraints.extend([0,0])
                 else:
-                    constraints.append(loss_a - loss_b - self.epsilon)
-                    constraints.append(-loss_a + loss_b - self.epsilon)
+#                     constraints.append(loss_a - loss_b - self.epsilon)
+#                     constraints.append(-loss_a + loss_b - self.epsilon)
+                    constraints.append(loss_a + flipped_loss_b - self.epsilon)
+                    constraints.append(flipped_loss_a + loss_b - self.epsilon)
             
         return constraints
     
