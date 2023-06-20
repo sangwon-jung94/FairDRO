@@ -1,6 +1,6 @@
-# Exact Group Fairness Regularization via Classwise Robust Optimization (ICLR 2023)
+# Re-weighting based Group Fairness Regularization via Classwise Robust Optimization (ICLR 2023)
 
-This repository is the official implementation of the paper **Exact Group Fairness Regularization via Classwise Robust Optimization**. 
+This repository is the official implementation of the paper **Re-weighting based Group Fairness Regularization via Classwise Robust Optimization**. 
 
 ## Requirements
 - GPU RTX A5000
