@@ -54,9 +54,11 @@ class CelebA(data_handler.GenericDataset):
             raise RuntimeError('Dataset not found or corrupted.' +
                                ' You can use download=True to download it')
         # SELECT the features
-        self.sensitive_attr = 'Male'
+        # self.sensitive_attr = 'Male'
+        self.sensitive_attr = 'Blond_Hair'
         self.add_attr = add_attr
-        self.target_attr = target_attr       
+        # self.target_attr = target_attr       
+        self.target_attr = 'Male'
         split_map = {
             "train": 0,
             "valid": 1,
@@ -95,9 +97,9 @@ class CelebA(data_handler.GenericDataset):
         att = tmp[:,0]
         self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
         
-        if self.split == "test":
-            self.features = self._balance_test_data(self.n_data, self.n_groups, self.n_classes)
-            self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
+        #if self.split == "test":
+        #    self.features = self._balance_test_data(self.n_data, self.n_groups, self.n_classes)
+        #    self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)
 
     def __getitem__(self, index):
         sensitive, target, img_name = self.features[index]
@@ -130,7 +132,3 @@ class CelebA(data_handler.GenericDataset):
 
         with zipfile.ZipFile(os.path.join(self.root, "img_align_celeba.zip"), "r") as f:
             f.extractall(self.root)
-
-
-
-
