@@ -41,6 +41,7 @@ class CelebA(data_handler.GenericDataset):
              transforms.ToTensor(),
              transforms.Normalize(mean=mean, std=std)] 
         )
+    
     name = 'celeba'
 
     def __init__(self, target_attr='Blond_Hair', add_attr=None, download=False, **kwargs):

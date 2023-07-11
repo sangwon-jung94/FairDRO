@@ -44,17 +44,76 @@ class Trainer(trainer.GenericTrainer):
                    eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
 
             if self.record:
-                self.evaluate(self.model, train_loader, self.criterion, epoch, 
+                _, _, _, _, train_subgroup_acc, train_subgroup_loss=self.evaluate(self.model, train_loader, self.criterion, epoch, 
                               train=True, 
                               record=self.record,
                               writer=writer
                              )
-                
+                cov = self.calculate_covariance(self.model, train_loader)
+                n_classes = train_loader.dataset.n_classes
+                covs = {}
+                for l in range(n_classes):
+                    covs[f'l{l}'] = cov[l]
+                writer.add_scalars('covs', covs, epoch)
+
             if self.scheduler != None and 'Reduce' in type(self.scheduler).__name__:
                 self.scheduler.step(eval_loss)
             else:
                 self.scheduler.step()
         print('Training Finished!')        
+
+    def calculate_covariance(self, model, train_loader):
+        model.train()
+        
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
+        n_subgroups = n_classes * n_groups
+        
+        FPR_total = 0
+        FNR_total = 0
+        for i, data in enumerate(train_loader):
+            inputs, _, groups, targets, idx = data
+            labels = targets
+            if self.cuda:
+                inputs = inputs.cuda(device=self.device)
+                labels = labels.cuda(device=self.device)
+                groups = groups.cuda(device=self.device)
+
+                outputs = model(inputs)
+                    
+            def closure_FPR(inputs, groups, labels, model):
+                groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
+                groups_onehot = groups_onehot.float() # n by g
+
+                outputs = model(inputs) # n by 2
+
+                d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0  # n by 1
+                d_theta_new = -(labels.view(-1,1)-1)*(2*labels.view(-1,1)-1)*d_theta
+                g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
+                z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
+                # loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
+                loss_groupwise = torch.mean((groups_onehot - z_bar)*g_theta, dim=0)
+                
+                loss = torch.sum(loss_groupwise)
+                return loss
+
+            def closure_FNR(inputs, groups, labels, model):
+                groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
+                groups_onehot = groups_onehot.float() # n by g
+                outputs = model(inputs) # n by 2
+
+                d_theta = torch.diff(outputs, dim=1) # w1Tx - w0Tx + b1-b0  # n by 1
+                d_theta_new = (labels.view(-1,1))*(2*labels.view(-1,1)-1)*d_theta
+                g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
+                z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
+                # loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
+                loss_groupwise = torch.mean((groups_onehot - z_bar)*g_theta, dim=0)
+                loss = torch.sum(loss_groupwise)
+                return loss
+            
+            FPR_total  += closure_FPR(inputs, groups, labels, model)
+            FNR_total += closure_FNR(inputs, groups, labels, model)
+        return [torch.abs(FPR_total).item(), torch.abs(FNR_total).item()]
 
     def _train_epoch(self, epoch, train_loader, model, criterion=None):
         model.train()

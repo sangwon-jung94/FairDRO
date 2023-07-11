@@ -56,6 +56,7 @@ def get_args():
     parser.add_argument('--get-inter', default=False, action='store_true',
                         help='get penultimate features for TSNE visualization')
     parser.add_argument('--record', default=False, action='store_true', help='record')
+    parser.add_argument('--analysis', default=False, action='store_true', help='analysis')
     parser.add_argument('--uc', default=False, action='store_true', help='uncertain')
     
     parser.add_argument('--target-criterion', default='eo', type=str, choices=['eo', 'dp', 'eopp', 'ap','dca'], help='fairness criterion')

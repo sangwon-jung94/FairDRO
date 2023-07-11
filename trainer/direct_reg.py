@@ -44,12 +44,55 @@ class Trainer(trainer.GenericTrainer):
                               record=self.record,
                               writer=writer
                              )
-                
+                n_classes = train_loader.dataset.n_classes
+                reg = self._calculate_reg(self.model, train_loader)
+                regs = {}
+                for l in range(n_classes):
+                    regs[f'l{l}'] = reg[l]
+                writer.add_scalars('regs', regs, epoch)
+
             if self.scheduler != None and 'Reduce' in type(self.scheduler).__name__:
                 self.scheduler.step(eval_loss)
             else:
                 self.scheduler.step()
         print('Training Finished!')        
+
+    def _calculate_reg(self, model, train_loader):
+        total = 0
+        n_classes = train_loader.dataset.n_classes
+        n_groups = train_loader.dataset.n_groups
+        n_subgroups = n_classes * n_groups
+
+        group_total_denom = torch.zeros((n_groups, n_classes)).cuda()
+        group_total_loss = torch.zeros((n_groups, n_classes)).cuda()
+        for i, data in enumerate(train_loader):
+            # Get the inputs
+            inputs, _, groups, targets, idx = data
+            labels = targets
+            if self.cuda:
+                inputs = inputs.cuda(device=self.device)
+                labels = labels.cuda(device=self.device)
+                groups = groups.cuda(device=self.device)
+
+            with torch.no_grad():
+                outputs = model(inputs)
+                loss = nn.CrossEntropyLoss(reduction='none')(outputs, labels)
+
+                subgroups = groups * n_classes + labels
+                group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                group_loss = (group_map @ loss.view(-1))
+                group_loss_matrix = group_loss.reshape(n_groups, n_classes)
+                group_total_loss += group_loss_matrix
+
+                group_count = group_map.sum(1)
+                group_denom = group_count + (group_count==0).float() # avoid nans
+                group_denom = group_denom.reshape(n_groups, n_classes)
+                group_total_denom += group_denom
+        
+        group_total_loss /= group_total_denom
+        abs_group_loss_diff = torch.abs(group_total_loss - group_total_loss.mean(dim=0))
+        return abs_group_loss_diff.mean(dim=0).cpu().numpy()
+        
 
     def _train_epoch(self, epoch, train_loader, model, criterion=None):
         model.train()
