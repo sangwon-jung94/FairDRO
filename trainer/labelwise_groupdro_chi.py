@@ -70,10 +70,6 @@ class Trainer(trainer.GenericTrainer):
         self.trueloss = args.trueloss
         self.q_decay = args.q_decay    
         self.kd = args.kd
-
-        self.analysis = args.analysis
-        if self.analysis and not self.record:
-            raise ValueError
         
     def cal_baseline(self, data, seed, bs, wd):
 
@@ -137,17 +133,17 @@ class Trainer(trainer.GenericTrainer):
                 elif self.optim_q == 'ibr':
                     self._q_update_ibr(train_subgroup_loss, n_classes, n_groups)
                 elif self.optim_q == 'ibr_ip':
-                    self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+                    self.adv_probs_dict = self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs)
 
             eval_start_time = time.time()
-            eval_loss, eval_acc, eval_deom, eval_deoa, test_subgroup_acc, test_subgroup_loss  = self.evaluate(self.model, 
-                                                                                                    test_loader, 
-                                                                                                    self.criterion,
-                                                                                                    epoch, 
-                                                                                                    train=False,
-                                                                                                    record=self.record,
-                                                                                                    writer=writer
-                                                                                                    )
+            eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
+                                                                             test_loader, 
+                                                                             self.criterion,
+                                                                             epoch, 
+                                                                             train=False,
+                                                                             record=self.record,
+                                                                             writer=writer
+                                                                            )
             eval_end_time = time.time()
             print('[{}/{}] Method: {} '
                   'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
@@ -160,29 +156,14 @@ class Trainer(trainer.GenericTrainer):
                     for l in range(n_classes):
                         q_values[f'g{g},l{l}'] = self.adv_probs_dict[l][g]
                 writer.add_scalars('q_values', q_values, epoch)
-                if self.analysis:
-                    celoss = {}
-                    trueloss = {}
+                if not self.trueloss:
+                    q_values_true =self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, epoch, epochs)
+                    q_values = {}
                     for g in range(n_groups):
                         for l in range(n_classes):
-                            key = f'g{g},l{l}'
-                            celoss[key] = train_subgroup_loss[g,l]                             
-                            trueloss[key] = 1-train_subgroup_acc[g,1]
-                    writer.add_scalars('celoss', celoss, epoch)
-                    writer.add_scalars('trainloss', trueloss, epoch)
+                            q_values[f'g{g},l{l}'] = q_values_true[l][g]
+                    writer.add_scalars('q_values_true', q_values, epoch)
 
-
-                    var = {}
-                    deo = {}
-                    tmp = (1-train_subgroup_acc).var(dim=0)
-                    var_list = (2*tmp).sqrt()
-                    deo_per_label = torch.max(train_subgroup_acc, dim=0)[0] - torch.min(train_subgroup_acc, dim=0)[0]
-                    
-                    for l in range(n_classes):
-                        var[f'l{l}'] = var_list[l]
-                        deo[f'l{l}'] = deo_per_label[l]
-                    writer.add_scalars('var',var, epoch)
-                    writer.add_scalars('deo',deo, epoch)
                 
             if self.scheduler != None and 'Reduce' in type(self.scheduler).__name__:
                 self.scheduler.step(eval_loss)
@@ -316,7 +297,7 @@ class Trainer(trainer.GenericTrainer):
                     elif self.optim_q == 'ibr':
                         self._q_update_ibr(train_subgroup_loss, n_classes, n_groups)
                     elif self.optim_q == 'ibr_ip':
-                        self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, self.n_q_update, self.total_q_update)
+                        self.adv_probs_dict = self._q_update_ibr_linear_interpolation(train_subgroup_loss, n_classes, n_groups, self.n_q_update, self.total_q_update)
                     self.n_q_update+=1
                     self.q_update_term = 0
                 
@@ -367,10 +348,13 @@ class Trainer(trainer.GenericTrainer):
                 q_ibr[l] = self._update_mw_bisection(label_group_loss)#, self.group_dist[l])
             else:
                 q_ibr[l] = self._update_mw_margin(label_group_loss)#, self.group_dist[l])
-            self.adv_probs_dict[l] = q_start[l] + cur_step_size*(q_ibr[l] - q_start[l])
+            # self.adv_probs_dict[l] = q_start[l] + cur_step_size*(q_ibr[l] - q_start[l])
+            q_ibr[l] = q_start[l] + cur_step_size*(q_ibr[l] - q_start[l])
             print(f'{l} label loss : {train_subgroup_loss[idxs+l]}')
-            print(f'{l} label q_ibr values : {q_ibr[l]}')
-            print(f'{l} label q values : {self.adv_probs_dict[l]}')
+            # print(f'{l} label q_ibr values : {q_ibr[l]}')
+            # print(f'{l} label q values : {self.adv_probs_dict[l]}')
+            print(f'{l} label q values : {q_ibr[l]}')
+        return q_ibr
                  
     
     def _update_mw_bisection(self, losses, p_train=None):
