@@ -91,9 +91,7 @@ class Trainer(trainer.GenericTrainer):
                 d_theta_new = -(labels.view(-1,1)-1)*(2*labels.view(-1,1)-1)*d_theta
                 g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
                 z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
-                # loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
-                loss_groupwise = torch.mean((groups_onehot - z_bar)*g_theta, dim=0)
-                
+                loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
                 loss = torch.sum(loss_groupwise)
                 return loss
 
@@ -106,8 +104,7 @@ class Trainer(trainer.GenericTrainer):
                 d_theta_new = (labels.view(-1,1))*(2*labels.view(-1,1)-1)*d_theta
                 g_theta = torch.minimum(d_theta_new, torch.tensor(0)) # n by 1
                 z_bar = torch.mean(groups_onehot, dim=0) # 1 by g
-                # loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
-                loss_groupwise = torch.mean((groups_onehot - z_bar)*g_theta, dim=0)
+                loss_groupwise = torch.abs(torch.mean((groups_onehot - z_bar)*g_theta, dim=0))
                 loss = torch.sum(loss_groupwise)
                 return loss
             

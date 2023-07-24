@@ -172,8 +172,8 @@ def make_log_name(args):
         log_name += f'_rholr{args.rholr}_eps{args.epsilon}'
         if args.margin:
             log_name += f'_margin'
-        if args.trueloss:
-            log_name +='_trueloss'
+        if args.use_01loss:
+            log_name +='_01loss'
         
     elif 'cotter' in args.method:
         log_name += f'_lamblr{args.lamblr}_eps{args.epsilon}'
@@ -189,11 +189,9 @@ def make_log_name(args):
 
         if 'chi' or 'new' or 'no_sampling' in args.method:
             log_name += f'_rho{args.rho}'
-            if args.margin:
-                log_name += f'_margin'
                 
-        if args.trueloss:
-            log_name +='_trueloss'
+        if args.use_01loss:
+            log_name +='_01loss'
     
     elif 'variance' in args.method:
         log_name += f'_rho{args.rho}'        
@@ -205,8 +203,8 @@ def make_log_name(args):
         log_name += f'_rho{args.rho}'
         if args.margin:
             log_name += f'_margin'
-        if args.trueloss:
-            log_name +='_trueloss'
+        if args.use_01loss:
+            log_name +='_01loss'
         if args.label_flipped:
             log_name +='_flipped'
         

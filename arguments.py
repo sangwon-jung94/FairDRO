@@ -18,7 +18,7 @@ def get_args():
     parser.add_argument('--modelpath', default=None)
     parser.add_argument('--evalset', default='all', choices=['all', 'train', 'test'])
 
-    parser.add_argument('--dataset', required=True, default='', choices=['adult', 'compas','utkface', 'celeba', 'cifar10s','cifar100s', 'waterbird','utkface_fairface', 'jigsaw'])
+    parser.add_argument('--dataset', required=True, default='', choices=['adult', 'compas','utkface', 'celeba', 'jigsaw'])
     parser.add_argument('--skew-ratio', default=0.8, type=float, help='skew ratio for cifar-10s')
     parser.add_argument('--img-size', default=176, type=int, help='img size for preprocessing')
 
@@ -67,14 +67,13 @@ def get_args():
     # For lgdro chi,
     parser.add_argument('--kd', default=False, action='store_true', help='kd')
     parser.add_argument('--rho', default=0.5, type=float, help='uncertainty box length')
-    parser.add_argument('--trueloss', default=False, action='store_true', help='using 0-1 loss when updating q')
+    parser.add_argument('--use-01loss', default=False, action='store_true', help='using 0-1 loss when updating q')
     parser.add_argument('--gamma', default=0.1, type=float, help='learning rate for q')
-    parser.add_argument('--optim-q', default='pd', type=str, help='the type of optimization for q')
+    parser.add_argument('--optim-q', default='pd', choices=['pd', 'ibr', 'smt_ibr'], help='the type of optimization for q')
     parser.add_argument('--q-decay', default='linear', type=str, help='the type of optimization for q')
-    parser.add_argument('--margin', default=False, action='store_true', help='whether use a margin scheme or not')
-    parser.add_argument('--label_flipped', default=False, action='store_true', help='flip a label when the corresponding q has a negative value')
+    parser.add_argument('--label-flipped', default=False, action='store_true', help='flip a label when the corresponding q has a negative value')
     parser.add_argument('--rholr', default=0.001, type=float, help='learning rate of lambda')        
-    
+   
     # For exp_grad_reduction,
     parser.add_argument('--bound_B', default=0.01, type=float, help='bound for L1 norm')
     parser.add_argument('--constraint_c', default=0.0, type=float, help='bound for constraint c')

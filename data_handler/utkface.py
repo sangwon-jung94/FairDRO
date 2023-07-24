@@ -24,25 +24,13 @@ class UTKFaceDataset(GenericDataset):
     }
     mean, std = get_mean_std('utkface')
 
-#     train_transform = transforms.Compose(
-#         [transforms.Resize((256, 256)),
-#          transforms.RandomCrop(224),
-#          transforms.RandomHorizontalFlip(),
-#          transforms.ToTensor(),
-#          transforms.Normalize(mean=mean, std=std)]
-#     )
-    train_transform = transforms.Compose([
-        transforms.RandomResizedCrop(size=256, scale=(0.2, 1.)),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomApply([
-            transforms.ColorJitter(0.4, 0.4, 0.4, 0.1)
-        ], p=0.8),
-        transforms.RandomGrayscale(p=0.2),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=mean, std=std),
-    ])
-
-
+    train_transform = transforms.Compose(
+        [transforms.Resize((256, 256)),
+         transforms.RandomCrop(224),
+         transforms.RandomHorizontalFlip(),
+         transforms.ToTensor(),
+         transforms.Normalize(mean=mean, std=std)]
+    )
 
     test_transform = transforms.Compose(
         [transforms.Resize((224, 224)),

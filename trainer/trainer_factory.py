@@ -73,12 +73,14 @@ class GenericTrainer:
     Base class for trainer; to implement a new training routine, inherit from this. 
     '''
     def __init__(self, model, args, optimizer, teacher=None, scheduler=None):
+        self.model = model
+        self.teacher = teacher
+        self.optimizer = optimizer
+
         self.get_inter = args.get_inter
-        
         self.record = args.record
         self.cuda = args.cuda
-        self.device = args.device
-        self.t_device = args.t_device
+        self.device = args.device        
         self.term = args.term
         self.seed = args.seed
         self.lr = args.lr
@@ -86,18 +88,12 @@ class GenericTrainer:
         self.epochs = args.epochs
         self.method = args.method
         self.model_name =args.model
-        self.nlp_flag = True if self.model_name.startswith("bert") else False
-        self.model = model
-        self.teacher = teacher
-        self.optimizer = optimizer
         self.optim_type = args.optim
-        self.sam = args.sam
         self.log_dir = args.log_dir
         self.criterion=torch.nn.CrossEntropyLoss(reduction='none')
         self.scheduler = None
-        self.dataset = args.dataset
-        self.uc = args.uc
-        self.batch_size = args.batch_size
+        self.data = args.dataset
+        self.bs = args.batch_size
         self.balanced = args.balanced
 
         self.log_name = make_log_name(args)
@@ -106,25 +102,15 @@ class GenericTrainer:
 
         if scheduler is None:
             if self.optim_type == 'Adam' and self.optimizer is not None:
-                if self.sam:
-                    self.scheduler = ReduceLROnPlateau(self.optimizer.base_optimizer)
-                else:
-                    self.scheduler = ReduceLROnPlateau(self.optimizer)
+                self.scheduler = ReduceLROnPlateau(self.optimizer)
             elif (self.optim_type == 'AdamP' or self.optim_type == 'AdamW') and self.optimizer is not None:
-                if self.sam:
-                    self.scheduler = CosineAnnealingLR(self.optimizer.base_optimizer, self.epochs)
-                else:
-                    self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
+                self.scheduler = CosineAnnealingLR(self.optimizer, self.epochs)
             else:  # if the optimizaer is SGD
                 if self.epochs == 70:
                     interval = [30, 60]
                 elif self.epochs == 100:
                     interval = [60, 75, 90]
-                if self.sam:
-        #             self.scheduler = MultiStepLR(self.optimizer, [60, 120, 180], gamma=0.1)
-                    self.scheduler = MultiStepLR(self.optimizer.base_optimizer, interval, gamma=0.1)
-                else:
-                    self.scheduler = MultiStepLR(self.optimizer, interval, gamma=0.1)
+                self.scheduler = MultiStepLR(self.optimizer, interval, gamma=0.1)
         else:
             self.scheduler = scheduler
             
@@ -159,7 +145,7 @@ class GenericTrainer:
                     labels = labels.cuda(device)
                     groups = groups.cuda(device)
                     
-                if self.nlp_flag:
+                if self.data == 'jigsaw':
                     input_ids = inputs[:, :, 0]
                     input_masks = inputs[:, :, 1]
                     segment_ids = inputs[:, :, 2]
@@ -176,23 +162,14 @@ class GenericTrainer:
                 preds = torch.argmax(outputs, 1)
                 acc = (preds == labels).float().squeeze()
                 
-                # calculate the labelwise losses
-#                 if not self.uc:
-                subgroups = groups * n_classes + labels                
+                # calculate the losses for each group
+                subgroups = groups * n_classes + labels
                 group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
                 group_count += group_map.sum(1)
 
                 group_loss += (group_map @ loss.view(-1))
                 group_acc += group_map @ acc
-#                 else:
-#                     idxs = np.array([i * n_classes for i in range(n_groups)])
-#                     for l in range(n_classes):
-#                         mask = classes == l
-# #                         print((groups[mask].T @ loss[mask]).float())
-# #                         print(groups[mask].sum(dim=0).float())
-#                         group_count[idxs+l] += groups[mask].sum(dim=0).float()
-#                         group_loss[idxs+l] += (groups[mask].T @ loss[mask]).float()
-#                         group_acc[idxs+l] += (groups[mask].T @ acc[mask]).float()
+
             loss = group_loss.sum() / group_count.sum() 
             acc = group_acc.sum() / group_count.sum() 
 
@@ -271,7 +248,7 @@ class GenericTrainer:
                     labels = labels.cuda(self.device)
 
                 # forward                    
-                if self.nlp_flag:
+                if self.data == 'jigsaw':
                     input_ids = inputs[:, :, 0]
                     input_masks = inputs[:, :, 1]
                     segment_ids = inputs[:, :, 2]

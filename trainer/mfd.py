@@ -13,6 +13,7 @@ class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
         super().__init__(args=args, **kwargs)
         self.lamb = args.lamb
+        self.t_device = args.t_device 
         self.sigma = args.sigma
         self.kernel = args.kernel
         
