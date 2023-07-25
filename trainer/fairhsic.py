@@ -18,7 +18,8 @@ class Trainer(trainer.GenericTrainer):
     def train(self, train_loader, test_loader, epochs, writer=None):
         n_classes = train_loader.dataset.n_classes
 
-        hsic = RbfHSIC(1, 1, nlp_flag=self.nlp_flag)
+        nlp_flag = True if self.data == 'jigsaw' else False
+        hsic = RbfHSIC(1, 1, nlp_flag=nlp_flag)
         
         for epoch in range(self.epochs):
             self._train_epoch(epoch, train_loader, self.model, hsic=hsic, n_classes=n_classes)
@@ -84,7 +85,7 @@ class Trainer(trainer.GenericTrainer):
                     output_hidden_states=True
                 )
                 logits = outputs[1]
-                
+
             else:
                 outputs = model(inputs, get_inter=True)
                 logits = outputs[-1]
