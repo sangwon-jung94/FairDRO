@@ -16,13 +16,12 @@ class Trainer(trainer.GenericTrainer):
         self.kernel = args.kernel
         
     def train(self, train_loader, test_loader, epochs, writer=None):
-        n_classes = train_loader.dataset.n_classes
 
         nlp_flag = True if self.data == 'jigsaw' else False
         hsic = RbfHSIC(1, 1, nlp_flag=nlp_flag)
         
         for epoch in range(self.epochs):
-            self._train_epoch(epoch, train_loader, self.model, hsic=hsic, n_classes=n_classes)
+            self._train_epoch(epoch, train_loader, self.model, hsic=hsic)
 
             eval_start_time = time.time()                
             eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
