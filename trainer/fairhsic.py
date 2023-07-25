@@ -103,7 +103,7 @@ class Trainer(trainer.GenericTrainer):
                 else:
                     loss = self.criterion(outputs, labels).mean()
                         
-            f_s = outputs[-2] if not self.nlp_flag else outputs[2][0][:,0,:]
+            f_s = outputs[-2] if self.data != 'jigsaw' else outputs[2][0][:,0,:]
             group_onehot = F.one_hot(groups).float()
             hsic_loss = 0
             for l in range(n_classes):
