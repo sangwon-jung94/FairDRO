@@ -17,7 +17,7 @@ class Trainer(trainer.GenericTrainer):
         model.train()
 
         for epoch in range(epochs):
-            self._train_epoch(epoch, train_loader, model,criterion)
+            self._train_epoch(epoch, train_loader, model, criterion)
             
             eval_start_time = time.time()
             eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
@@ -70,19 +70,18 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda()
                 groups = groups.cuda()
                 
-            def closure():
-                if self.nlp_flag:
-                    input_ids = inputs[:, :, 0]
-                    input_masks = inputs[:, :, 1]
-                    segment_ids = inputs[:, :, 2]
-                    outputs = model(
-                        input_ids=input_ids,
-                        attention_mask=input_masks,
-                        token_type_ids=segment_ids,
-                        labels=labels,
-                    )[1] 
-                else:
-                    outputs = model(inputs)
+            if self.data == 'jigsaw':
+                input_ids = inputs[:, :, 0]
+                input_masks = inputs[:, :, 1]
+                segment_ids = inputs[:, :, 2]
+                outputs = model(
+                    input_ids=input_ids,
+                    attention_mask=input_masks,
+                    token_type_ids=segment_ids,
+                    labels=labels,
+                )[1] 
+            else:
+                outputs = model(inputs)
 
                 if self.balanced:
                     subgroups = groups * n_classes + labels
@@ -97,24 +96,12 @@ class Trainer(trainer.GenericTrainer):
                         loss = criterion(outputs, labels).mean()
                     else:
                         loss = self.criterion(outputs, labels).mean()
-                    
-                    
-                return outputs, loss
             
-            outputs, loss = closure()            
             loss.backward()
-            if not self.sam:
-                if self.nlp_flag:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
-                self.optimizer.step()
-                self.optimizer.zero_grad()
-            else:
-                self.optimizer.first_step(zero_grad=True)
-                outputs, loss = closure()
-                loss.backward()
-                if self.nlp_flag:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
-                self.optimizer.second_step(zero_grad=True)
+            if self.data == 'jigsaw':
+                torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+            self.optimizer.step()
+            self.optimizer.zero_grad()
                 
             running_loss += loss.item()
             running_acc += get_accuracy(outputs, labels)

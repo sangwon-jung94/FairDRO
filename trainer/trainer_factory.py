@@ -23,16 +23,14 @@ class TrainerFactory:
             import trainer.adv_debiasing as trainer
         elif method == 'lbc':
             import trainer.lbc as trainer
-        elif method == 'lgdro':
-            import trainer.labelwise_groupdro as trainer
         elif method == 'gdro':
             import trainer.groupdro as trainer
         elif method == 'gdro_epoch':
             import trainer.groupdro_epoch as trainer
         elif method == 'gdro_chi':
             import trainer.groupdro_chi as trainer
-        elif method == 'lgdro_chi':
-            import trainer.labelwise_groupdro_chi as trainer
+        elif method == 'cgdro':
+            import trainer.cgdro as trainer
         elif method == 'lgdro_chi_ap':
             import trainer.labelwise_groupdro_chi_ap as trainer
         elif method == 'fairbatch':
@@ -72,30 +70,39 @@ class GenericTrainer:
     '''
     Base class for trainer; to implement a new training routine, inherit from this. 
     '''
-    def __init__(self, model, args, optimizer, teacher=None, scheduler=None):
+    def __init__(self, model, args, optimizer, scheduler=None):
         self.model = model
-        self.teacher = teacher
         self.optimizer = optimizer
-
-        self.get_inter = args.get_inter
-        self.record = args.record
+        
         self.cuda = args.cuda
         self.device = args.device        
         self.term = args.term
         self.seed = args.seed
-        self.lr = args.lr
-        self.max_grad_norm = args.max_grad_norm
+        self.get_inter = args.get_inter
+        
         self.epochs = args.epochs
         self.method = args.method
         self.model_name =args.model
-        self.optim_type = args.optim
-        self.log_dir = args.log_dir
+        self.record = args.record
+
         self.criterion=torch.nn.CrossEntropyLoss(reduction='none')
-        self.scheduler = None
+        self.fairness_criterion = args.fairness_criterion
+        
+        # objective function
+        self.balanced = args.balanced
+        
+        # optimization
+        self.optim_type = args.optim        
+        self.scheduler = scheduler
+        self.lr = args.lr
+        self.max_grad_norm = args.max_grad_norm
+
+        # for redefining data handler        
         self.data = args.dataset
         self.bs = args.batch_size
-        self.balanced = args.balanced
+        self.n_workers = args.n_workers
 
+        self.log_dir = args.log_dir
         self.log_name = make_log_name(args)
         self.log_dir = os.path.join(args.log_dir, args.date, args.dataset, args.method)
         self.save_dir = os.path.join(args.save_dir, args.date, args.dataset, args.method)

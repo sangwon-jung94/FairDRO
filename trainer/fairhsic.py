@@ -7,7 +7,6 @@ import time
 from utils import get_accuracy
 import trainer
 from .hsic import RbfHSIC
-import networks
 
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
@@ -16,11 +15,8 @@ class Trainer(trainer.GenericTrainer):
         self.sigma = args.sigma
         self.kernel = args.kernel
         
-        # self.image_transformer = networks.ModelFactory.get_model('image_transformer').cuda(self.device)
-        
     def train(self, train_loader, test_loader, epochs, writer=None):
         n_classes = train_loader.dataset.n_classes
-        n_groups = train_loader.dataset.n_groups
 
         hsic = RbfHSIC(1, 1, nlp_flag=self.nlp_flag)
         
@@ -56,7 +52,7 @@ class Trainer(trainer.GenericTrainer):
 
         print('Training Finished!')
 
-    def _train_epoch(self, epoch, train_loader, model, hsic=None,n_classes=3):
+    def _train_epoch(self, epoch, train_loader, model, hsic=None, criterion=None):
         model.train()
 
         running_acc = 0.0
@@ -76,67 +72,53 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda(self.device)
                 groups = groups.long().cuda(self.device)
             
-            def closure():
-                if self.nlp_flag:
-                    input_ids = inputs[:, :, 0]
-                    input_masks = inputs[:, :, 1]
-                    segment_ids = inputs[:, :, 2]
-                    outputs = model(
-                        input_ids=input_ids,
-                        attention_mask=input_masks,
-                        token_type_ids=segment_ids,
-                        labels=labels,
-                        output_hidden_states=True
-                    )
-                    logits = outputs[1]
-                else:
-                    outputs = model(inputs, get_inter=True)
-                    logits = outputs[-1]
-                    
-                # stu_logits = outputs_transformed[-1]
-
-#                 loss = self.criterion(logits, labels).mean()
-
-                if self.balanced:
-                    subgroups = groups * n_classes + labels
-                    group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
-                    group_count = group_map.sum(1)
-                    group_denom = group_count + (group_count==0).float() # avoid nans
-                    loss = nn.CrossEntropyLoss(reduction='none')(logits, labels)
-                    group_loss = (group_map @ loss.view(-1))/group_denom
-                    loss = torch.mean(group_loss)
-                else:
-                    if criterion is not None:
-                        loss = criterion(outputs, labels).mean()
-                    else:
-                        loss = self.criterion(outputs, labels).mean()
-                        
-                f_s = outputs[-2] if not self.nlp_flag else outputs[2][0][:,0,:]
-                group_onehot = F.one_hot(groups).float()
-                hsic_loss = 0
-                for l in range(n_classes):
-                    mask = targets == l
-                    if mask.sum()==0:
-                        continue
-                    hsic_loss += hsic.unbiased_estimator(f_s[mask], group_onehot[mask])
-                    
-                loss = loss + self.lamb * hsic_loss 
-                return logits,loss
-            
-            logits, loss = closure()            
-            loss.backward()
-            if not self.sam:
-                if self.nlp_flag:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
-                self.optimizer.step()
-                self.optimizer.zero_grad()
+            if self.data == 'jigsaw':
+                input_ids = inputs[:, :, 0]
+                input_masks = inputs[:, :, 1]
+                segment_ids = inputs[:, :, 2]
+                outputs = model(
+                    input_ids=input_ids,
+                    attention_mask=input_masks,
+                    token_type_ids=segment_ids,
+                    labels=labels,
+                    output_hidden_states=True
+                )
+                logits = outputs[1]
+                
             else:
-                self.optimizer.first_step(zero_grad=True)
-                outputs, loss = closure()
-                loss.backward()
-                if self.nlp_flag:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
-                self.optimizer.second_step(zero_grad=True)
+                outputs = model(inputs, get_inter=True)
+                logits = outputs[-1]
+                    
+            if self.balanced:
+                subgroups = groups * n_classes + labels
+                group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                group_count = group_map.sum(1)
+                group_denom = group_count + (group_count==0).float() # avoid nans
+                loss = nn.CrossEntropyLoss(reduction='none')(logits, labels)
+                group_loss = (group_map @ loss.view(-1))/group_denom
+                loss = torch.mean(group_loss)
+            else:
+                if criterion is not None:
+                    loss = criterion(outputs, labels).mean()
+                else:
+                    loss = self.criterion(outputs, labels).mean()
+                        
+            f_s = outputs[-2] if not self.nlp_flag else outputs[2][0][:,0,:]
+            group_onehot = F.one_hot(groups).float()
+            hsic_loss = 0
+            for l in range(n_classes):
+                mask = targets == l
+                if mask.sum()==0:
+                    continue
+                hsic_loss += hsic.unbiased_estimator(f_s[mask], group_onehot[mask])
+                
+            loss = loss + self.lamb * hsic_loss 
+            
+            loss.backward()
+            if self.data == 'jigsaw':
+                torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+            self.optimizer.step()
+            self.optimizer.zero_grad()
                 
             running_acc += get_accuracy(logits, labels)
             running_loss += loss.item()

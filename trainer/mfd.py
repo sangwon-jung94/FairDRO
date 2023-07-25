@@ -10,8 +10,9 @@ import trainer
 
 
 class Trainer(trainer.GenericTrainer):
-    def __init__(self, args, **kwargs):
+    def __init__(self, args, teacher=None, **kwargs):
         super().__init__(args=args, **kwargs)
+        self.teacher = teacher
         self.lamb = args.lamb
         self.t_device = args.t_device 
         self.sigma = args.sigma

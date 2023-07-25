@@ -156,11 +156,11 @@ def make_log_name(args):
 
     elif args.method == 'lbc':
         log_name += f'_eta{args.eta}_iter{args.iteration}'
-        log_name += f'_criterion{args.target_criterion}'
+        log_name += f'_criterion{args.fairness_criterion}'
     
     elif args.method == 'exp_grad_reduction':
         log_name += f'_eta{args.eta}_iter{args.iteration}_bound{args.bound_B}_constraint{args.constraint_c}'
-        log_name += f'_criterion{args.target_criterion}'
+        log_name += f'_criterion{args.fairness_criterion}'
     
     elif args.method == 'fairbatch':
         log_name += f'_gamma{args.gamma}'
@@ -210,13 +210,13 @@ def make_log_name(args):
         
     if 'disp_mist' == args.method:
         log_name += f'_lamb{args.lamb}'
-        log_name += f'_criterion{args.target_criterion}'
+        log_name += f'_criterion{args.fairness_criterion}'
     if 'renyi' == args.method:
         log_name += f'_lamb{args.lamb}'
-        log_name += f'_criterion{args.target_criterion}'
+        log_name += f'_criterion{args.fairness_criterion}'
     if 'direct_reg' == args.method:
         log_name += f'_lamb{args.lamb}'
-        log_name += f'_criterion{args.target_criterion}'
+        log_name += f'_criterion{args.fairness_criterion}'
 
     if args.labelwise:
         log_name += '_labelwise'

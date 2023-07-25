@@ -37,6 +37,7 @@ def main():
         log_dir = os.path.join(args.log_dir, args.date, dataset, args.method)
         check_log_dir(log_dir)
         writer = SummaryWriter(log_dir + '/' + log_name)
+
     print(log_name)    
     ########################## get dataloader ################################
     tmp = data_handler.DataloaderFactory.get_dataloader(args.dataset, 
@@ -49,16 +50,6 @@ def main():
                                                         args=args
                                                         )
     n_classes, n_groups, train_loader, test_loader = tmp
-    """
-    filename = 'test/{}.txt'.format(args.add_attr)
-    tmp = np.concatenate((train_loader.dataset.n_data, test_loader.dataset.n_data), axis=0)
-    np.savetxt(filename, tmp, fmt='%d')
-    if np.min(test_loader.dataset.n_data) >= 300:
-        f = open('test/attr_list.txt', 'a+')
-        f.write(args.add_attr)
-        f.write(', ')
-    exit()
-    """
     ########################## get model ##################################
     if args.dataset == 'adult':
         args.img_size = 97
@@ -79,9 +70,7 @@ def main():
             model.load_state_dict(torch.load(args.teacher_path))
         
     teacher = None
-#     if ((args.method == 'mfd' or args.teacher_path is not None) and args.mode != 'eval'):
     if ((args.method == 'mfd' and args.teacher_path is not None) and args.mode != 'eval'):
-#     (args.method=='lgdro_chi' and args.kd):
         teacher = networks.ModelFactory.get_model(args.teacher_type, train_loader.dataset.n_classes, args.img_size)
         teacher.load_state_dict(torch.load(args.teacher_path, map_location=torch.device('cuda:{}'.format(args.t_device))))
         teacher.cuda('cuda:{}'.format(args.t_device))
@@ -96,21 +85,12 @@ def main():
     scheduler=None
     ########################## get trainer ##################################
     if 'Adam' == args.optim:
-        if args.sam:
-            optimizer = SAM(model.parameters(), optim.Adam, lr=args.lr, weight_decay=args.weight_decay)
-        else:
-            optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+        optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     elif 'AdamP' == args.optim:
-        if args.sam:
-            optimizer = SAM(model.parameters(), optim.AdamP, lr=args.lr, weight_decay=args.weight_decay)
-        else:
-            optimizer = optim.AdamP(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+        optimizer = optim.AdamP(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     elif 'AdamW' == args.optim:
         if not args.model.startswith("bert"):
-            if args.sam:
-                optimizer = SAM(model.parameters(), optim.AdamW, lr=args.lr, weight_decay=args.weight_decay)
-            else:
-                optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+            optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
         # BERT uses its own scheduler and optimizer
         else: 
             from pytorch_transformers import WarmupLinearSchedule
@@ -133,34 +113,25 @@ def main():
                     0.0,
                 },
             ]
-            if args.sam:
-                optimizer = SAM(optimizer_grouped_parameters,
-                                  optim.AdamW,
-                                  lr=args.lr,
-                                  eps=1e-8,
-    #                               eps=args.adam_epsilon
-                                 )
-                
-            else:
-                optimizer = optim.AdamW(optimizer_grouped_parameters,
-                                  lr=args.lr,
-                                  eps=1e-8,
-    #                               eps=args.adam_epsilon
-                                 )
+            optimizer = optim.AdamW(optimizer_grouped_parameters,
+                                lr=args.lr,
+                                eps=1e-8,
+                                )
             t_total = len(train_loader) * args.epochs
             print(f"\nt_total is {t_total}\n")
             scheduler = WarmupLinearSchedule(optimizer,
-#                                              warmup_steps=args.warmup_steps,
                                              warmup_steps=0,
                                              t_total=t_total)        
         
     elif 'SGD' == args.optim:
-        if args.sam:
-            optimizer = SAM(model.parameters(), optim.SGD, lr=args.lr, momentum=0.9)    
-        else:
-            optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.weight_decay)
-    trainer_ = trainer.TrainerFactory.get_trainer(args.method, model=model, args=args,
-                                                  optimizer=optimizer, teacher=teacher, scheduler=scheduler)
+        optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9, weight_decay=args.weight_decay)
+
+    if args.method == 'mfd':
+        trainer_ = trainer.TrainerFactory.get_trainer(args.method, model=model, args=args,
+                                                    optimizer=optimizer, teacher=teacher, scheduler=scheduler)
+    else:
+        trainer_ = trainer.TrainerFactory.get_trainer(args.method, model=model, args=args,
+                                                    optimizer=optimizer, scheduler=scheduler)
 
     ####################### start training or evaluating ####################
     
