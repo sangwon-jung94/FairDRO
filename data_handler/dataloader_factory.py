@@ -11,7 +11,7 @@ class DataloaderFactory:
 
     @staticmethod
     def get_dataloader(name, batch_size=256, seed = 0, n_workers=4,
-                       target_attr='Blond_Hair', add_attr=None, labelwise=False, args=None):
+                       target_attr='Blond_Hair', add_attr=None, balSampling=False, args=None):
         if name == 'adult':
             target_attr = 'sex'
         elif name == 'compas':
@@ -32,7 +32,7 @@ class DataloaderFactory:
 
         shuffle = True
         sampler = None
-        if labelwise:
+        if balSampling:
 #             if args.method == 'mfd':
 #                 from data_handler.custom_loader import Customsampler                
 #                 sampler = Customsampler(train_dataset, replacement=False, batch_size=batch_size)

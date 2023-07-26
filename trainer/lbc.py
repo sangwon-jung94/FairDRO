@@ -38,10 +38,10 @@ class Trainer(trainer.GenericTrainer):
                 self._train_epoch(epoch, train_loader, model)
                 
                 eval_start_time = time.time()                
-                eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
+                eval_loss, eval_acc, eval_dcam, eval_dcaa, _, _  = self.evaluate(self.model, 
                                                                                  test_loader, 
                                                                                  self.criterion,
-                                                                                 epoch, 
+                                                                                 epoch,
                                                                                  train=False,
                                                                                  record=self.record,
                                                                                  writer=writer
@@ -49,9 +49,9 @@ class Trainer(trainer.GenericTrainer):
                             
                 eval_end_time = time.time()
                 print('[{}/{}] Method: {} '
-                      'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
+                      'Test Loss: {:.3f} Test Acc: {:.2f} Test DCAM {:.2f} [{:.2f} s]'.format
                       (epoch + 1, epochs, self.method,
-                       eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
+                       eval_loss, eval_acc, eval_dcam, (eval_end_time - eval_start_time)))
 
                 if self.record:
                     self.evaluate(self.model, train_loader, self.criterion, epoch, 
@@ -78,8 +78,8 @@ class Trainer(trainer.GenericTrainer):
                 # calculate violation
                 if self.fairness_criterion == 'dp':
                     acc, violations = self.get_error_and_violations_DP(pred_set, y_set, s_set, self.n_groups, self.n_classes)
-                elif self.fairness_criterion == 'eo':
-                    acc, violations = self.get_error_and_violations_EO(pred_set, y_set, s_set, self.n_groups, self.n_classes)
+                elif self.fairness_criterion == 'dca':
+                    acc, violations = self.get_error_and_violations_DCA(pred_set, y_set, s_set, self.n_groups, self.n_classes)
 
                 self.extended_multipliers -= self.eta * violations 
                 self.weight_matrix = self.get_weight_matrix(self.extended_multipliers) 
@@ -152,8 +152,8 @@ class Trainer(trainer.GenericTrainer):
                     # calculate violation
                     if self.fairness_criterion == 'dp':
                         acc, violations = self.get_error_and_violations_DP(pred_set, y_set, s_set, self.n_groups, self.n_classes)
-                    elif self.fairness_criterion == 'eo':
-                        acc, violations = self.get_error_and_violations_EO(pred_set, y_set, s_set, self.n_groups, self.n_classes)
+                    elif self.fairness_criterion == 'dca':
+                        acc, violations = self.get_error_and_violations_DCA(pred_set, y_set, s_set, self.n_groups, self.n_classes)
                     self.extended_multipliers -= self.eta * violations 
                     self.weight_matrix = self.get_weight_matrix(self.extended_multipliers) 
 
@@ -230,10 +230,9 @@ class Trainer(trainer.GenericTrainer):
                 violations[g, c] = len(group_pred_idxs)/len(group_idxs) - pivot
         return acc, violations
 
-    # Vectorized version for EO & multi-class
-    def get_error_and_violations_EO(self, y_pred, label, sen_attrs, n_groups, n_classes):
+    # Vectorized version for DCA & multi-class
+    def get_error_and_violations_DCA(self, y_pred, label, sen_attrs, n_groups, n_classes):
         acc = torch.mean((y_pred == label).float())
-        total_num = len(y_pred)
         violations = torch.zeros((n_groups, n_classes)) 
         for g in range(n_groups):
             for c in range(n_classes):

@@ -18,11 +18,11 @@ class Trainer(trainer.GenericTrainer):
 
     def train(self, train_loader, test_loader, epochs, writer=None):
         
-        dummy_loader = DataLoader(train_loader.dataset, batch_size=self.batch_size, shuffle=False,
+        dummy_loader = DataLoader(train_loader.dataset, batch_size=self.bs, shuffle=False,
                                           num_workers=2, 
                                           pin_memory=True, drop_last=False)
 
-        if self.nlp_flag:
+        if self.data == 'jigsaw':
             self.adjust_count = 0
             self.adjust_term = 100
         self.model.train()
@@ -31,7 +31,7 @@ class Trainer(trainer.GenericTrainer):
             train_acc, train_loss = self._train_epoch(epoch, train_loader, self.model, dummy_loader)
 
             eval_start_time = time.time()                
-            eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
+            eval_loss, eval_acc, eval_dcam, eval_dcaa, _, _  = self.evaluate(self.model, 
                                                                              test_loader, 
                                                                              self.criterion,
                                                                              epoch, 
@@ -41,9 +41,9 @@ class Trainer(trainer.GenericTrainer):
                                                                             )
             eval_end_time = time.time()
             print('[{}/{}] Method: {} '
-                  'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
+                  'Test Loss: {:.3f} Test Acc: {:.2f} Test DCAM {:.2f} [{:.2f} s]'.format
                   (epoch + 1, epochs, self.method,
-                   eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
+                   eval_loss, eval_acc, eval_dcam, (eval_end_time - eval_start_time)))
 
             if self.record:
                 self.evaluate(self.model, train_loader, self.criterion, epoch, 
@@ -73,14 +73,15 @@ class Trainer(trainer.GenericTrainer):
         n_subgroups = n_classes * n_groups
         
         batch_start_time = time.time()
-        if not self.nlp_flag:
+        if self.data != 'jigsaw':
             self.adjust_lambda(model, train_loader, dummy_loader)
         
         for i, data in enumerate(train_loader):
-            if self.nlp_flag:
+            if self.data == 'jigsaw':
                 if self.adjust_count % self.adjust_term == 0:
                     self.adjust_lambda(model, train_loader, dummy_loader)    
                 self.adjust_count+=1
+            
             # Get the inputs
             inputs, _, groups, labels, _ = data
             if self.cuda:
@@ -91,7 +92,7 @@ class Trainer(trainer.GenericTrainer):
             # labels = labels.float() if num_classes == 2 else labels.long()
             labels = labels.long()
 
-            if self.nlp_flag:
+            if self.data == 'jigsaw':
                 input_ids = inputs[:, :, 0]
                 input_masks = inputs[:, :, 1]
                 segment_ids = inputs[:, :, 2]
@@ -161,7 +162,7 @@ class Trainer(trainer.GenericTrainer):
                     _labels = _labels.cuda()
                     groups = groups.cuda()
                 
-                if self.nlp_flag:
+                if self.data == 'jigsaw':
                     input_ids = inputs[:, :, 0]
                     input_masks = inputs[:, :, 1]
                     segment_ids = inputs[:, :, 2]
@@ -183,8 +184,6 @@ class Trainer(trainer.GenericTrainer):
         labels = torch.cat(labels)
         labels = labels.long()
         # TO DO
-        # We should use BCELoss if a model outputs one-dim vecs
-        # criterion = torch.nn.BCEWithLogitsLoss(reduction='none')
         criterion = torch.nn.CrossEntropyLoss(reduction='none')
         
         if sampler.fairness_type == 'eqopp':
@@ -192,7 +191,6 @@ class Trainer(trainer.GenericTrainer):
             yhat_yz = {}
             yhat_y = {}
                         
-#             eo_loss = criterion ((F.tanh(logits)+1)/2, (labels+1)/2)
             eo_loss = criterion(logits, labels)
             
             for tmp_yz in sampler.yz_tuple:
@@ -240,13 +238,6 @@ class Trainer(trainer.GenericTrainer):
                         max_diff = tmp_diff
                         pos = (_l, _g) if yhat_yz[(_l, _g)] >= yhat_yz[(_l, _g-1)] else (_l, _g-1)
 
-                # # lb update per label
-                #     #find plus position
-                # if yhat_yz[(_l, pos)] > yhat_yz[(_l, pos-1)]:
-                #     target = pos-1
-                # else:
-                #     target = pos
-
             pos_label = pos[0]
             pos_group = pos[1]
             for _g in range(n_groups):
@@ -262,42 +253,12 @@ class Trainer(trainer.GenericTrainer):
             #normalize
             sampler.lbs[pos_label] = [i / sum(sampler.lbs[pos_label]) for i in sampler.lbs[pos_label]]
                 
-            
-#             y1_diff = abs(yhat_yz[(1, 1)] - yhat_yz[(1, 0)])
-#             y0_diff = abs(yhat_yz[(0, 1)] - yhat_yz[(0, 0)])
-            
-            # lb1 * loss_y1z1 + (1-lb1) * loss_y1z0
-            # lb2 * loss_y0z1 + (1-lb2) * loss_y0z0
-            
-#             if y1_diff > y0_diff:
-#                 if yhat_yz[(1, 1)] > yhat_yz[(1, 0)]:
-#                     sampler.lb1 += sampler.alpha
-#                 else:
-#                     sampler.lb1 -= sampler.alpha
-#             else:
-#                 if yhat_yz[(0, 1)] > yhat_yz[(0, 0)]:
-#                     sampler.lb2 += sampler.alpha
-#                 else:
-#                     sampler.lb2 -= sampler.alpha
-                    
-                
-#             if sampler.lb1 < 0:
-#                 sampler.lb1 = 0
-#             elif sampler.lb1 > 1:
-#                 sampler.lb1 = 1
-                
-#             if sampler.lb2 < 0:
-#                 sampler.lb2 = 0
-#             elif sampler.lb2 > 1:
-#                 sampler.lb2 = 1
-                
         elif sampler.fairness_type == 'dp':
             yhat_yz = {}
             yhat_y = {}
             
             ones_array = np.ones(len(sampler.y_data))
             ones_tensor = torch.FloatTensor(ones_array).cuda()
-#             dp_loss = criterion((F.tanh(logits)+1)/2, ones_tensor) # Note that ones tensor puts as the true label
             dp_loss = criterion(logits, ones_tensor.long())
             
             for tmp_yz in sampler.yz_tuple:
@@ -307,9 +268,6 @@ class Trainer(trainer.GenericTrainer):
             y1_diff = abs(yhat_yz[(1, 1)] - yhat_yz[(1, 0)])
             y0_diff = abs(yhat_yz[(0, 1)] - yhat_yz[(0, 0)])
             
-            # lb1 * loss_y1z1 + (1-lb1) * loss_y1z0
-            # lb2 * loss_y0z1 + (1-lb2) * loss_y0z0
-
             if y1_diff > y0_diff:
                 if yhat_yz[(1, 1)] > yhat_yz[(1, 0)]:
                     sampler.lbs[1][1] += sampler.gamma

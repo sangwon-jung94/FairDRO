@@ -46,7 +46,7 @@ def main():
                                                         target_attr=args.target,
                                                         add_attr = args.add_attr,
 #                                                         skew_ratio=args.skew_ratio,
-                                                        labelwise=args.labelwise,
+                                                        balSampling=args.balSampling,
                                                         args=args
                                                         )
     n_classes, n_groups, train_loader, test_loader = tmp

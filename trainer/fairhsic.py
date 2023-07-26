@@ -24,7 +24,7 @@ class Trainer(trainer.GenericTrainer):
             self._train_epoch(epoch, train_loader, self.model, hsic=hsic)
 
             eval_start_time = time.time()                
-            eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
+            eval_loss, eval_acc, eval_dcam, eval_dcaa, _, _  = self.evaluate(self.model, 
                                                                              test_loader, 
                                                                              self.criterion,
                                                                              epoch, 
@@ -34,9 +34,9 @@ class Trainer(trainer.GenericTrainer):
                                                                             )
             eval_end_time = time.time()
             print('[{}/{}] Method: {} '
-                  'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
+                  'Test Loss: {:.3f} Test Acc: {:.2f} Test DCAM {:.2f} [{:.2f} s]'.format
                   (epoch + 1, epochs, self.method,
-                   eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
+                   eval_loss, eval_acc, eval_dcam, (eval_end_time - eval_start_time)))
 
             if self.record:
                 self.evaluate(self.model, train_loader, self.criterion, epoch, 
@@ -99,9 +99,9 @@ class Trainer(trainer.GenericTrainer):
                 loss = torch.mean(group_loss)
             else:
                 if criterion is not None:
-                    loss = criterion(outputs, labels).mean()
+                    loss = criterion(logits, labels).mean()
                 else:
-                    loss = self.criterion(outputs, labels).mean()
+                    loss = self.criterion(logits, labels).mean()
                         
             f_s = outputs[-2] if self.data != 'jigsaw' else outputs[2][0][:,0,:]
             group_onehot = F.one_hot(groups).float()
@@ -111,7 +111,7 @@ class Trainer(trainer.GenericTrainer):
                 if mask.sum()==0:
                     continue
                 hsic_loss += hsic.unbiased_estimator(f_s[mask], group_onehot[mask])
-                
+            
             loss = loss + self.lamb * hsic_loss 
             
             loss.backward()

@@ -20,7 +20,7 @@ class DatasetFactory:
 
     @staticmethod
    # def get_dataset(name, split='Train', seed=0, sv_ratio=1, version=1, target='Attractive', add_attr=None):
-    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, labelwise=False, bs=256, uc=False, method=None):
+    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, balSampling=False, bs=256, uc=False, method=None):
         root = f'./data/{name}' if name != 'utkface_fairface' else './data/utkface'
         kwargs = {'root':root,
                   'split':split,
@@ -46,7 +46,7 @@ class DatasetFactory:
         module = importlib.import_module(dataset_dict[name][0])
         class_ = getattr(module, dataset_dict[name][1])
         
-#         if split == 'train' and labelwise:
+#         if split == 'train' and balSampling:
 #             class_.sampel_weight = class_._make_weights(method)
         return class_(**kwargs)
 

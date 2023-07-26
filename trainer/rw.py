@@ -35,7 +35,7 @@ class Trainer(trainer.GenericTrainer):
             self._train_epoch(epoch, train_loader, model, weight_matrix)
 
             eval_start_time = time.time()                
-            eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
+            eval_loss, eval_acc, eval_dcam, eval_dcaa, _, _  = self.evaluate(self.model, 
                                                                              test_loader, 
                                                                              self.criterion,
                                                                              epoch, 
@@ -46,9 +46,9 @@ class Trainer(trainer.GenericTrainer):
 
             eval_end_time = time.time()
             print('[{}/{}] Method: {} '
-                  'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
+                  'Test Loss: {:.3f} Test Acc: {:.2f} Test DCAM {:.2f} [{:.2f} s]'.format
                   (epoch + 1, epochs, self.method,
-                   eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
+                   eval_loss, eval_acc, eval_dcam, (eval_end_time - eval_start_time)))
 
             if self.record:
                 self.evaluate(self.model, train_loader, 
@@ -165,7 +165,6 @@ class Trainer(trainer.GenericTrainer):
 
     # update weight
     def get_reweight_matrix(self, label, sen_attrs, n_groups, n_classes):  
-        n_data = len(label)
         w_matrix = torch.zeros((n_groups, n_classes))
         for g in range(n_groups):
             for c in range(n_classes):

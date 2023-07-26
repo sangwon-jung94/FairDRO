@@ -30,7 +30,7 @@ def get_args():
     parser.add_argument('--seed', default=0, type=int, help='seed for randomness')
     parser.add_argument('--date', default='20200101', type=str, help='experiment date')
     parser.add_argument('--method', default='scratch', type=str, required=True,
-                        choices=['scratch', 'lbc','mfd', 'adv', 'fairhsic', 'lgdro','gdro','gdro_epoch', 'fairbatch','gdro_chi','lgdro_chi','lgdro_chi_ap','disp_mist','rw', 'fscl','renyi', 'variance','cgdro_new','cgdro_no_sampling', 'exp_grad_reduction','cotter','cotter_epoch', 'fairdro','fairdro_cotter', 'direct_reg'])
+                        choices=['scratch', 'lbc','mfd', 'fairhsic','gdro','fairbatch','fairdro','cov','rw','renyi', 'rvp','egr','pl', 'direct_reg'])
 
     parser.add_argument('--optim', default='Adam', type=str, required=False,
                         choices=['AdamP', 'AdamW','SGD', 'SGD_momentum_decay', 'Adam'],
@@ -52,14 +52,14 @@ def get_args():
 
     parser.add_argument('--sigma', default=1.0, type=float, help='sigma for rbf kernel')
     parser.add_argument('--kernel', default='rbf', type=str, choices=['rbf', 'poly'], help='kernel for mmd')
-    parser.add_argument('--labelwise', default=False, action='store_true', help='labelwise loader')
+    parser.add_argument('--balSampling', default=False, action='store_true', help='balSampling loader')
     parser.add_argument('--get-inter', default=False, action='store_true',
                         help='get penultimate features for TSNE visualization')
     parser.add_argument('--record', default=False, action='store_true', help='record')
     parser.add_argument('--analysis', default=False, action='store_true', help='analysis')
     parser.add_argument('--uc', default=False, action='store_true', help='uncertain')
     
-    parser.add_argument('--fairness-criterion', default='eo', type=str, choices=['eo', 'dp', 'eopp', 'ap','dca'], help='fairness criterion')
+    parser.add_argument('--fairness-criterion', default='dca', type=str, choices=['eo', 'dp', 'eopp', 'ap','dca'], help='fairness criterion')
     
     # For reweighting,
     parser.add_argument('--iteration', default=10, type=int, help='iteration for reweighting')

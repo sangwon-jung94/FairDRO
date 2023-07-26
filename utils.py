@@ -27,23 +27,24 @@ def chi_proj(pre_q, rho):
     #print(f'took {end-start} s')
     return q.value
 
-def chi_proj_nonuni(pre_q, rho, group_dist):
-    #start = time.time()
-    g = pre_q.shape[0]
-    q = cvx.Variable(g)
-    v = pre_q.cpu().numpy()
-    obj = cvx.Minimize(cvx.square(cvx.norm(q - v, 2)))
 
-    constraints = [q>= 0.0,
-                   cvx.sum(q)==1.0,
-                   cvx.square(q-group_dist) @ group_dist  <= rho]
+# def chi_proj_nonuni(pre_q, rho, group_dist):
+#     #start = time.time()
+#     g = pre_q.shape[0]
+#     q = cvx.Variable(g)
+#     v = pre_q.cpu().numpy()
+#     obj = cvx.Minimize(cvx.square(cvx.norm(q - v, 2)))
+
+#     constraints = [q>= 0.0,
+#                    cvx.sum(q)==1.0,
+#                    cvx.square(q-group_dist) @ group_dist  <= rho]
     
-    prob = cvx.Problem(obj, constraints)
-    prob.solve() # Returns the optimal value.
-    print("optimal value : ", prob.value)
-    print("pre q : ", pre_q)
-    print("optimal var :", q.value)
-# 4    return q.value
+#     prob = cvx.Problem(obj, constraints)
+#     prob.solve() # Returns the optimal value.
+#     print("optimal value : ", prob.value)
+#     print("pre q : ", pre_q)
+#     print("optimal var :", q.value)
+# # 4    return q.value
 
 def list_files(root, suffix, prefix=False):
     root = os.path.expanduser(root)
@@ -113,126 +114,62 @@ def check_log_dir(log_dir):
     except OSError:
         print("Failed to create directory!!")
 
-class FitnetRegressor(torch.nn.Module):
-    def __init__(self, in_feature, out_feature):
-        super(FitnetRegressor, self).__init__()
-        self.in_feature = in_feature
-        self.out_feature = out_feature
-
-        #self.regressor = nn.Linear(in_feature, out_feature, bias=False)
-        self.regressor = torch.nn.Conv2d(in_feature, out_feature, 1, bias=False)
-        torch.nn.init.kaiming_normal_(self.regressor.weight, mode='fan_out', nonlinearity='relu')
-        self.regressor.weight.data.uniform_(-0.005, 0.005)
-#         self.bn = torch.nn.BatchNorm2d(out_feature) 
-#         torch.nn.init.ones_(self.bn.weight)
-#         torch.nn.init.zeros_(self.bn.bias)
-
-    def forward(self, feature):
-        if feature.dim() == 2:
-            feature = feature.unsqueeze(2).unsqueeze(3)
-
-        return F.relu(self.regressor(feature))
-#         return F.relu(self.bn(self.regressor(feature)))
-
 def make_log_name(args):
     log_name = args.model
 
-#     if args.mode == 'eva':
-#         log_name = args.modelpath.split('/')[-1]
-#         log_name = log_name[:-3]
-
-#     else:
     if args.pretrained:
         log_name += '_pretrained'
-    log_name += f'_seed{args.seed}_epochs{args.epochs}_bs{args.batch_size}_lr{args.lr}_{args.optim}'
-    if args.sam:
-        log_name += 'sam'
-    log_name += f'_wd{args.weight_decay}'
-    if args.uc:
-        log_name += '_uc'
-        
-    if args.method == 'adv':
-        log_name += f'_lamb{args.lamb}_eta{args.eta}'
 
-    elif args.method == 'lbc':
-        log_name += f'_eta{args.eta}_iter{args.iteration}'
-        log_name += f'_criterion{args.fairness_criterion}'
+    log_name += f'_seed{args.seed}_epochs{args.epochs}_bs{args.batch_size}_lr{args.lr}_{args.optim}'
+    log_name += f'_wd{args.weight_decay}'
+
+    if args.method == 'lbc':
+        log_name += f'_eta{args.eta}_iter{args.iteration}'        
     
-    elif args.method == 'exp_grad_reduction':
+    elif args.method == 'egr':
         log_name += f'_eta{args.eta}_iter{args.iteration}_bound{args.bound_B}_constraint{args.constraint_c}'
-        log_name += f'_criterion{args.fairness_criterion}'
     
     elif args.method == 'fairbatch':
         log_name += f'_gamma{args.gamma}'
         
-    elif args.method == 'fairdro_cotter':
-        log_name += f'_{args.optim_q}'
-        if args.optim_q == 'ibr_ip':
-            log_name += f'_{args.q_decay}'
-        log_name += f'_rholr{args.rholr}_eps{args.epsilon}'
-        if args.margin:
-            log_name += f'_margin'
-        if args.use_01loss:
-            log_name +='_01loss'
-        
-    elif 'cotter' in args.method:
+    elif args.method == 'pl':
         log_name += f'_lamblr{args.lamblr}_eps{args.epsilon}'
         
-
-            
     elif 'gdro' in args.method:
-#         if not args.ibr:
         log_name += f'_gamma{args.gamma}'
-        if args.optim_q != 'pd':
-            log_name += f'_{args.optim_q}'
-            log_name += f'_{args.q_decay}'
 
-        if 'chi' or 'new' or 'no_sampling' in args.method:
-            log_name += f'_rho{args.rho}'
-                
-        if args.use_01loss:
-            log_name +='_01loss'
-    
-    elif 'variance' in args.method:
+    elif args.method == 'rvp':
         log_name += f'_rho{args.rho}'        
         
-    if args.method == 'fairdro':
+    elif args.method == 'fairdro':
         log_name += f'_{args.optim_q}'
-        if args.optim_q == 'ibr_ip':
+        if args.optim_q == 'smt_ibr':
             log_name += f'_{args.q_decay}'
         log_name += f'_rho{args.rho}'
-        if args.margin:
-            log_name += f'_margin'
         if args.use_01loss:
             log_name +='_01loss'
-        if args.label_flipped:
-            log_name +='_flipped'
         
-    if 'disp_mist' == args.method:
+    if 'cov' == args.method:
         log_name += f'_lamb{args.lamb}'
-        log_name += f'_criterion{args.fairness_criterion}'
+
     if 'renyi' == args.method:
         log_name += f'_lamb{args.lamb}'
-        log_name += f'_criterion{args.fairness_criterion}'
+
     if 'direct_reg' == args.method:
         log_name += f'_lamb{args.lamb}'
-        log_name += f'_criterion{args.fairness_criterion}'
-
-    if args.labelwise:
-        log_name += '_labelwise'
-
-    if args.balanced:
-        log_name += '_balanced'
-
+   
     if args.method in ['fairhsic', 'mfd']:
         log_name += f'_lamb{args.lamb}'
         if args.method == 'mfd':
             log_name += f'_from_{args.teacher_type}'
 
-    if args.dataset == 'celeba':
-        if args.target != 'Blond_Hair':
-            log_name += f'_T{args.target}'
-        if args.add_attr is not None:
-            log_name += f'_A{args.add_attr}'
+    if args.fairness_criterion != 'dca':
+        log_name += f'_criterion{args.fairness_criterion}'
+
+    if args.balSampling:
+        log_name += '_balSampling'
+
+    if args.balanced:
+        log_name += '_balanced'
 
     return log_name

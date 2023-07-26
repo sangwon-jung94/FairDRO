@@ -59,7 +59,7 @@ def predict_group(model, loader, args):
             if i % args.term == 0:
                 print('[{}] in group prediction'.format(i))
 
-    if args.labelwise:
+    if args.balSampling:
         loader.dataset.n_data, loader.dataset.idxs_per_group = loader.dataset._data_count()
         from data_handler.custom_loader import Customsampler
         def _init_fn(worker_id):
@@ -71,7 +71,7 @@ def predict_group(model, loader, args):
     del dataloader
     del model
     del loader
-    if args.labelwise:
+    if args.balSampling:
         return train_dataloader            
 
 

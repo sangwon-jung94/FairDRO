@@ -19,46 +19,26 @@ class TrainerFactory:
             import trainer.mfd as trainer
         elif method == 'fairhsic':
             import trainer.fairhsic as trainer
-        elif method == 'adv':
-            import trainer.adv_debiasing as trainer
         elif method == 'lbc':
             import trainer.lbc as trainer
         elif method == 'gdro':
             import trainer.groupdro as trainer
-        elif method == 'gdro_epoch':
-            import trainer.groupdro_epoch as trainer
-        elif method == 'gdro_chi':
-            import trainer.groupdro_chi as trainer
-        elif method == 'cgdro':
-            import trainer.cgdro as trainer
-        elif method == 'lgdro_chi_ap':
-            import trainer.labelwise_groupdro_chi_ap as trainer
+        elif method == 'fairdro':
+            import trainer.fairdro as trainer
         elif method == 'fairbatch':
             import trainer.fairbatch as trainer
-        elif method == 'disp_mist':
-            import trainer.disparate_mistreatment as trainer
+        elif method == 'cov':
+            import trainer.cov as trainer
         elif method == 'rw':
             import trainer.rw as trainer
-        elif method == 'fscl':
-            import trainer.fscl as trainer
         elif method == 'renyi':
             import trainer.renyi as trainer
-        elif method == 'variance':
-            import trainer.labelwise_variance as trainer
-        elif method == 'cgdro_new':
-            import trainer.cgdro_new as trainer
-        elif method == 'cgdro_no_sampling':
-            import trainer.cgdro_no_sampling as trainer
-        elif method == 'exp_grad_reduction':
-            import trainer.exp_grad_reduction as trainer
-        elif method == 'cotter':
-            import trainer.cotter as trainer
-        elif method == 'cotter_epoch':
-            import trainer.cotter_epoch as trainer
-        elif method == 'fairdro':
-            import trainer.fairDRO as trainer
-        elif method == 'fairdro_cotter':
-            import trainer.fairDRO_cotter as trainer
+        elif method == 'rvp':
+            import trainer.rvp as trainer
+        elif method == 'egr':
+            import trainer.egr as trainer
+        elif method == 'pl':
+            import trainer.pl as trainer
         elif method == 'direct_reg':
             import trainer.direct_reg as trainer
         else:
@@ -185,31 +165,25 @@ class GenericTrainer:
 
             group_loss = group_loss.reshape((n_groups, n_classes))            
             group_acc = group_acc.reshape((n_groups, n_classes))
-            labelwise_acc_gap = torch.max(group_acc, dim=0)[0] - torch.min(group_acc, dim=0)[0]
-            deoa = torch.mean(labelwise_acc_gap).item()
-            deom = torch.max(labelwise_acc_gap).item()
-            
-#             root_var = 0.0
-#             for c in range(n_classes):
-#                 var_c = torch.var(group_loss[:, c])
-#                 root_var += torch.sqrt(var_c)
-#             root_var = root_var/n_classes
+            balSampling_acc_gap = torch.max(group_acc, dim=0)[0] - torch.min(group_acc, dim=0)[0]
+            dcaA = torch.mean(balSampling_acc_gap).item()
+            dcaM = torch.max(balSampling_acc_gap).item()
 
         if record:
-            self.write_record(writer, epoch, loss, acc, deom, deoa, group_loss, group_acc, train)
+            self.write_record(writer, epoch, loss, acc, dcaM, dcaA, group_loss, group_acc, train)
             
         model.train()
-        return loss, acc, deom, deoa, group_acc, group_loss
+        return loss, acc, dcaM, dcaA, group_acc, group_loss
     
-    def write_record(self, writer, epoch, loss, acc, deom, deoa, group_loss, group_acc, train=False):
+    def write_record(self, writer, epoch, loss, acc, dcaM, dcaA, group_loss, group_acc, train=False):
         flag = 'train' if train else 'test'
         
         n_groups = group_acc.shape[0]
         n_classes = group_loss.shape[1]
         writer.add_scalar(f'{flag}_loss', loss, epoch)
         writer.add_scalar(f'{flag}_acc', acc, epoch)
-        writer.add_scalar(f'{flag}_deom', deom, epoch)
-        writer.add_scalar(f'{flag}_deoa', deoa, epoch)
+        writer.add_scalar(f'{flag}_dcam', dcaM, epoch)
+        writer.add_scalar(f'{flag}_dcaa', dcaA, epoch)
 
         acc_dict = {}
         loss_dict = {}
@@ -285,12 +259,6 @@ class GenericTrainer:
                         confu_mat[str(i)] += confusion_matrix(
                             labels[mask].cpu().numpy(), pred[mask].cpu().numpy(),
                             labels=[i for i in range(n_classes)])
-                        
-#         print(confu_mat['0'][0,0] / confu_mat['0'][0,:].sum())
-#         print(confu_mat['0'][1,1] / confu_mat['0'][1,:].sum())
-#         print(confu_mat['1'][0,0] / confu_mat['1'][0,:].sum())
-#         print(confu_mat['1'][1,1] / confu_mat['1'][1,:].sum())
-
 
         predict_mat['group_set'] = group_set.numpy()
         predict_mat['target_set'] = target_set.numpy()

@@ -13,7 +13,6 @@ class Trainer(trainer.GenericTrainer):
         super().__init__(args=args, **kwargs)
         self.gamma = args.gamma # learning rate of adv_probs
         self.train_criterion = torch.nn.CrossEntropyLoss(reduction='none')
-    
 
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         global loss_set
@@ -30,7 +29,7 @@ class Trainer(trainer.GenericTrainer):
             self._train_epoch(epoch, train_loader, model,criterion)
 
             eval_start_time = time.time()                
-            eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
+            eval_loss, eval_acc, eval_dcam, eval_dcaa, _, _  = self.evaluate(self.model, 
                                                                              test_loader, 
                                                                              self.criterion,
                                                                              epoch, 
@@ -42,7 +41,7 @@ class Trainer(trainer.GenericTrainer):
             print('[{}/{}] Method: {} '
                   'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
                   (epoch + 1, epochs, self.method,
-                   eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
+                   eval_loss, eval_acc, eval_dcam, (eval_end_time - eval_start_time)))
 
             if self.record:
                 self.evaluate(self.model, train_loader, self.criterion, epoch, 
@@ -63,7 +62,6 @@ class Trainer(trainer.GenericTrainer):
         
         running_acc = 0.0
         running_loss = 0.0
-        total = 0
         batch_start_time = time.time()
         
         n_classes = train_loader.dataset.n_classes
@@ -80,52 +78,40 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda(device=self.device)
                 groups = groups.cuda(device=self.device)
                 
-            def closure():
-                subgroups = groups * n_classes + labels
-                if self.nlp_flag:
-                    input_ids = inputs[:, :, 0]
-                    input_masks = inputs[:, :, 1]
-                    segment_ids = inputs[:, :, 2]
-                    outputs = model(
-                        input_ids=input_ids,
-                        attention_mask=input_masks,
-                        token_type_ids=segment_ids,
-                        labels=labels,
-                    )[1] 
-                else:
-                    outputs = model(inputs)
-
-                loss = self.train_criterion(outputs, labels)
-
-                # calculate the groupwise losses
-                group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
-                group_count = group_map.sum(1)
-                group_denom = group_count + (group_count==0).float() # avoid nans
-                group_loss = (group_map @ loss.view(-1))/group_denom
-
-                # update q
-                self.adv_probs = self.adv_probs * torch.exp(self.gamma*group_loss.data)
-                self.adv_probs = self.adv_probs/(self.adv_probs.sum()) # proj
-
-                robust_loss = group_loss @ self.adv_probs
-                
-                return outputs, robust_loss 
-            
-            outputs, loss = closure()            
-            loss.backward()
-            if not self.sam:
-                if self.nlp_flag:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
-                self.optimizer.step()
-                self.optimizer.zero_grad()
+            subgroups = groups * n_classes + labels
+            if self.data == 'jigsaw':
+                input_ids = inputs[:, :, 0]
+                input_masks = inputs[:, :, 1]
+                segment_ids = inputs[:, :, 2]
+                outputs = model(
+                    input_ids=input_ids,
+                    attention_mask=input_masks,
+                    token_type_ids=segment_ids,
+                    labels=labels,
+                )[1] 
             else:
-                self.optimizer.first_step(zero_grad=True)
-                outputs, loss = closure()
-                loss.backward()
-                if self.nlp_flag:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
-                self.optimizer.second_step(zero_grad=True)
-                            
+                outputs = model(inputs)
+
+            loss = self.train_criterion(outputs, labels)
+
+            # calculate the groupwise losses
+            group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+            group_count = group_map.sum(1)
+            group_denom = group_count + (group_count==0).float() # avoid nans
+            group_loss = (group_map @ loss.view(-1))/group_denom
+
+            # update q
+            self.adv_probs = self.adv_probs * torch.exp(self.gamma*group_loss.data)
+            self.adv_probs = self.adv_probs/(self.adv_probs.sum()) # proj
+
+            loss = group_loss @ self.adv_probs
+                
+            loss.backward()
+            if self.data == 'jigsaw':
+                torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+            self.optimizer.step()
+            self.optimizer.zero_grad()
+
             running_loss += loss.item()
             running_acc += get_accuracy(outputs, labels)
 

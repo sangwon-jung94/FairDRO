@@ -14,11 +14,9 @@ import numpy as np
 class Trainer(trainer.GenericTrainer):
     def __init__(self, args, **kwargs):
         super().__init__(args=args, **kwargs)
-        self.batch_size = args.batch_size
-        self.n_workers = args.n_workers
         self.lamb = args.lamb
-        self.target_criterion = args.target_criterion
-        assert (self.target_criterion == 'eo' or self.target_criterion == 'ap')
+        self.fairness_criterion = args.fairness_criterion
+        assert (self.fairness_criterion == 'eo' or self.fairness_criterion == 'ap')
         
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         global loss_set
@@ -29,7 +27,7 @@ class Trainer(trainer.GenericTrainer):
             self._train_epoch(epoch, train_loader, model, criterion)
             
             eval_start_time = time.time()
-            eval_loss, eval_acc, eval_deom, eval_deoa, _, _  = self.evaluate(self.model, 
+            eval_loss, eval_acc, eval_dcam, eval_dcaa, _, _  = self.evaluate(self.model, 
                                                                              test_loader, 
                                                                              self.criterion,
                                                                              epoch, 
@@ -41,7 +39,7 @@ class Trainer(trainer.GenericTrainer):
             print('[{}/{}] Method: {} '
                   'Test Loss: {:.3f} Test Acc: {:.2f} Test DEOM {:.2f} [{:.2f} s]'.format
                   (epoch + 1, epochs, self.method,
-                   eval_loss, eval_acc, eval_deom, (eval_end_time - eval_start_time)))
+                   eval_loss, eval_acc, eval_dcam, (eval_end_time - eval_start_time)))
 
             if self.record:
                 _, _, _, _, train_subgroup_acc, train_subgroup_loss=self.evaluate(self.model, train_loader, self.criterion, epoch, 
@@ -65,9 +63,7 @@ class Trainer(trainer.GenericTrainer):
     def calculate_covariance(self, model, train_loader):
         model.train()
         
-        n_classes = train_loader.dataset.n_classes
         n_groups = train_loader.dataset.n_groups
-        n_subgroups = n_classes * n_groups
         
         FPR_total = 0
         FNR_total = 0
@@ -79,8 +75,6 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda(device=self.device)
                 groups = groups.cuda(device=self.device)
 
-                outputs = model(inputs)
-                    
             def closure_FPR(inputs, groups, labels, model):
                 groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
                 groups_onehot = groups_onehot.float() # n by g
@@ -134,7 +128,7 @@ class Trainer(trainer.GenericTrainer):
                 groups = groups.cuda(device=self.device)
                 
             def closure():
-                if self.nlp_flag:
+                if self.data == 'jigsaw':
                     input_ids = inputs[:, :, 0]
                     input_masks = inputs[:, :, 1]
                     segment_ids = inputs[:, :, 2]
@@ -162,11 +156,11 @@ class Trainer(trainer.GenericTrainer):
                         loss = self.criterion(outputs, labels).mean()
                 return outputs, loss
             
-            if self.target_criterion == 'eo':
+            if self.fairness_criterion == 'eo':
                 def closure_FPR(inputs, groups, labels, model):
                     groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
                     groups_onehot = groups_onehot.float() # n by g
-                    if self.nlp_flag:
+                    if self.data == 'jigsaw':
                         input_ids = inputs[:, :, 0]
                         input_masks = inputs[:, :, 1]
                         segment_ids = inputs[:, :, 2]
@@ -190,7 +184,7 @@ class Trainer(trainer.GenericTrainer):
                 def closure_FNR(inputs, groups, labels, model):
                     groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
                     groups_onehot = groups_onehot.float() # n by g
-                    if self.nlp_flag:
+                    if self.data == 'jigsaw':
                         input_ids = inputs[:, :, 0]
                         input_masks = inputs[:, :, 1]
                         segment_ids = inputs[:, :, 2]
@@ -210,11 +204,11 @@ class Trainer(trainer.GenericTrainer):
                     loss = torch.sum(loss_groupwise)
                     return loss
             
-            elif self.target_criterion == 'ap':
+            elif self.fairness_criterion == 'ap':
                 def closure_OMR(inputs, groups, labels, model):
                     groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
                     groups_onehot = groups_onehot.float() # n by g
-                    if self.nlp_flag:
+                    if self.data == 'jigsaw':
                         input_ids = inputs[:, :, 0]
                         input_masks = inputs[:, :, 1]
                         segment_ids = inputs[:, :, 2]
@@ -244,18 +238,10 @@ class Trainer(trainer.GenericTrainer):
                 loss += self.lamb*closure_OMR(inputs, groups, labels, model)
             
             loss.backward()
-            if not self.sam:
-                if self.nlp_flag:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
-                self.optimizer.step()
-                self.optimizer.zero_grad()
-            else:
-                self.optimizer.first_step(zero_grad=True)
-                outputs, loss = closure()
-                loss.backward()
-                if self.nlp_flag:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
-                self.optimizer.second_step(zero_grad=True)
+            if self.data == 'jigsaw':
+                torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
+            self.optimizer.step()
+            self.optimizer.zero_grad()
                 
             running_loss += loss.item()
             running_acc += get_accuracy(outputs, labels)
