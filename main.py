@@ -62,7 +62,6 @@ def main():
                                             pretrained=args.pretrained, n_groups=n_groups)
 
     model.cuda('cuda:{}'.format(args.device))
-    
     if args.pretrained:
         if args.modelpath is not None:
             model.load_state_dict(torch.load(args.modelpath))
@@ -75,12 +74,7 @@ def main():
         teacher.load_state_dict(torch.load(args.teacher_path, map_location=torch.device('cuda:{}'.format(args.t_device))))
         teacher.cuda('cuda:{}'.format(args.t_device))
 
-    if ((args.method == 'lgdro_chi' and args.teacher_path is not None) and args.mode != 'eval'):
-#     (args.method=='lgdro_chi' and args.kd):
-        teacher = networks.ModelFactory.get_model(args.teacher_type, train_loader.dataset.n_classes, args.img_size)
-        teacher.load_state_dict(torch.load(args.teacher_path, map_location=torch.device('cuda:{}'.format(args.t_device))))
-        teacher.cuda('cuda:{}'.format(args.t_device))
-        
+    print('successfully call the model')
 #     set_seed(seed)
     scheduler=None
     ########################## get trainer ##################################
