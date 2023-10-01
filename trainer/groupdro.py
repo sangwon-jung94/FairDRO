@@ -22,7 +22,7 @@ class Trainer(trainer.GenericTrainer):
         n_classes = train_loader.dataset.n_classes
         n_groups = train_loader.dataset.n_groups
         
-        self.adv_probs = torch.ones(n_groups*n_classes).cuda() / n_groups*n_classes
+        self.adv_probs = torch.ones(n_groups*n_classes).cuda() / (n_groups*n_classes)
         
         for epoch in range(epochs):
             
