@@ -43,7 +43,7 @@ def get_args():
     parser.add_argument('--teacher-path', default=None, help='teacher model path')
 
     parser.add_argument('--pretrained', default=False, action='store_true', help='load imagenet pretrained model')
-    parser.add_argument('--n-workers', default=2, type=int, help='the number of thread used in dataloader')
+    parser.add_argument('--n-workers', default=1, type=int, help='the number of thread used in dataloader')
     parser.add_argument('--term', default=20, type=int, help='the period for recording train acc')
     parser.add_argument('--target', default='Blond_Hair', type=str, help='target attribute for celeba')
     parser.add_argument('--add-attr', default=None, help='additional group attribute for celeba')
