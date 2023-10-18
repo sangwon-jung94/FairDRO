@@ -31,7 +31,6 @@ class Trainer(trainer.GenericTrainer):
         
     def train(self, train_loader, test_loader, epochs, criterion=None, writer=None):
         
-        
         global loss_set
         model = self.model
         model.train()
@@ -51,7 +50,7 @@ class Trainer(trainer.GenericTrainer):
             self.q_dict[l] = torch.ones(n_groups).cuda(device=self.device) / n_groups
         
         if self.data == 'jigsaw':
-            self.n_q_update = 0 
+            self.n_q_update = 0
             self.q_update_term = 0
             self.total_q_update = (epochs * len(train_loader)) / self.update_freq
 
@@ -126,7 +125,6 @@ class Trainer(trainer.GenericTrainer):
                         for l in range(n_classes):
                             opt_q_values[f'g{g},l{l}'] = opt_q_true[l][g]
                     writer.add_scalars('opt_q_values_true', opt_q_values, epoch)
-
                 
             if self.scheduler != None and 'Reduce' in type(self.scheduler).__name__:
                 self.scheduler.step(eval_loss)
@@ -155,7 +153,6 @@ class Trainer(trainer.GenericTrainer):
                 labels = labels.cuda(device=self.device)
                 groups = groups.cuda(device=self.device)
                 
-        
             subgroups = groups * n_classes + labels
             if self.data == 'jigsaw':
                 input_ids = inputs[:, :, 0]
@@ -181,12 +178,10 @@ class Trainer(trainer.GenericTrainer):
             group_denom = group_count + (group_count==0).float() # avoid nans
             group_loss = (group_map @ loss.view(-1))/group_denom
             group_loss = group_loss.reshape([n_groups, n_classes])
-        
             robust_loss = 0
             for l in range(n_classes):
                 robust_loss += group_loss[:,l] @ self.q_dict[l]
             robust_loss /= n_classes        
-
             self.optimizer.zero_grad()
             robust_loss.backward()                
             if self.data == 'jigsaw':

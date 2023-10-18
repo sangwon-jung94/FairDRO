@@ -142,32 +142,13 @@ class Trainer(trainer.GenericTrainer):
                     loss = self.criterion(outputs, labels).mean()
             
             if self.fairness_criterion == 'dca':
-                def closure_DCA(inputs, groups, labels, model):
-                    if self.data == 'jigsaw':
-                        input_ids = inputs[:, :, 0]
-                        input_masks = inputs[:, :, 1]
-                        segment_ids = inputs[:, :, 2]
-                        outputs = model(
-                            input_ids=input_ids,
-                            attention_mask=input_masks,
-                            token_type_ids=segment_ids,
-                            labels=labels,
-                        )[1] 
-                    else:
-                        outputs = model(inputs) # 128 by 2                    
-                    
-                    subgroups = groups * n_classes + labels
-                    group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
-                    group_count = group_map.sum(1)
-                    group_denom = group_count + (group_count==0).float() # avoid nans
-                    loss = nn.CrossEntropyLoss(reduction='none')(outputs, labels)
-                    group_loss = (group_map @ loss.view(-1))/group_denom
+                def closure_DCA(group_loss):
                     group_loss_matrix = group_loss.reshape(n_groups, n_classes)
                     abs_group_loss_diff = torch.abs(group_loss_matrix - group_loss_matrix.mean(dim=0))
                     DCA_reg = torch.mean(abs_group_loss_diff)
                     return DCA_reg
                 
-                loss += self.lamb*closure_DCA(inputs, groups, labels, model)
+                loss += self.lamb*closure_DCA(group_loss)
             
             loss.backward()
 

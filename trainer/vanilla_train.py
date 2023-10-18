@@ -2,7 +2,7 @@ from __future__ import print_function
 from collections import defaultdict
 
 import time
-from utils import get_accuracy
+from utils import get_accuracy, cal_dca
 import trainer
 import torch
 import torch.nn as nn
@@ -40,7 +40,8 @@ class Trainer(trainer.GenericTrainer):
                               record=self.record,
                               writer=writer
                              )
-                
+                cal_dca(train_loader,  self.model, writer, epoch)
+                             
             if self.scheduler != None and 'Reduce' in type(self.scheduler).__name__:
                 self.scheduler.step(eval_loss)
             else:
@@ -58,12 +59,11 @@ class Trainer(trainer.GenericTrainer):
         n_groups = train_loader.dataset.n_groups
         n_subgroups = n_classes * n_groups
 
-
         for i, data in enumerate(train_loader):
             # Get the inputs
-        
             inputs, _, groups, targets, idx = data
             labels = targets
+
             if self.cuda:
                 inputs = inputs.cuda()
                 labels = labels.cuda()
@@ -101,7 +101,7 @@ class Trainer(trainer.GenericTrainer):
                 torch.nn.utils.clip_grad_norm_(model.parameters(),self.max_grad_norm)
             self.optimizer.step()
             self.optimizer.zero_grad()
-                
+
             running_loss += loss.item()
             running_acc += get_accuracy(outputs, labels)
             

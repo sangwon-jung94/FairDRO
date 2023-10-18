@@ -5,6 +5,11 @@ import os
 import torch.nn.functional as F
 import cvxpy as cvx
 import time 
+import torch.nn as nn
+import torch
+from torch.utils.data import DataLoader
+
+from copy import deepcopy
 
 def chi_proj(pre_q, rho):
     #start = time.time()
@@ -173,3 +178,87 @@ def make_log_name(args):
         log_name += '_balanced'
 
     return log_name
+
+
+def cal_dca(loader, model, writer, epoch):
+    bs_list = [128, 256, 512,1024]
+    acc_gap_dict = {}
+    loss_gap_dict = {}
+    for bs in bs_list:
+        loader = DataLoader(loader.dataset, 
+                            batch_size=bs, 
+                            shuffle=False, 
+                            num_workers=1, 
+                            pin_memory=True, 
+                            drop_last=True)
+        model.train()
+
+        n_groups = loader.dataset.n_groups
+        n_classes = loader.dataset.n_classes
+        n_subgroups = n_groups * n_classes        
+        
+        group_count_total = torch.zeros(n_subgroups).cuda()
+        group_loss_total = torch.zeros(n_subgroups).cuda()        
+        group_acc_total = torch.zeros(n_subgroups).cuda()        
+
+        group_loss_list = []
+        group_acc_list = []
+        with torch.no_grad():
+            for i, data in enumerate(loader):
+                # Get the inputs
+                inputs, _, groups, targets, idx = data
+                labels = targets
+                inputs = inputs.cuda()
+                labels = labels.cuda()
+                groups = groups.cuda()
+                    
+                outputs = model(inputs)
+                preds = torch.argmax(outputs, 1)
+                acc = (preds == labels).float().squeeze()
+
+                subgroups = groups * n_classes + labels
+                group_map = (subgroups == torch.arange(n_subgroups).unsqueeze(1).long().cuda()).float()
+                group_count = group_map.sum(1)
+                group_denom = group_count + (group_count==0).float() # avoid nans
+                loss = nn.CrossEntropyLoss(reduction='none')(outputs, labels)
+                unnormalized_group_loss = (group_map @ loss.view(-1))
+                unnormalized_group_acc = (group_map @ acc)
+                group_loss = unnormalized_group_loss / group_denom
+                group_acc = unnormalized_group_acc / group_denom
+                loss = torch.mean(group_loss)
+
+                group_count_total += group_count
+                group_loss_total += unnormalized_group_loss
+                group_acc_total += unnormalized_group_acc
+
+                group_loss_list.append(group_loss)
+                group_acc_list.append(group_acc)
+        
+        group_loss_total /= group_count_total
+        group_acc_total /= group_count_total
+        group_loss_total = group_loss_total.reshape((n_groups, n_classes))
+        group_acc_total = group_acc_total.reshape((n_groups, n_classes))
+        loss_gap_total = group_loss_total[0] - group_loss_total[1]
+        acc_gap_total = group_loss_total[0] - group_loss_total[1]
+        # balSampling_acc_gap = torch.max(group_acc, dim=0)[0] - torch.min(group_acc, dim=0)[0]
+        gap = 0
+        for group_loss in group_loss_list:
+            group_loss = group_loss.reshape((n_groups, n_classes))
+            loss_gap = group_loss[0] - group_loss[1]
+            gap += (loss_gap_total - loss_gap).abs().mean()
+        gap /= len(group_loss_list)
+        loss_gap_dict[f'{bs}'] = gap
+
+        gap = 0
+        for group_acc in group_acc_list:
+            group_acc = group_acc.reshape((n_groups, n_classes))
+            acc_gap = group_acc[0] - group_acc[1]
+            gap += (acc_gap_total - acc_gap).abs().mean()
+        gap /= len(group_acc_list)
+        acc_gap_dict[f'{bs}'] = gap
+
+    writer.add_scalars('loss_gap_dict', loss_gap_dict, epoch)
+    writer.add_scalars('acc_gap_dict', acc_gap_dict, epoch)
+    return 
+
+    
