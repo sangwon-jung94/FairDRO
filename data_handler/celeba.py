@@ -56,10 +56,10 @@ class CelebA(data_handler.GenericDataset):
                                ' You can use download=True to download it')
         # SELECT the features
         # self.sensitive_attr = 'Male'
-        self.sensitive_attr = 'Blond_Hair'
+        self.sensitive_attr ='Male'
         self.add_attr = add_attr
         # self.target_attr = target_attr       
-        self.target_attr = 'Male'
+        self.target_attr = 'Blond_Hair'
         split_map = {
             "train": 0,
             "valid": 1,
