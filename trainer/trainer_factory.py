@@ -25,6 +25,8 @@ class TrainerFactory:
             import trainer.groupdro as trainer
         elif method == 'fairdro':
             import trainer.fairdro as trainer
+        elif method == 'fairdro_wo_c':
+            import trainer.fairdro_wo_classwise as trainer
         elif method == 'fairbatch':
             import trainer.fairbatch as trainer
         elif method == 'cov':

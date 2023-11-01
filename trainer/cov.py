@@ -230,11 +230,11 @@ class Trainer(trainer.GenericTrainer):
                 
             outputs, loss = closure()
             
-            if self.target_criterion == 'eo':
+            if self.fairness_criterion == 'eo':
                 loss += self.lamb*closure_FPR(inputs, groups, labels, model)
                 loss += self.lamb*closure_FNR(inputs, groups, labels, model)
             
-            elif self.target_criterion == 'ap':
+            elif self.fairness_criterion == 'ap':
                 loss += self.lamb*closure_OMR(inputs, groups, labels, model)
             
             loss.backward()

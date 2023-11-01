@@ -45,17 +45,76 @@ class Trainer(trainer.GenericTrainer):
                    eval_loss, eval_acc, eval_dcam, (eval_end_time - eval_start_time)))
             
             if self.record:
-                self.evaluate(self.model, train_loader, self.criterion, epoch, 
-                              train=True, 
-                              record=self.record,
-                              writer=writer
-                             )
+                outputs, groups, labels = [], [], []
+                for i, data in enumerate(test_loader):
+                    inputs, _, group, target, idx = data
+                    if self.cuda:
+                        inputs = inputs.cuda(device=self.device)
+                        label = target.cuda(device=self.device)
+                        group = group.cuda(device=self.device)
+                    output = self.model(inputs)
+                    outputs.append(output)
+                    groups.append(group)
+                    labels.append(label)
+                
+                outputs = torch.cat(outputs)
+                groups = torch.cat(groups)
+                labels = torch.cat(labels)
+
+                renyi = self.calculate_correlation(outputs, groups, labels, self.weights)
+                writer.add_scalar('renyi', renyi.item(), epoch)
                 
             if self.scheduler != None and 'Reduce' in type(self.scheduler).__name__:
                 self.scheduler.step(eval_loss)
             else:
                 self.scheduler.step()
         print('Training Finished!')        
+
+    def calculate_correlation(self, outputs, groups, labels, weights):
+        if self.fairness_criterion == 'dp':            
+            assert (weights).shape == (1, self.n_classes)
+
+            output_probs = torch.nn.Softmax(dim=None)(outputs) # n by c
+
+            if self.n_groups == 2:
+                s_tilde = ((2*groups-1).view(len(groups),1)) * (torch.ones_like(groups).view(len(groups),1)).expand(len(groups), self.n_classes)
+                multiplier = -(weights**2)+weights*s_tilde
+                assert (multiplier).shape == (len(groups), self.n_classes)
+
+                sample_loss = torch.sum(multiplier*output_probs, dim=1)
+                loss = torch.mean(sample_loss)
+
+            else: 
+                print('not implemented')
+
+        if self.fairness_criterion == 'eo':
+            assert (weights).shape == (self.n_classes, self.n_classes)
+            loss = 0
+            index_set = []
+            for c in range(self.n_classes):
+                index_set.append(torch.where(labels==c)[0])
+
+            output_probs = torch.nn.Softmax(dim=None)(outputs) # n by c
+
+            if self.n_groups == 2:
+                s_tilde = ((2*groups-1).view(len(groups),1)) * (torch.ones_like(groups).view(len(groups),1)).expand(len(groups), self.n_classes)
+                
+                for c in range(self.n_classes):
+                    if index_set[c] == []:
+                        pass
+                    else:
+                        output_probs_c = output_probs[index_set[c]]
+                        s_tilde_c = s_tilde[index_set[c]]
+                        weights_c = weights[c]
+                        multiplier_c = -(weights_c**2)+weights_c*s_tilde_c
+                        assert (multiplier_c).shape == (len(index_set[c]), self.n_classes)
+
+                        sample_loss_c = torch.sum(multiplier_c*output_probs_c, dim=1)
+                        loss_c = torch.mean(sample_loss_c)
+                        loss += loss_c
+
+        return loss
+
 
     def _train_epoch(self, epoch, train_loader, model, criterion=None):
         model.train()
@@ -110,88 +169,7 @@ class Trainer(trainer.GenericTrainer):
                 else:
                     loss = self.criterion(outputs, labels).mean()
             
-            if self.fairness_criterion == 'dp':
-                def closure_renyi(inputs, groups, labels, model, weights):
-                    assert (weights).shape == (1, self.n_classes)
-
-                    if self.data == 'jigsaw':
-                            input_ids = inputs[:, :, 0]
-                            input_masks = inputs[:, :, 1]
-                            segment_ids = inputs[:, :, 2]
-                            outputs = model(
-                                input_ids=input_ids,
-                                attention_mask=input_masks,
-                                token_type_ids=segment_ids,
-                                labels=labels,
-                            )[1]
-                    else:
-                        outputs = model(inputs) # n by 2
-
-                    output_probs = torch.nn.Softmax(dim=None)(outputs) # n by c
-
-                    if self.n_groups == 2:
-                        s_tilde = ((2*groups-1).view(len(groups),1)) * (torch.ones_like(groups).view(len(groups),1)).expand(len(groups), self.n_classes)
-                        multiplier = -(weights**2)+weights*s_tilde
-                        assert (multiplier).shape == (len(groups), self.n_classes)
-
-                        sample_loss = torch.sum(multiplier*output_probs, dim=1)
-                        loss = torch.mean(sample_loss)
-
-                    else: 
-                        print('not implemented')
-
-                    return loss
-                
-                
-            if self.fairness_criterion == 'eo':
-                def closure_renyi(inputs, groups, labels, model, weights):
-                    assert (weights).shape == (self.n_classes, self.n_classes)
-                    loss = 0
-                    index_set = []
-                    for c in range(self.n_classes):
-                        index_set.append(torch.where(labels==c)[0])
-
-                    if self.data == 'jigsaw':
-                            input_ids = inputs[:, :, 0]
-                            input_masks = inputs[:, :, 1]
-                            segment_ids = inputs[:, :, 2]
-                            outputs = model(
-                                input_ids=input_ids,
-                                attention_mask=input_masks,
-                                token_type_ids=segment_ids,
-                                labels=labels,
-                            )[1]
-                    else:
-                        outputs = model(inputs) # n by 2
-
-                    output_probs = torch.nn.Softmax(dim=None)(outputs) # n by c
-
-                    
-
-                    if self.n_groups == 2:
-                        s_tilde = ((2*groups-1).view(len(groups),1)) * (torch.ones_like(groups).view(len(groups),1)).expand(len(groups), self.n_classes)
-                        
-                        for c in range(self.n_classes):
-                            if index_set[c] == []:
-                                pass
-                            else:
-                                output_probs_c = output_probs[index_set[c]]
-                                s_tilde_c = s_tilde[index_set[c]]
-                                weights_c = weights[c]
-                                multiplier_c = -(weights_c**2)+weights_c*s_tilde_c
-                                assert (multiplier_c).shape == (len(index_set[c]), self.n_classes)
-
-                                sample_loss_c = torch.sum(multiplier_c*output_probs_c, dim=1)
-                                loss_c = torch.mean(sample_loss_c)
-                                loss += loss_c
-
-                    else: 
-                        groups_onehot = torch.nn.functional.one_hot(groups.long(), num_classes=n_groups)
-                        groups_onehot = groups_onehot.float() # n by g
-
-                    return loss
-            
-            loss += self.lamb*closure_renyi(inputs, groups, labels, model, weights)
+            loss += self.lamb * self.calculate_correlation(outputs, groups, labels, weights)
             
             loss.backward()
             if self.data == 'jigsaw':
@@ -212,8 +190,6 @@ class Trainer(trainer.GenericTrainer):
                 running_loss = 0.0
                 running_acc = 0.0
                 batch_start_time = time.time()
-            
-            
             
         self.weights = self.update_weights(train_loader.dataset, self.bs, self.n_workers, model, weights) # implemented for each epoch
             

@@ -146,7 +146,7 @@ def make_log_name(args):
     elif args.method == 'rvp':
         log_name += f'_rho{args.rho}'        
         
-    elif args.method == 'fairdro':
+    elif 'fairdro' in args.method:
         log_name += f'_{args.optim_q}'
         if args.optim_q == 'smt_ibr':
             log_name += f'_{args.q_decay}'
