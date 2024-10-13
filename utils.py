@@ -154,7 +154,7 @@ def make_log_name(args):
         if args.use_01loss:
             log_name +='_01loss'
         
-    if 'cov' == args.method:
+    if 'cov' == args.method or 'fairret' == args.method:
         log_name += f'_lamb{args.lamb}'
 
     if 'renyi' == args.method:
