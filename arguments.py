@@ -15,6 +15,7 @@ def get_args():
     parser.add_argument('--t-device', default=0, type=int, help='teacher cuda device number')
     
     parser.add_argument('--mode', default='train', choices=['train', 'eval'])
+    parser.add_argument('--val', default=False, action='store_true')
     parser.add_argument('--modelpath', default=None)
     parser.add_argument('--evalset', default='all', choices=['all', 'train', 'test'])
 
@@ -30,7 +31,7 @@ def get_args():
     parser.add_argument('--seed', default=0, type=int, help='seed for randomness')
     parser.add_argument('--date', default='20200101', type=str, help='experiment date')
     parser.add_argument('--method', default='scratch', type=str, required=True,
-                        choices=['scratch', 'fairret','lbc','mfd', 'fairhsic','gdro','fairbatch','fairdro','cov','rw','renyi', 'rvp','egr','pl', 'direct_reg', 'fairdro_wo_c'])
+                        choices=['scratch', 'fairinf', 'fairret','lbc','mfd', 'fairhsic','gdro','fairbatch','fairdro','cov','rw','renyi', 'rvp','egr','pl', 'direct_reg', 'fairdro_wo_c'])
 
     parser.add_argument('--optim', default='Adam', type=str, required=False,
                         choices=['AdamP', 'AdamW','SGD', 'SGD_momentum_decay', 'Adam'],
@@ -73,6 +74,10 @@ def get_args():
     parser.add_argument('--q-decay', default='linear', type=str, help='the type of optimization for q')
     parser.add_argument('--label-flipped', default=False, action='store_true', help='flip a label when the corresponding q has a negative value')
     parser.add_argument('--rholr', default=0.001, type=float, help='learning rate of lambda')        
+
+    # For fairInf,
+    parser.add_argument('--alpha', default=0.02, type=float, help='uncertainty box length')    
+    parser.add_argument('--beta', default=0.5, type=float, help='uncertainty box length')
    
     # For exp_grad_reduction,
     parser.add_argument('--bound_B', default=0.01, type=float, help='bound for L1 norm')

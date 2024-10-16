@@ -20,9 +20,14 @@ class DataloaderFactory:
             target_attr = 'toxicity'
 
         test_dataset = DatasetFactory.get_dataset(name, split='test',
-                                                  target_attr=target_attr, seed=seed, add_attr=add_attr, bs=batch_size,uc=args.uc,method=args.method)
+                                                  target_attr=target_attr, seed=seed, add_attr=add_attr, bs=batch_size,uc=args.uc,method=args.method,val=args.val)
         train_dataset = DatasetFactory.get_dataset(name, split='train',
-                                                   target_attr=target_attr, seed=seed,add_attr=add_attr, bs=batch_size,uc=args.uc,method=args.method)
+                                                   target_attr=target_attr, seed=seed,add_attr=add_attr, bs=batch_size,uc=args.uc,method=args.method,val=args.val)
+        
+        val_dataloader = None
+        if args.val:
+            val_dataset = DatasetFactory.get_dataset(name, split='val',
+                                                   target_attr=target_attr, seed=seed,add_attr=add_attr, bs=batch_size,uc=args.uc,method=args.method,val=args.val)
         
         n_classes = test_dataset.n_classes
         n_groups = test_dataset.n_groups
@@ -55,10 +60,15 @@ class DataloaderFactory:
         test_dataloader = DataLoader(test_dataset, batch_size=256, shuffle=False,
                                      num_workers=n_workers, worker_init_fn=_init_fn, pin_memory=True)
 
+        if args.val:
+            val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False,
+                            num_workers=n_workers, worker_init_fn=_init_fn, pin_memory=True)
+
+
         print('# of test data : {}'.format(len(test_dataset)))
         print('# of train data : {}'.format(len(train_dataset)))
         print('Dataset loaded.')
         print('# of classes, # of groups : {}, {}'.format(n_classes, n_groups))
 
-        return n_classes, n_groups, train_dataloader, test_dataloader
+        return n_classes, n_groups, train_dataloader, test_dataloader, val_dataloader
 

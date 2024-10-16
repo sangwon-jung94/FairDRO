@@ -20,11 +20,12 @@ class DatasetFactory:
 
     @staticmethod
    # def get_dataset(name, split='Train', seed=0, sv_ratio=1, version=1, target='Attractive', add_attr=None):
-    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, balSampling=False, bs=256, uc=False, method=None):
+    def get_dataset(name, split='train', seed=0, target_attr='Blond_Hair', add_attr=None, balSampling=False, bs=256, uc=False, method=None, val=False):
         root = f'./data/{name}' if name != 'utkface_fairface' else './data/utkface'
         kwargs = {'root':root,
                   'split':split,
                   'seed':seed,
+                  'val':val
                   }
          
         if name not in dataset_dict.keys():
@@ -43,6 +44,7 @@ class DatasetFactory:
             kwargs['uc']=uc
             kwargs['method']=method
         
+        
         module = importlib.import_module(dataset_dict[name][0])
         class_ = getattr(module, dataset_dict[name][1])
         
@@ -51,13 +53,14 @@ class DatasetFactory:
         return class_(**kwargs)
 
 class GenericDataset(data.Dataset):
-    def __init__(self, root, split='train', transform=None, seed=0, uc=False):
+    def __init__(self, root, split='train', transform=None, seed=0, uc=False, val=False):
         self.root = root
         self.split = split
         self.transform = transform
         self.seed = seed
         self.n_data = None
         self.uc = uc
+        self.val = val
         
     def __len__(self):
         return np.sum(self.n_data)

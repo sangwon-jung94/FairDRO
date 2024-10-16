@@ -143,6 +143,12 @@ def make_log_name(args):
     elif 'gdro' in args.method:
         log_name += f'_gamma{args.gamma}'
 
+    elif 'fairinf' in args.method:
+        log_name += f'_alpha{args.alpha}'
+        log_name += f'_beta{args.beta}'
+        log_name += f'_gamma{args.gamma}'
+
+
     elif args.method == 'rvp':
         log_name += f'_rho{args.rho}'        
         

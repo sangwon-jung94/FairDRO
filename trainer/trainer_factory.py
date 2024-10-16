@@ -25,6 +25,8 @@ class TrainerFactory:
             import trainer.groupdro as trainer
         elif method == 'fairdro':
             import trainer.fairdro as trainer
+        elif method == 'fairinf':
+            import trainer.fairinf as trainer
         elif method == 'fairdro_wo_c':
             import trainer.fairdro_wo_classwise as trainer
         elif method == 'fairbatch':
@@ -77,7 +79,7 @@ class GenericTrainer:
         
         # optimization
         self.optim_type = args.optim        
-        self.scheduler = scheduler
+        self._call_scheduler(scheduler)
         self.lr = args.lr
         self.max_grad_norm = args.max_grad_norm
 
@@ -91,6 +93,7 @@ class GenericTrainer:
         self.log_dir = os.path.join(args.log_dir, args.date, args.dataset, args.method)
         self.save_dir = os.path.join(args.save_dir, args.date, args.dataset, args.method)
 
+    def _call_scheduler(self, scheduler=None):
         if scheduler is None:
             if self.optim_type == 'Adam' and self.optimizer is not None:
                 self.scheduler = ReduceLROnPlateau(self.optimizer)
@@ -105,7 +108,6 @@ class GenericTrainer:
         else:
             self.scheduler = scheduler
             
-
     def evaluate(self, model, loader, criterion, epoch=0, device=None, train=False, record=False, writer=None):
         if record:
             assert writer is not None

@@ -17,8 +17,6 @@ class ModelFactory():
         elif target_model == 'lr': 
             return MLP(feature_size=img_size, hidden_dim=64, n_classes=n_classes, n_layer=1)
 
-
-
         elif 'resnet' in target_model:
             model_class = eval(target_model)
             if pretrained:

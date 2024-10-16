@@ -16,7 +16,11 @@ class TabularDataset(GenericDataset):
         
         dataset_train, dataset_test = dataset.split([0.8], shuffle=True, seed=0)
         # features, labels = self._balance_test_set(dataset)
-        self.dataset = dataset_train if self.split == 'train' else dataset_test
+        if self.split == 'test':
+            self.dataset = dataset_test
+        elif self.split == 'train' or self.split == 'val':
+            self.dataset = dataset_train
+        # self.dataset = dataset_train if self.split == 'train' else dataset_test
         
         features = np.delete(self.dataset.features, self.sen_attr_idx, axis=1)
         mean, std = self._get_mean_n_std(dataset_train.features)        
@@ -27,6 +31,12 @@ class TabularDataset(GenericDataset):
         
         # self.features = self.dataset.features
         self.features = np.concatenate((self.groups, self.dataset.labels, features), axis=1)
+        if self.val:
+            n_samples = len(self.features)
+            if self.split == 'train':
+                self.features = self.features[:int(n_samples*0.8)]
+            elif self.split == 'val':
+                self.features = self.features[int(n_samples*0.8):]
 
         # For prepare mean and std from the train dataset
         self.n_data, self.idxs_per_group = self._data_count(self.features, self.n_groups, self.n_classes)

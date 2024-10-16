@@ -49,7 +49,7 @@ def main():
                                                         balSampling=args.balSampling,
                                                         args=args
                                                         )
-    n_classes, n_groups, train_loader, test_loader = tmp
+    n_classes, n_groups, train_loader, test_loader, val_loader = tmp
     ########################## get model ##################################
     if args.dataset == 'adult':
         args.img_size = 97
@@ -131,7 +131,10 @@ def main():
     
     if args.mode == 'train':
         start_t = time.time()
-        trainer_.train(train_loader, test_loader, args.epochs, writer=writer)
+        if args.val:
+            trainer_.train(train_loader, test_loader, args.epochs, writer=writer, val_loader=val_loader)
+        else:
+            trainer_.train(train_loader, test_loader, args.epochs, writer=writer)
         end_t = time.time()
         train_t = int((end_t - start_t)/60)  # to minutes
         print('Training Time : {} hours {} minutes'.format(int(train_t/60), (train_t % 60)))
